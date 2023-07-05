@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 ">
+    <file original="source_file.ext"
+          datatype="plaintext"
+          source-language="en"
+          target-language="de">
+        <body>
+            <trans-unit id="code-1" resname="code-1">
+                <source>Hello, world!</source>
+                <target>Hallo, Welt!</target>
+            </trans-unit>
+            <trans-unit id="code-2">
+                <source>This is another sentence.</source>
+                <target>Dies ist ein weiterer Satz.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

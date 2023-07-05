@@ -1,0 +1,57 @@
+name: "SonarCloud Analyze"
+run-name: SonarCloud Analyze [${{ github.ref_type }}][${{ github.ref }}]
+on:
+  #  push:
+  #    branches:
+  #      - master
+  #  pull_request:
+  #    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build and analyze
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #   SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }} # -Dsonar.projectKey=$SONAR_PROJECTKEY
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v7
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'zulu'
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze (dev)
+        run: |
+          mvn test -P test-coverage
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }} \
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
+            -Dsonar.branch.name=${{ steps.branch-name.outputs.ref_branch }} \
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} \
+            -Dsonar.host.url=${{ vars.SONAR_HOST_URL }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=${{ vars.SONAR_COVERAGE_JACOCO_XML_REPORT_PATHS }} \
+            -Dsonar.sources=${{ vars.SONAR_SOURCES }} \
+            -Dsonar.tests=${{ vars.SONAR_TESTS }} \
+            -Dsonar.exclusions=${{ vars.SONAR_EXCLUSIONS }} \
+            -Dsonar.java.binaries=${{ vars.SONAR_JAVA_BINARIES }} \
+            -Dsonar.coverage.exclusions=${{ vars.SONAR_COVERAGE_EXCLUSIONS }} \
+            -Dsonar.java.source=${{ vars.SONAR_JAVA_SOURCE }}

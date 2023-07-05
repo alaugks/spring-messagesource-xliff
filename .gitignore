@@ -1,0 +1,13 @@
+HELP.md
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+mvnw
+mvnw.cmd
+/.mvn/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr

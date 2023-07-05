@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <element>value</element>
+    <element-newline>
+        value
+    </element-newline>
+    <element-with-cdata><![CDATA[value]]></element-with-cdata>
+    <element-with-cdata-newline>
+        <![CDATA[
+                            value
+                        ]]>
+    </element-with-cdata-newline>
+    <dummy><dummy-inner/></dummy>
+</root>

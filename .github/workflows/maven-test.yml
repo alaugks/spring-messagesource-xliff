@@ -1,0 +1,28 @@
+name: "Maven Test"
+run-name: Maven Test [${{ github.ref_type }}][${{ github.ref }}]
+on:
+  push:
+    branches:
+      - main
+      - stage
+      - dev
+#    workflow_dispatch:
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-package: 'jdk'
+          java-version: '17'
+          check-latest: true
+          cache: 'maven'
+      - name: Install & Run Rests
+        run: |
+          mvn install
+          mvn test

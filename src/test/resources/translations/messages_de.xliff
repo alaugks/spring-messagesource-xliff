@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="global"
+          datatype="plaintext"
+          source-language="en"
+          target-language="de">
+        <body>
+            <trans-unit id="hello_language" resname="hello_language">
+                <source>
+
+                    Hello EN (messages)
+                </source>
+                <target>
+                    Hallo DE (messages)
+                </target>
+            </trans-unit>
+            <trans-unit id="roadrunner">
+                <source>
+                    {0} and {1}
+                </source>
+                <target>
+                    {0} und {1}
+                </target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
