@@ -1,5 +1,5 @@
 name: "Maven Test"
-run-name: Maven Test [${{ github.ref_type }}][${{ github.ref }}]
+run-name: Maven Test [${{ github.ref_name }}]
 on:
   push:
     branches:
