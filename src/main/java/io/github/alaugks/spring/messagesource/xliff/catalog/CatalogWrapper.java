@@ -5,11 +5,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.cache.CacheManager;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Objects;
 
-public final class CatalogWrapper {
+public class CatalogWrapper {
     private static final Logger logger = LogManager.getLogger();
     private final CatalogCache catalogCache;
     private final CatalogInterface catalog;
@@ -23,8 +23,8 @@ public final class CatalogWrapper {
                           CatalogInterface catalog
     ) {
         this.catalog = catalog;
-        this.catalogBuilder = catalogBuilder;
         this.resourcesLoader = resourcesLoader;
+        this.catalogBuilder = catalogBuilder;
         this.catalogCache = new CatalogCache(cacheManager);
     }
 
@@ -62,7 +62,7 @@ public final class CatalogWrapper {
         // If exists then init cache, because it was not in the cache. Cache empty?
         if (targetValue != null) {
             logger.info("Re-init xliff catalog cache");
-            this.catalogCache.initCache(loadedCatalog);
+            this.initCache(loadedCatalog);
         }
 
         // If not exists then is the targetValue is the code.
@@ -90,6 +90,11 @@ public final class CatalogWrapper {
         this.defaultDomain = defaultDomain;
     }
 
+    public void initCache(CatalogInterface catalog) {
+        // Without cache do not get load catalog
+        this.catalogCache.initCache(catalog);
+    }
+
     public void initCache() {
         // Without cache do not get load catalog
         this.catalogCache.initCache(this.loadCatalog());
@@ -101,7 +106,7 @@ public final class CatalogWrapper {
 
     private String chainLink(CatalogInterface catalog, Locale locale, String code) {
         String targetValue;
-        HashMap<Integer, Locale> locales = new HashMap<>();
+        LinkedHashMap<Integer, Locale> locales = new LinkedHashMap<>();
         // Follow the order
         locales.put(0, locale); // First
         locales.put(1, this.resourcesLoader.getDefaultLocale()); // Second

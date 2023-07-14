@@ -5,16 +5,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-final class Xliff12 extends XliffAbstract implements XliffInterface {
-    private List<String> translationUnitIdentifiers = new ArrayList<>(Arrays.asList("resname", "id"));
+final class Xliff2 extends XliffAbstract implements XliffInterface {
+    private List<String> translationUnitIdentifiers = new ArrayList<>(List.of("id"));
 
     @Override
     public boolean support(String version) {
-        return version.equals("1.2");
+        return List.of("2.0", "2.1").contains(version);
     }
 
     @Override
@@ -24,7 +23,7 @@ final class Xliff12 extends XliffAbstract implements XliffInterface {
 
     @Override
     public void read(CatalogInterface catalog, Document document, String domain, Locale locale) {
-        NodeList translationUnits = XliffParserUtility.getTranslationUnits(document, "trans-unit");
+        NodeList translationUnits = XliffParserUtility.getTranslationUnits(document, "segment");
         this.readItems(catalog, domain, locale, translationUnits, this.translationUnitIdentifiers);
     }
 }

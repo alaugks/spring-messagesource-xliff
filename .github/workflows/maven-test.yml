@@ -6,6 +6,7 @@ on:
       - main
       - stage
       - dev
+      - feature/*
 #    workflow_dispatch:
 jobs:
   tests:

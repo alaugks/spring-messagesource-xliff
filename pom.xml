@@ -5,12 +5,12 @@
 
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Provides a MessageSource for translations from XLIFF files for Spring and Spring Boot.</description>
-    <url>https://github.com/alaugks/spring-xliff-translation</url>
+    <url>https://github.com/alaugks/spring-messagesource-xliff</url>
 
     <licenses>
         <license>
@@ -27,9 +27,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:https://github.com/alaugks/spring-xliff-translation</connection>
-        <developerConnection>scm:git:https://github.com/alaugks/spring-xliff-translation</developerConnection>
-        <url>https://github.com/alaugks/spring-xliff-translation</url>
+        <connection>scm:git:https://github.com/alaugks/spring-messagesource-xliff</connection>
+        <developerConnection>scm:git:https://github.com/alaugks/spring-messagesource-xliff</developerConnection>
+        <url>https://github.com/alaugks/spring-messagesource-xliff</url>
     </scm>
 
     <parent>
@@ -77,6 +77,18 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-subclass</artifactId>
+            <version>5.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

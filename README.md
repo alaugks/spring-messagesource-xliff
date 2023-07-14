@@ -2,27 +2,29 @@
 
 This package provides a **MessageSource** for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
+With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](https://www.thymeleaf.org/). 
+
 **Table of content**
 
-1. [Version](#1-Versions)
-2. [Dependency](#2-Dependency)
-3. [MessageSource Configuration](#3-MessageSource-Configuration)
-4. [Minimal CacheManager Configuration](#4-Minimal-CacheManager-Configuration)
-5. [CacheManager with Supported Cache Providers](#5-CacheManager-with-Supported-Cache-Providers)
-6. [Cache warming with an ApplicationRunner (recommended)](#6-Cache-warming-with-an-ApplicationRunner-recommended)
-7. [Xliff Translations Files](#7-XLIFF-Translation-Files)
-8. [Example with Translations Files](#8-Example-with-Translations-Files)
-9. [Full Example](#9-Full-Example)
-10. [Support](#10-Support)
-
-## 1. Versions
+1. [Version](#Versions)
+2. [Dependency](#Dependency)
+3. [MessageSource Configuration](#MessageSource-Configuration)
+4. [Minimal CacheManager Configuration](#Minimal-CacheManager-configuration)
+5. [CacheManager with supported Cache Providers](#CacheManager-with-supported-Cache-Providers)
+6. [Cache warming with an ApplicationRunner (recommended)](#Cache-warming-with-an-ApplicationRunner-recommended)
+7. [Xliff Translations files](#Xliff-Translations-files)
+8. [Example with Translations files](#Example-with-Translations-files)
+9. [Full Example](#Full-Example)
+10. [Support](#Support)
+## Versions
 
 | Version | Description          |
-|:------- |:-------------------- |
+|:--------|:---------------------|
+| 1.1.0   | Release note         |
 | 1.0.0   | First public version |
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.0)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.0.0)
 
 ## 2. Dependency
 
@@ -31,14 +33,15 @@ This package provides a **MessageSource** for using translations from XLIFF file
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
 **Gradle**
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.0.0'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.1.0'
 ```
+
 
 ## 3. MessageSource Configuration
 
@@ -46,17 +49,23 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 
 ### XliffTranslationMessageSource
 
-`setBasenamePattern(String basename)` or `setBasenamesPattern(Iterable<String> basenames)` (*mandatory*)
+`setBasenamePattern(String basename)` or `setBasenamesPattern(Iterable<String> basenames)` (*required*)
 
 * Defines the pattern used to select the XLIFF files.
 * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
 * Files with the extension `xliff` and `xlf` are filtered from the result list.
 
-`setDefaultLocale(Locale locale)` (*mandatory*)
+`setDefaultLocale(Locale locale)` (*required*)
 * Defines the default language.
 
 `setDefaultDomain(String defaultDomain)`
-* Defines the default domain. Default is `messages`. For more information, see [Xliff Translations Files](#7-XLIFF-Translation-Files).
+* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#7-XLIFF-Translation-Files).
+
+`setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers)`
+* The Identifiers can be defined with attributes on a translation unit. The attribute `id` is required for XLIFF 1.2 and 2.*. For XLIFF 1.2, the attribute `resname` can also be defined.
+    * **XLIFF 2.1**: Default definition is `"resname", "id"`. If the attribute `resname` does not exist, the attribute `id` is used to determine the identifier for the catalogue. 
+    * **XLIFF 2.\***: Default definition is `"id"`. The `id` defines the identifier for the catalogue. The attribute `id` is optional by standard in XLIFF 2.*. However, this package requires the `id` on a translation unit.
+* Documentation Identifiers: [XLIFF 1.2](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers), [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment) and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
 
 > Please note the [Minimal CacheManager Configuration](#Minimal-CacheManager-configuration).
 
@@ -84,11 +93,12 @@ public class MessageConfig {
 }
 ```
 
+
 ## 4. Minimal CacheManager Configuration
 
 You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required.
 
-The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The specific cache identifier is stored in the constant. Currently you cannot set a custom cache name.
+The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The specific cache identifier is stored in the constant. 
 
 [ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html) is the default cache in Spring Boot and Spring.
 
@@ -107,22 +117,25 @@ import java.util.List;
 @Configuration
 @EnableCaching
 public class CacheConfig {
+    
     @Bean
     public CacheManager cacheManager() {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
         cacheManager.setCacheNames(List.of(CatalogCache.CACHE_NAME));
         return cacheManager;
     }
+    
 }    
 ```
 
+
 ## 5. CacheManager with Supported Cache Providers
 
-[Supported Cache Providers](https://docs.spring.io/spring-boot/docs/3.1.1/reference/html/io.html#io.caching.provider) can also be used. The following Example using [Caffeine](https://github.com/ben-manes/caffeine):
+[Supported Cache Providers](https://docs.spring.io/spring-boot/docs/3.1.1/reference/html/io.html#io.caching.provider) can also be used. The following example using [Caffeine](https://github.com/ben-manes/caffeine):
 
 ### CacheConfig with Caffeine
 
-The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. No ExpireDate should be set for the XLIFF Translations cache.
+The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. No ExpireDate should be set for the XLIFF translations cache.
 
 ```java
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -139,6 +152,7 @@ import java.util.List;
 @Configuration
 @EnableCaching
 class CacheConfig {
+    
     @Bean
     public Caffeine<Object, Object> caffeineConfig() {
         return Caffeine.newBuilder();
@@ -152,8 +166,10 @@ class CacheConfig {
         caffeineCacheManager.setCacheNames(cacheNames);
         return caffeineCacheManager;
     }
+    
 }
 ```
+
 
 ## 6. Cache warming with an ApplicationRunner (recommended)
 
@@ -161,7 +177,6 @@ In the following example, the cache of translations is warmed up after the appli
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.XliffMessageSourcePatternResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.MessageSource;
@@ -170,26 +185,30 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppStartupRunner implements ApplicationRunner {
 
-    @Autowired
-    MessageSource messageSource;
+  private final MessageSource messageSource;
 
-    @Override
-    public void run(ApplicationArguments args) {
-        if (this.messageSource instanceof XliffTranslationMessageSource) {
-            ((XliffTranslationMessageSource) this.messageSource).initCache();
-        }
+  public AppStartupRunner(MessageSource messageSource) {
+    this.messageSource = messageSource;
+  }
+
+  @Override
+  public void run(ApplicationArguments args) {
+    if (this.messageSource instanceof XliffTranslationMessageSource) {
+      ((XliffTranslationMessageSource) this.messageSource).initCache();
     }
+  }
+    
 }
 ```
+
 
 ## 7. XLIFF Translation Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
 * Translation files must be stored in the resource folder and have the extension `xliff` or `xlf`.
-* In the XLIFF files, the `<target/>` is fetched in a `<trans-unit/>` (XLIFF 1.2) or `<segment/>` (XLIFF 2.*).
-* For performance reasons, there is no validation of XLIFF files with an XMLSchema. If there is any broken XML in an XLIFF file, the SAX parser will throw a [Fatal Error].
-
+* In the XLIFF files, the `<target/>` is retrieved in a `<trans-unit/>` (XLIFF 1.2) or `<segment/>` (XLIFF 2.*).
+* For performance reasons, there is no validation of XLIFF files with an XMLSchema. If there is any corrupt XML in an XLIFF file, the SAX parser will throw a [Fatal Error].
 
 ### Structure of the Translation Filename
 
@@ -204,7 +223,8 @@ public class AppStartupRunner implements ApplicationRunner {
 <domain>[-_]<language>[-_]<region>.xlf
 ```
 
-## 8. Example with Translations Files
+
+### Example with Translations Files
 
 * Default domain is `messages`.
 * Default locale is `en` without region.
@@ -221,11 +241,11 @@ public class AppStartupRunner implements ApplicationRunner {
              |-payment_en-US.xliff     
 ```  
 
-### Translations files
+#### Translations files
 
 Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 2.1. 
 
-#### messages.xliff
+##### messages.xliff
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2"
@@ -241,12 +261,28 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
                 <source>Postcode</source>
                 <target>Postcode</target>
             </trans-unit>
+            <trans-unit id="headline-examples">
+                <source>Examples</source>
+                <target>Examples</target>
+            </trans-unit>
+            <trans-unit id="translation-args-label">
+                <source>Translation with param</source>
+                <target>Translation with param</target>
+            </trans-unit>
+            <trans-unit id="email-notice">
+                <source>Your email {0} has been registered.</source>
+                <target>Your email {0} has been registered.</target>
+            </trans-unit>
+            <trans-unit id="default-message">
+                <source>This is a default message.</source>
+                <target>This is a default message.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
 ```
 
-#### messages_de.xliff
+##### messages_de.xliff
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2"
@@ -262,12 +298,28 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
                 <source>Postcode</source>
                 <target>Postleitzahl</target>
             </trans-unit>
+            <trans-unit id="headline-examples">
+                <source>Examples</source>
+                <target>Beispiele</target>
+            </trans-unit>
+            <trans-unit id="translation-args-label">
+                <source>Translation with param</source>
+                <target>Übersetzung mit Parameter</target>
+            </trans-unit>
+            <trans-unit id="email-notice">
+                <source>Your email {0} has been registered.</source>
+                <target>Ihre E-Mail {0} wurde registriert.</target>
+            </trans-unit>
+            <trans-unit id="default-message">
+                <source>This is a default message.</source>
+                <target>Das ist ein Standardtext.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
 ```
 
-#### messages_en-US.xliff
+##### messages_en-US.xliff
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2"
@@ -284,7 +336,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 </xliff>
 ```
 
-#### payment.xliff
+##### payment.xliff
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.1" version="2.1"
@@ -304,7 +356,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 </xliff>
 ```
 
-#### payment_de.xliff
+##### payment_de.xliff
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.1" version="2.1"
@@ -324,7 +376,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 </xliff>
 ```
 
-#### payment_en-US.xliff
+##### payment_en-US.xliff
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.1" version="2.1"
@@ -344,20 +396,143 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 </xliff>
 ```
 
-#### Target value
+##### Target value
 
-| id                  | en          | de           | en-US           |
-| ------------------- | ----------- | ------------ | --------------- |
-| postcode*           | Postcode    | Postleitzahl | Zip code        |
-| messages.postcode   | Postcode    | Postleitzahl | Zip code        |
-| headline*           | Headline    | Überschrift  | Headline**      |
-| messages.headline   | Headline    | Überschrift  | Headline**      |
-| payment.headline    | Payment     | Zahlung      | Payment         |
-| payment.expiry_date | Expiry date | Ablaufdatum  | Expiration date |
+| id                              | en                                  | de                                 | en-US                               |
+|---------------------------------|-------------------------------------|------------------------------------|-------------------------------------|
+| headline*                       | Headline                            | Überschrift                        | Headline**                          |
+| messages.headline               | Headline                            | Überschrift                        | Headline**                          |
+| postcode*                       | Postcode                            | Postleitzahl                       | Zip code                            |
+| messages.postcode               | Postcode                            | Postleitzahl                       | Zip code                            |
+| headline-examples               | Examples                            | Beispiele                          | Examples                            |
+| messages.headline-examples      | Examples                            | Beispiele                          | Examples                            |
+| translation-args-label          | Translation with param              | Übersetzung mit Parameter          | Translation with param              |
+| messages.translation-args-label | Translation with param              | Übersetzung mit Parameter          | Translation with param              |
+| email-notice                    | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered. |
+| messages.email-notice           | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered. |
+| default-message                 | This is a default message.          | Das ist ein Standardtext.          | This is a default message.          |
+| messages.default-message        | This is a default message.          | Das ist ein Standardtext.          | This is a default message.          |
+| payment.headline                | Payment                             | Zahlung                            | Payment                             |
+| payment.expiry_date             | Expiry date                         | Ablaufdatum                        | Expiration date                     |
 
 > *Default domain is `messages`.
 >
 > **Example of a fallback. With locale `en-US` it tries to select the translation with id `headline` in messages_en-US. The id `headline` does not exist, so it tries to select the translation with locale `en` in messages.
+
+
+## 8. Using the MessageSource in Thymeleaf or as Service
+
+### Thymeleaf
+
+With the configured MessageSource, the translations are available in Thymeleaf. See the example in the [Full Example](#9-Full-Example).
+
+```html
+<!-- "Headline" -->
+<h1 th:text="#{messages.headline}"/>
+
+<!-- "Headline" -->
+<h1 th:text="#{headline}"/>
+
+<!-- "Postcode" -->
+<label th:text="#{messages.postcode}"/>
+
+<!-- "Postcode" -->
+<label th:text="#{postcode}"/>
+
+<!-- "Payment" -->
+<h2 th:text="#{payment.headline}"/>
+
+<!-- "Expiry date" -->
+<strong th:text="#{payment.expiry_date}"/>
+
+<!-- "Translation with param: Your email john.doe@example.com has been registered." -->
+<strong th:text="#{translation-args-label}"/>: <span th:text="#{email-notice('john.doe@example.com')}"/>
+
+<!-- "This is a default message." -->
+<span th:text="${#messages.msgOrNull('not-exists-id')} ?: #{default-message}"/>
+
+
+```
+
+
+### MessageSource as Dependency Injection
+
+The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#9-Full-Example).
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Service;
+
+import java.util.Locale;
+
+@Service
+public class MyService {
+    
+    private MessageSource messageSource;
+
+    public MyService(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    void method() {
+        Locale locale = Locale.forLanguageTag("en");
+        
+        // "Headline"
+        String headline = this.messageSource.getMessage("headline", null, locale);
+        
+        // "Headline"
+        String messagesHeadline = this.messageSource.getMessage("messages.headline", null, locale);
+        
+        // "Postcode"
+        String postcode = this.messageSource.getMessage("postcode", null, locale);
+        
+        // "Postcode"
+        String messagesPostcode = this.messageSource.getMessage("messages.postcode", null, locale);
+        
+        // "Payment"
+        String paymentHeadline = this.messageSource.getMessage("payment.headline", null, locale);
+        
+        // "Expiry date"
+        String paymentExpiryDate = this.messageSource.getMessage("payment.expiry_date", null, locale);
+
+        // With arguments
+        // "Translation with param: Your email john.doe@example.com has been registered."
+        Object[] args = {"john.doe@example.com"};
+        translations.put("email-notice", this.messageSource.getMessage("email-notice", args, locale));
+        translations.put("messages.email-notice", this.messageSource.getMessage("email-notice", args, locale));
+  
+        // Show default message if id not exists
+        // "This is a default message."
+        String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
+        translations.put("not-exists-id", this.messageSource.getMessage("not-exists-id", null, defaultMessage, locale));
+    }
+}
+```
+
+
+## 9. Full Example
+
+A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files: https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot
+
+
+## 10. Support
+
+If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
+
+
+## #11. More Information
+
+### MessageSource, Internationalization and Thymeleaf
+* [Guide to Internationalization in Spring Boot](https://www.baeldung.com/spring-boot-internationalization)
+* [How to Internationalize a Spring Boot Application](https://reflectoring.io/spring-boot-internationalization/)
+* [Spring Boot internationalization i18n: Step-by-step with examples](https://lokalise.com/blog/spring-boot-internationalization/)
+
+### Caching
+* [A Guide To Caching in Spring](https://www.baeldung.com/spring-cache-tutorial) 
+* [Implementing a Cache with Spring Boot](https://reflectoring.io/spring-boot-cache/)
+
+
 
 <!-- 
 ## Use @Cachable proxy
@@ -415,10 +590,10 @@ class CacheableXliffTranslationMessageSource extends XliffTranslationMessageSour
 ```
 -->
 
-## 9. Full Example
+## Full Example
 
-A complete example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files: https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot
+A complete example using Spring Boot, including the use of XLIFF 1.2 and XLIFF 2.1 translation files: https://github.com/alaugks/spring-xliff-translation-example-spring-boot
 
-## 10. Support
+## Support
 
-If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
+If you have any questions, comments or feature requests, please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section to contact me.

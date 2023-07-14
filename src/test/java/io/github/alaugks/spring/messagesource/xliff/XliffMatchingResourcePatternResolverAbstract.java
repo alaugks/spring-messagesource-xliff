@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 abstract class XliffMatchingResourcePatternResolverAbstract {
 
-    public XliffTranslationMessageSource resolver;
+    protected static XliffTranslationMessageSource messageSource;
 
     @Test
     void test_message_withDefaultMessage_messageExists() {
-        String message = this.resolver.getMessage(
+        String message = messageSource.getMessage(
                 "hello_language",
                 null,
                 "My default message",
@@ -27,7 +27,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
 
     @Test
     void test_getMessage_withDefaultMessage_messageNotExists() {
-        String message = this.resolver.getMessage(
+        String message = messageSource.getMessage(
                 "not_exists",
                 null,
                 "My default message",
@@ -40,7 +40,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
     @Test
     void test_getMessage_withDefaultMessage_messageExists_messageWithArgs() {
         Object[] args = {"Road Runner", "Wile E. Coyote"};
-        String message = this.resolver.getMessage(
+        String message = messageSource.getMessage(
                 "roadrunner",
                 args,
                 "My default message",
@@ -53,7 +53,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
     @Test
     void test_getMessage_withDefaultMessage_messageNotExists_defaultMessageWithArgs() {
         Object[] args = {"Road Runner", "Wile E. Coyote"};
-        String message = this.resolver.getMessage(
+        String message = messageSource.getMessage(
                 "not_exists",
                 args,
                 "{0} and {1} as default",
@@ -65,7 +65,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
 
     @Test
     void test_getMessage_messageExists() {
-        String message = this.resolver.getMessage(
+        String message = messageSource.getMessage(
                 "hello_language",
                 null,
                 Locale.forLanguageTag("en")
@@ -79,7 +79,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
         Locale locale =  Locale.forLanguageTag("en");
 
         NoSuchMessageException exception = assertThrows(NoSuchMessageException.class, () -> {
-            this.resolver.getMessage(
+            messageSource.getMessage(
                     "not_exists",
                     null,
                     locale
@@ -92,7 +92,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
     @Test
     void test_getMessage_messageExists_messageWithArgs() {
         Object[] args = {"Road Runner", "Wile E. Coyote"};
-        String message = this.resolver.getMessage(
+        String message = messageSource.getMessage(
                 "roadrunner",
                 args,
                 Locale.forLanguageTag("en")
@@ -109,7 +109,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
                 codes,
                 args
         );
-        String message = this.resolver.getMessage(
+        String message = messageSource.getMessage(
                 resolvable,
                 Locale.forLanguageTag("en")
         );
@@ -126,7 +126,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
         );
 
         NoSuchMessageException exception = assertThrows(NoSuchMessageException.class, () -> {
-            this.resolver.getMessage(
+            messageSource.getMessage(
                     resolvable,
                     locale
             );
@@ -143,7 +143,7 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
                 null,
                 defaultMessage
         );
-        String message = this.resolver.getMessage(
+        String message = messageSource.getMessage(
                 resolvable,
                 Locale.forLanguageTag("en")
         );

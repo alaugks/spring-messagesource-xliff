@@ -37,7 +37,7 @@ class CatalogCacheTest {
     @Test
     void test_put_get_withDomain() {
         this.catalogCache.put(this.locale, "domain", "code", "targetValue");
-        assertEquals("targetValue", this.catalogCache.get(locale, "domain.code"));
+        assertEquals("targetValue", this.catalogCache.get(this.locale, "domain.code"));
     }
 
     @Test
@@ -52,7 +52,7 @@ class CatalogCacheTest {
     void test_put_get() {
         Locale locale = Locale.forLanguageTag("en");
         this.catalogCache.put(this.locale, "code", "targetValue");
-        assertEquals("targetValue", this.catalogCache.get(locale, "code"));
+        assertEquals("targetValue", this.catalogCache.get(this.locale, "code"));
     }
 
     @Test
@@ -66,7 +66,13 @@ class CatalogCacheTest {
     @Test
     void test_get_onNull() {
         this.catalogCache.put(this.locale, "domain", "code", "targetValue");
-        assertNull(this.catalogCache.get(locale, "domain.foo"));
+        assertNull(this.catalogCache.get(this.locale, "domain.foo"));
+    }
+
+    @Test
+    void test_get_onNull_localeEmpty() {
+        this.catalogCache.put(this.locale, "domain", "code", "targetValue");
+        assertNull(this.catalogCache.get(Locale.forLanguageTag(""), "domain.foo"));
     }
 
     @Test

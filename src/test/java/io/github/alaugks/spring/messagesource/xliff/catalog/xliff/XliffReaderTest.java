@@ -18,8 +18,8 @@ class XliffReaderTest {
     @Test
     void test_supportedVersions() {
         assertInstanceOf(Xliff12.class, this.reader.getReader("1.2"));
-        assertInstanceOf(Xliff20.class, this.reader.getReader("2.0"));
-        assertInstanceOf(Xliff21.class, this.reader.getReader("2.1"));
+        assertInstanceOf(Xliff2.class, this.reader.getReader("2.0"));
+        assertInstanceOf(Xliff2.class, this.reader.getReader("2.1"));
     }
 
     @Test

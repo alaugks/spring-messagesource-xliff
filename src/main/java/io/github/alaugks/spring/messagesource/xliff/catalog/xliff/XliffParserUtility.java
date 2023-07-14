@@ -3,6 +3,8 @@ package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.*;
 
+import java.util.List;
+
 final class XliffParserUtility {
 
     private XliffParserUtility() {
@@ -37,43 +39,34 @@ final class XliffParserUtility {
     }
 
     public static String getElementValue(Element translationNodeElement, String elementName) {
-        Node sourceElement = getFirstChild(
-                translationNodeElement.getElementsByTagName(elementName)
+        return getCharacterDataFromElement(
+                getFirstChild(
+                        translationNodeElement.getElementsByTagName(elementName)
+                )
         );
-        return getCharacterDataFromElement(sourceElement);
-    }
-
-    public static String getSource(Element translationNodeElement) {
-        return getElementValue(translationNodeElement, "source");
     }
 
     public static String getTargetValue(Element translationNodeElement) {
         return getElementValue(translationNodeElement, "target");
     }
 
-    public static NodeList getTranslationNodes(Document document, String nodeName) {
+    public static NodeList getTranslationUnits(Document document, String nodeName) {
         return document.getElementsByTagName(nodeName);
     }
 
-    public static String getCode(String id, String resname, String sourceValue) {
-        //  resname|name -> id -> sourceValue
-
-        if (resname != null) {
-            return resname;
+    public static String getCode(
+            Element translationUnit,
+            List<String> translationUnitIdentifiers
+    ) {
+        if (translationUnitIdentifiers != null) {
+            for (String name : translationUnitIdentifiers) {
+                String value = getAttributeValue(translationUnit, name);
+                if (value != null) {
+                    return value;
+                }
+            }
         }
 
-        if (id != null) {
-            return id;
-        }
-
-        return sourceValue;
-    }
-
-    public static String getResname(Node translationNode, String name) {
-        return getAttributeValue(translationNode, name);
-    }
-
-    public static String getId(Node translationNode) {
-        return getAttributeValue(translationNode, "id");
+        return null;
     }
 }

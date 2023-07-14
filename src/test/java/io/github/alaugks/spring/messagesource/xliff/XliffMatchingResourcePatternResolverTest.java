@@ -1,15 +1,15 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.util.Locale;
 
 class XliffMatchingResourcePatternResolverTest extends XliffMatchingResourcePatternResolverAbstract {
 
-    @BeforeEach
-    void beforeEach() {
-        this.resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        this.resolver.setBasenamePattern("translations/*");
-        this.resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+    @BeforeAll
+    static void beforeAll() {
+        messageSource = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        messageSource.setBasenamePattern("translations/*");
+        messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
     }
 }

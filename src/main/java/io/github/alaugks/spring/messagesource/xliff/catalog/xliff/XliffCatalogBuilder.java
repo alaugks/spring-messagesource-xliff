@@ -16,10 +16,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
-public final class XliffCatalogBuilder implements CatalogBuilderInterface {
+public class XliffCatalogBuilder implements CatalogBuilderInterface {
 
     private CatalogInterface catalog;
+    private List<String> translationUnitIdentifiers;
 
     @Override
     public CatalogInterface createCatalog(ResourcesLoaderInterface resourceLoader, CatalogInterface catalog) {
@@ -30,6 +32,10 @@ public final class XliffCatalogBuilder implements CatalogBuilderInterface {
         } catch (ParserConfigurationException | IOException e) {
             throw new XliffMessageSourceRuntimeException(e);
         }
+    }
+
+    public void setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
+        this.translationUnitIdentifiers = translationUnitIdentifiers;
     }
 
     private void readFile(ArrayList<ResourcesLoader.Dto> translationFiles) throws ParserConfigurationException, IOException {
@@ -61,6 +67,9 @@ public final class XliffCatalogBuilder implements CatalogBuilderInterface {
 
             XliffInterface xliffInterface = xliffReader.getReader(version);
             if (xliffInterface != null) {
+                if (this.translationUnitIdentifiers != null) {
+                    xliffInterface.setTranslationUnitIdentifiersOrdering(this.translationUnitIdentifiers);
+                }
                 xliffInterface.read(this.catalog, document, translationFile.getDomain(), translationFile.getLocale());
             } else {
                 throw new XliffMessageSourceVersionSupportException(String.format("XLIFF version \"%s\" not supported.", version));

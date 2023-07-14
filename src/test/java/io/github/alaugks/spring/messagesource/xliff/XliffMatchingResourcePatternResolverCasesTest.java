@@ -2,9 +2,15 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -64,7 +70,7 @@ class XliffMatchingResourcePatternResolverCasesTest {
     }
 
     @Test
-    void test_setSefaultDomain() {
+    void test_setDefaultDomain() {
         var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
         resolver.setBasenamePattern("translations/*");
         resolver.setDefaultLocale(Locale.forLanguageTag("en"));
@@ -91,5 +97,47 @@ class XliffMatchingResourcePatternResolverCasesTest {
                 Locale.forLanguageTag("en-US")
         );
         assertEquals("Other Hello EN (otherdomain)", message);
+    }
+
+    @ParameterizedTest(name = "{index} => translationUnitIdentifiers={0}, code={1}, expected={2}, targetValue={3}")
+    @MethodSource("dataProvider_setTranslationUnitIdentifiersOrdering")
+    void test_setTranslationUnitIdentifiersOrdering(ArrayList<String> translationUnitIdentifiers, String code, String expected) {
+        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        resolver.setBasenamesPattern(List.of("translations/*"));
+        resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        resolver.setTranslationUnitIdentifiersOrdering(translationUnitIdentifiers);
+        resolver.initCache();
+
+        String message = resolver.getMessage(
+                code,
+                null,
+                Locale.forLanguageTag("en")
+        );
+        assertEquals(expected, message);
+    }
+
+    private static Stream<Arguments> dataProvider_setTranslationUnitIdentifiersOrdering() {
+        return Stream.of(
+            Arguments.of(
+                    new ArrayList<>(List.of("resname")),
+                    "code-resname-a",
+                    "Target"
+            ),
+            Arguments.of(
+                    new ArrayList<>(List.of("id")),
+                    "code-id-a",
+                    "Target"
+            ),
+            Arguments.of(
+                    new ArrayList<>(Arrays.asList("resname", "id")),
+                    "code-resname-a",
+                    "Target"
+            ),
+            Arguments.of(
+                    new ArrayList<>(Arrays.asList("id", "resname")),
+                    "code-id-a",
+                    "Target"
+            )
+        );
     }
 }

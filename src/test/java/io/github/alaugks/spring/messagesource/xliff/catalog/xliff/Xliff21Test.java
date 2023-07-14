@@ -28,7 +28,7 @@ class Xliff21Test {
 
     @Test
     void test_readXliffFile() {
-        Xliff21 version = new Xliff21();
+        Xliff2 version = new Xliff2();
         CatalogInterface catalog = new Catalog();
         Locale locale = Locale.forLanguageTag("en");
         version.read(catalog, document, "domain", locale);

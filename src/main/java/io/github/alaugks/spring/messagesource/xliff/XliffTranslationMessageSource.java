@@ -13,18 +13,20 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.lang.Nullable;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Locale;
 
 public class XliffTranslationMessageSource implements MessageSource {
 
     private final CatalogWrapper catalogWrapper;
     private final ResourcesLoaderInterface resourcesLoader = new ResourcesLoader();
+    private final XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
 
     public XliffTranslationMessageSource(CacheManager cacheManager) {
         this.catalogWrapper = new CatalogWrapper(
                 cacheManager,
                 this.resourcesLoader,
-                new XliffCatalogBuilder(),
+                this.xliffCatalogBuilder,
                 new Catalog()
         );
     }
@@ -46,6 +48,11 @@ public class XliffTranslationMessageSource implements MessageSource {
 
     public XliffTranslationMessageSource setDefaultDomain(String defaultDomain) {
         this.catalogWrapper.setDefaultDomain(defaultDomain);
+        return this;
+    }
+
+    public XliffTranslationMessageSource setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
+        this.xliffCatalogBuilder.setTranslationUnitIdentifiersOrdering(translationUnitIdentifiers);
         return this;
     }
 

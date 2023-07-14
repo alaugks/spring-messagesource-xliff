@@ -8,8 +8,7 @@ final class XliffReader {
     public XliffReader() {
         this.supportedVersions = Set.of(
                 new Xliff12(),
-                new Xliff20(),
-                new Xliff21()
+                new Xliff2()
         );
     }
 
