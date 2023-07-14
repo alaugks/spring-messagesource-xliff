@@ -6,22 +6,26 @@ With the implementation and use of the MessageSource interface, the translations
 
 **Table of content**
 
-1. [Version](#Versions)
-2. [Dependency](#Dependency)
-3. [MessageSource Configuration](#MessageSource-Configuration)
-4. [Minimal CacheManager Configuration](#Minimal-CacheManager-configuration)
-5. [CacheManager with supported Cache Providers](#CacheManager-with-supported-Cache-Providers)
-6. [Cache warming with an ApplicationRunner (recommended)](#Cache-warming-with-an-ApplicationRunner-recommended)
-7. [Xliff Translations files](#Xliff-Translations-files)
-8. [Example with Translations files](#Example-with-Translations-files)
-9. [Full Example](#Full-Example)
-10. [Support](#Support)
-## Versions
+1. [Version](#1-versions)
+2. [Dependency](#2-dependency)
+3. [MessageSource Configuration](#3-messagesource-configuration)
+4. [Minimal CacheManager Configuration](#4-minimal-cachemanager-configuration)
+5. [CacheManager with Supported Cache Providers](#5-cachemanager-with-supported-cache-providers)
+6. [Cache warming with an ApplicationRunner (recommended)](#6-Cache-warming-with-an-ApplicationRunner-recommended)
+7. [XLIFF Translation Files](#7-xliff-translation-files)
+8. [Using the MessageSource in Thymeleaf or as Dependency Injection](#8-using-the-messagesource-in-thymeleaf-or-as-dependency-injection)
+9. [Full Example](#9-full-example)
+10. [Support](#10-support)
+11. [More Information](#11-more-information)
 
-| Version | Description          |
-|:--------|:---------------------|
-| 1.1.0   | Release note         |
-| 1.0.0   | First public version |
+## 1. Versions
+
+
+| Version | Description                                                                               |
+|:--------|:------------------------------------------------------------------------------------------|
+| 1.1.0   | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
+| 1.0.0   | First public version                                                                      |
+
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.0)
 
@@ -420,7 +424,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 > **Example of a fallback. With locale `en-US` it tries to select the translation with id `headline` in messages_en-US. The id `headline` does not exist, so it tries to select the translation with locale `en` in messages.
 
 
-## 8. Using the MessageSource in Thymeleaf or as Service
+## 8. Using the MessageSource in Thymeleaf or as Dependency Injection
 
 ### Thymeleaf
 
@@ -455,7 +459,7 @@ With the configured MessageSource, the translations are available in Thymeleaf. 
 ```
 
 
-### MessageSource as Dependency Injection
+### Using the MessageSource in Thymeleaf or as Dependency Injection
 
 The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#9-Full-Example).
 
@@ -521,7 +525,7 @@ A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation fil
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
 
 
-## #11. More Information
+## 11. More Information
 
 ### MessageSource, Internationalization and Thymeleaf
 * [Guide to Internationalization in Spring Boot](https://www.baeldung.com/spring-boot-internationalization)
@@ -589,11 +593,3 @@ class CacheableXliffTranslationMessageSource extends XliffTranslationMessageSour
 }
 ```
 -->
-
-## Full Example
-
-A complete example using Spring Boot, including the use of XLIFF 1.2 and XLIFF 2.1 translation files: https://github.com/alaugks/spring-xliff-translation-example-spring-boot
-
-## Support
-
-If you have any questions, comments or feature requests, please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section to contact me.
