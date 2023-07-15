@@ -2,22 +2,23 @@
 
 This package provides a **MessageSource** for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
-With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](https://www.thymeleaf.org/). 
+With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](https://www.thymeleaf.org/).
 
 **Table of content**
 
-1. [Version](#1-versions)
-2. [Dependency](#2-dependency)
-3. [MessageSource Configuration](#3-messagesource-configuration)
-4. [Minimal CacheManager Configuration](#4-minimal-cachemanager-configuration)
-5. [CacheManager with Supported Cache Providers](#5-cachemanager-with-supported-cache-providers)
-6. [Cache warming with an ApplicationRunner (recommended)](#6-Cache-warming-with-an-ApplicationRunner-recommended)
-7. [XLIFF Translation Files](#7-xliff-translation-files)
-8. [Using the MessageSource in Thymeleaf or as Dependency Injection](#8-using-the-messagesource-in-thymeleaf-or-as-dependency-injection)
-9. [Full Example](#9-full-example)
-10. [Support](#10-support)
-11. [More Information](#11-more-information)
+1. [Version](#a1)
+2. [Dependency](#a2)
+3. [MessageSource Configuration](#a3)
+4. [Minimal CacheManager Configuration](#a4)
+5. [CacheManager with Supported Cache Providers](#a4)
+6. [Cache warming with an ApplicationRunner (recommended)](#a6)
+7. [XLIFF Translation Files](#a7)
+8. [Using the MessageSource in Thymeleaf or as Dependency Injection](#a8)
+9. [Full Example](#a9)
+10. [Support](#a10)
+11. [More Information](#a11)
 
+<a name="a1"></a>
 ## 1. Versions
 
 
@@ -30,6 +31,7 @@ With the implementation and use of the MessageSource interface, the translations
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.0)
 
 
+<a name="a2"></a>
 ## 2. Dependency
 
 **Maven**
@@ -47,31 +49,38 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 ```
 
 
+<a name="a3"></a>
 ## 3. MessageSource Configuration
 
 The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface. An instance of the [CacheManager](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider) is required for caching the translations.
 
 ### XliffTranslationMessageSource
 
-`setBasenamePattern(String basename)` or `setBasenamesPattern(Iterable<String> basenames)` (*required*)
+`setBasenamePattern(String basename)` or `setBasenamesPattern(Iterable<String> basenames)` (***required***)
 
 * Defines the pattern used to select the XLIFF files.
 * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
 * Files with the extension `xliff` and `xlf` are filtered from the result list.
 
-`setDefaultLocale(Locale locale)` (*required*)
+`setDefaultLocale(Locale locale)` (***required***)
 * Defines the default language.
 
 `setDefaultDomain(String defaultDomain)`
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#7-XLIFF-Translation-Files).
+* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a7).
 
 `setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers)`
-* The Identifiers can be defined with attributes on a translation unit. The attribute `id` is required for XLIFF 1.2 and 2.*. For XLIFF 1.2, the attribute `resname` can also be defined.
-    * **XLIFF 2.1**: Default definition is `"resname", "id"`. If the attribute `resname` does not exist, the attribute `id` is used to determine the identifier for the catalogue. 
-    * **XLIFF 2.\***: Default definition is `"id"`. The `id` defines the identifier for the catalogue. The attribute `id` is optional by standard in XLIFF 2.*. However, this package requires the `id` on a translation unit.
-* Documentation Identifiers: [XLIFF 1.2](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers), [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment) and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
+* The Identifiers can be defined with attributes on a translation unit (`<trans-unit/>` and `<segment/>`). The attribute `id` is required for XLIFF 1.2 and 2.*. For XLIFF 1.2, the attribute `resname` can also be defined.
+    * **XLIFF 2.1**:
+        * Default definition is `"resname", "id"`.
+        * If the attribute `resname` does not exist, the attribute `id` is used to determine the identifier.
+        * Documentation identifier: [XLIFF 1.2](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers)
+    * **XLIFF 2.\***:
+        * Default definition is `"id"`.
+        * The attribute `id` is optional by standard in XLIFF 2.*. However, this package requires the `id` on a translation unit.
+        * Documentation identifier: [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment) and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
 
-> Please note the [Minimal CacheManager Configuration](#Minimal-CacheManager-configuration).
+
+> Please note the [Minimal CacheManager Configuration](#a4).
 
 ```java
 import de.alaugks.spring.XliffTranslationMessageSource;
@@ -98,11 +107,12 @@ public class MessageConfig {
 ```
 
 
+<a name="a4"></a>
 ## 4. Minimal CacheManager Configuration
 
 You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required.
 
-The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The specific cache identifier is stored in the constant. 
+The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The specific cache identifier is stored in the constant.
 
 [ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html) is the default cache in Spring Boot and Spring.
 
@@ -133,6 +143,7 @@ public class CacheConfig {
 ```
 
 
+<a name="a5"></a>
 ## 5. CacheManager with Supported Cache Providers
 
 [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/3.1.1/reference/html/io.html#io.caching.provider) can also be used. The following example using [Caffeine](https://github.com/ben-manes/caffeine):
@@ -175,6 +186,7 @@ class CacheConfig {
 ```
 
 
+<a name="a6"></a>
 ## 6. Cache warming with an ApplicationRunner (recommended)
 
 In the following example, the cache of translations is warmed up after the application starts.
@@ -206,6 +218,7 @@ public class AppStartupRunner implements ApplicationRunner {
 ```
 
 
+<a name="a7"></a>
 ## 7. XLIFF Translation Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
@@ -247,7 +260,7 @@ public class AppStartupRunner implements ApplicationRunner {
 
 #### Translations files
 
-Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 2.1. 
+Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 2.1.
 
 ##### messages.xliff
 ```xml
@@ -402,33 +415,35 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 
 ##### Target value
 
-| id                              | en                                  | de                                 | en-US                               |
-|---------------------------------|-------------------------------------|------------------------------------|-------------------------------------|
-| headline*                       | Headline                            | Überschrift                        | Headline**                          |
-| messages.headline               | Headline                            | Überschrift                        | Headline**                          |
-| postcode*                       | Postcode                            | Postleitzahl                       | Zip code                            |
-| messages.postcode               | Postcode                            | Postleitzahl                       | Zip code                            |
-| headline-examples               | Examples                            | Beispiele                          | Examples                            |
-| messages.headline-examples      | Examples                            | Beispiele                          | Examples                            |
-| translation-args-label          | Translation with param              | Übersetzung mit Parameter          | Translation with param              |
-| messages.translation-args-label | Translation with param              | Übersetzung mit Parameter          | Translation with param              |
-| email-notice                    | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered. |
-| messages.email-notice           | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered. |
-| default-message                 | This is a default message.          | Das ist ein Standardtext.          | This is a default message.          |
-| messages.default-message        | This is a default message.          | Das ist ein Standardtext.          | This is a default message.          |
-| payment.headline                | Payment                             | Zahlung                            | Payment                             |
-| payment.expiry_date             | Expiry date                         | Ablaufdatum                        | Expiration date                     |
+| id                              | en                                  | de                                 | en-US                                 |
+|---------------------------------|-------------------------------------|------------------------------------|---------------------------------------|
+| headline*                       | Headline                            | Überschrift                        | Headline**                            |
+| messages.headline               | Headline                            | Überschrift                        | Headline**                            |
+| postcode*                       | Postcode                            | Postleitzahl                       | Zip code                              |
+| messages.postcode               | Postcode                            | Postleitzahl                       | Zip code                              |
+| headline-examples               | Examples                            | Beispiele                          | Examples**                            |
+| messages.headline-examples      | Examples                            | Beispiele                          | Examples**                            |
+| translation-args-label          | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
+| messages.translation-args-label | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
+| email-notice                    | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
+| messages.email-notice           | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
+| default-message                 | This is a default message.          | Das ist ein Standardtext.          | This is a default message.**          |
+| messages.default-message        | This is a default message.          | Das ist ein Standardtext.          | This is a default message.**          |
+| payment.headline                | Payment                             | Zahlung                            | Payment                               |
+| payment.expiry_date             | Expiry date                         | Ablaufdatum                        | Expiration date                       |
 
 > *Default domain is `messages`.
 >
 > **Example of a fallback. With locale `en-US` it tries to select the translation with id `headline` in messages_en-US. The id `headline` does not exist, so it tries to select the translation with locale `en` in messages.
 
 
+<a name="a8"></a>
 ## 8. Using the MessageSource in Thymeleaf or as Dependency Injection
 
 ### Thymeleaf
 
-With the configured MessageSource, the translations are available in Thymeleaf. See the example in the [Full Example](#9-Full-Example).
+With the configured MessageSource, the translations are available in Thymeleaf. See the example in the [Full Example](#a9).
+
 
 ```html
 <!-- "Headline" -->
@@ -449,82 +464,79 @@ With the configured MessageSource, the translations are available in Thymeleaf. 
 <!-- "Expiry date" -->
 <strong th:text="#{payment.expiry_date}"/>
 
-<!-- "Translation with param: Your email john.doe@example.com has been registered." -->
+<!-- "Your email john.doe@example.com has been registered." -->
 <strong th:text="#{translation-args-label}"/>: <span th:text="#{email-notice('john.doe@example.com')}"/>
 
 <!-- "This is a default message." -->
 <span th:text="${#messages.msgOrNull('not-exists-id')} ?: #{default-message}"/>
 
-
 ```
-
 
 ### Using the MessageSource in Thymeleaf or as Dependency Injection
 
-The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#9-Full-Example).
+The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a9).
 
 ```java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Service;
+@Controller
+public class HomeController {
 
-import java.util.Locale;
+    private final MessageSource messageSource;
 
-@Service
-public class MyService {
-    
-    private MessageSource messageSource;
-
-    public MyService(MessageSource messageSource) {
+    public HomeController(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
+    
+    @GetMapping(value = "/translations", name = "home_translations")
+    public String translations(Model model, Locale locale) {
+        LinkedHashMap<String, String> translations = new LinkedHashMap<>();
 
-    void method() {
-        Locale locale = Locale.forLanguageTag("en");
+        // "Headline"
+        translations.put("headline", this.messageSource.getMessage("headline", null, locale));
         
         // "Headline"
-        String headline = this.messageSource.getMessage("headline", null, locale);
-        
-        // "Headline"
-        String messagesHeadline = this.messageSource.getMessage("messages.headline", null, locale);
+        translations.put("messages.headline", this.messageSource.getMessage("messages.headline", null, locale));
         
         // "Postcode"
-        String postcode = this.messageSource.getMessage("postcode", null, locale);
+        translations.put("postcode", this.messageSource.getMessage("postcode", null, locale));
         
         // "Postcode"
-        String messagesPostcode = this.messageSource.getMessage("messages.postcode", null, locale);
+        translations.put("messages.postcode", this.messageSource.getMessage("messages.postcode", null, locale));
         
         // "Payment"
-        String paymentHeadline = this.messageSource.getMessage("payment.headline", null, locale);
+        translations.put("payment.headline", this.messageSource.getMessage("payment.headline", null, locale));
         
         // "Expiry date"
-        String paymentExpiryDate = this.messageSource.getMessage("payment.expiry_date", null, locale);
+        translations.put("payment.expiry-date", this.messageSource.getMessage("payment.expiry-date", null, locale));
 
-        // With arguments
-        // "Translation with param: Your email john.doe@example.com has been registered."
+        // "Your email john.doe@example.com has been registered."
         Object[] args = {"john.doe@example.com"};
         translations.put("email-notice", this.messageSource.getMessage("email-notice", args, locale));
         translations.put("messages.email-notice", this.messageSource.getMessage("email-notice", args, locale));
-  
-        // Show default message if id not exists
+
         // "This is a default message."
         String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
         translations.put("not-exists-id", this.messageSource.getMessage("not-exists-id", null, defaultMessage, locale));
+
+        model.addAttribute("translations", translations);
+        return "home/translations";
     }
 }
 ```
 
 
+<a name="a9"></a>
 ## 9. Full Example
 
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files: https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot
 
 
+<a name="a10"></a>
 ## 10. Support
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
 
 
+<a name="a11"></a>
 ## 11. More Information
 
 ### MessageSource, Internationalization and Thymeleaf
@@ -533,7 +545,7 @@ If you have questions, comments or feature requests please use the [Discussions]
 * [Spring Boot internationalization i18n: Step-by-step with examples](https://lokalise.com/blog/spring-boot-internationalization/)
 
 ### Caching
-* [A Guide To Caching in Spring](https://www.baeldung.com/spring-cache-tutorial) 
+* [A Guide To Caching in Spring](https://www.baeldung.com/spring-cache-tutorial)
 * [Implementing a Cache with Spring Boot](https://reflectoring.io/spring-boot-cache/)
 
 
