@@ -2,8 +2,6 @@
 
 This package provides a **MessageSource** for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
-With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](https://www.thymeleaf.org/).
-
 **Table of content**
 
 1. [Version](#a1)
@@ -13,7 +11,7 @@ With the implementation and use of the MessageSource interface, the translations
 5. [CacheManager with Supported Cache Providers](#a4)
 6. [Cache warming with an ApplicationRunner (recommended)](#a6)
 7. [XLIFF Translation Files](#a7)
-8. [Using the MessageSource in Thymeleaf or as Dependency Injection](#a8)
+8. [Using the MessageSource](#a8)
 9. [Full Example](#a9)
 10. [Support](#a10)
 11. [More Information](#a11)
@@ -438,12 +436,14 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 
 
 <a name="a8"></a>
-## 8. Using the MessageSource in Thymeleaf or as Dependency Injection
+## 8. Using the MessageSource
 
+With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](#a8.1), as [Service (Dependency Injection)](#a8.2) and [Custom Validation Messages](#a8.3). Also in packages and implementations that use the MessageSource.
+
+<a name="a8.1"></a>
 ### Thymeleaf
 
 With the configured MessageSource, the translations are available in Thymeleaf. See the example in the [Full Example](#a9).
-
 
 ```html
 <!-- "Headline" -->
@@ -472,7 +472,8 @@ With the configured MessageSource, the translations are available in Thymeleaf. 
 
 ```
 
-### Using the MessageSource in Thymeleaf or as Dependency Injection
+<a name="a8.2"></a>
+### Service (Dependency Injection)
 
 The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a9).
 
@@ -522,6 +523,12 @@ public class HomeController {
     }
 }
 ```
+
+<a name="a8.3"></a>
+### Custom Validation Messages
+
+The article [Custom Validation MessageSource in Spring Boot](https://www.baeldung.com/spring-custom-validation-message-source) describes how to use custom validation messages.
+
 
 
 <a name="a9"></a>
