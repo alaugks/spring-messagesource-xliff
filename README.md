@@ -27,7 +27,7 @@ This package provides a **MessageSource** for using translations from XLIFF file
 | 1.0.0   | First public version                                                                      |
 
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.0-01-SNAPSHOT)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.2.0-01-SNAPSHOT)
 
 
 <a name="a2"></a>
@@ -38,13 +38,13 @@ This package provides a **MessageSource** for using translations from XLIFF file
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>1.1.0-01-SNAPSHOT</version>
+    <version>1.2.0-01-SNAPSHOT</version>
 </dependency>
 ```
 
 **Gradle**
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.1.0-01-SNAPSHOT'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.2.0-01-SNAPSHOT'
 ```
 
 
