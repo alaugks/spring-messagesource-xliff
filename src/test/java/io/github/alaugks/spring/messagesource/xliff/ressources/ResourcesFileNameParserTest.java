@@ -1,49 +1,58 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ResourcesFileNameParserTest {
 
-    @Test
-    void test_domain_withoutLocale() {
-        ResourcesFileNameParser.Dto filename = new ResourcesFileNameParser("message").parse();
-        assertEquals("message", filename.getDomain());
-        assertNull(filename.getLanguage());
-        assertNull(filename.getRegion());
+    @ParameterizedTest()
+    @MethodSource("dataProvider_parse")
+    void test_parse(String filename, String domain, String language, String region) {
+        ResourcesFileNameParser.Dto dto = new ResourcesFileNameParser(filename).parse();
+        assertEquals(domain, dto.getDomain());
+        assertEquals(language, dto.getLanguage());
+        assertEquals(region, dto.getRegion());
     }
 
-    @Test
-    void test_domain_en() {
-        ResourcesFileNameParser.Dto filename = new ResourcesFileNameParser("message_en").parse();
-        assertEquals("message", filename.getDomain());
-        assertEquals("en", filename.getLanguage());
-        assertNull(filename.getRegion());
-    }
-
-    @Test
-    void test_domain_en_withDash() {
-        ResourcesFileNameParser.Dto filename = new ResourcesFileNameParser("message-en").parse();
-        assertEquals("message", filename.getDomain());
-        assertEquals("en", filename.getLanguage());
-        assertNull(filename.getRegion());
-    }
-
-    @Test
-    void test_domain_enGB() {
-        ResourcesFileNameParser.Dto filename = new ResourcesFileNameParser("message_en_GB").parse();
-        assertEquals("message", filename.getDomain());
-        assertEquals("en", filename.getLanguage());
-        assertEquals("GB", filename.getRegion());
-    }
-
-    @Test
-    void test_domain_enGB_withDash() {
-        ResourcesFileNameParser.Dto filename = new ResourcesFileNameParser("message-en-GB").parse();
-        assertEquals("message", filename.getDomain());
-        assertEquals("en", filename.getLanguage());
-        assertEquals("GB", filename.getRegion());
+    private static Stream<Arguments> dataProvider_parse() {
+        return Stream.of(
+                Arguments.of(
+                        "message",
+                        "message",
+                        null,
+                        null
+                ),
+                Arguments.of(
+                        "message_en",
+                        "message",
+                        "en",
+                        null
+                ),
+                Arguments.of(
+                        "message-en",
+                        "message",
+                        "en",
+                        null
+                ),
+                Arguments.of(
+                        "message_en_GB",
+                        "message",
+                        "en",
+                        "GB"
+                ),
+                Arguments.of(
+                        "message-en-GB",
+                        "message",
+                        "en",
+                        "GB"
+                )
+        );
     }
 
     @Test

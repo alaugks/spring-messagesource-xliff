@@ -99,7 +99,7 @@ class XliffMatchingResourcePatternResolverCasesTest {
         assertEquals("Other Hello EN (otherdomain)", message);
     }
 
-    @ParameterizedTest(name = "{index} => translationUnitIdentifiers={0}, code={1}, expected={2}, targetValue={3}")
+    @ParameterizedTest()
     @MethodSource("dataProvider_setTranslationUnitIdentifiersOrdering")
     void test_setTranslationUnitIdentifiersOrdering(ArrayList<String> translationUnitIdentifiers, String code, String expected) {
         var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());

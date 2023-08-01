@@ -24,14 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class XliffParserUtilityTest {
 
-    @ParameterizedTest(name = "{index} => elementName={0}, translationUnitIdentifiers={1}, expected={2}")
+    @ParameterizedTest()
     @MethodSource("getCodeProvider")
     void test_getCode(
             String elementName,
             ArrayList<String> translationUnitIdentifiers,
             String expected
     ) {
-        NodeList nodeList = XliffParserUtility.getTranslationUnits(getDocument(), elementName);
+        NodeList nodeList = XliffParserUtility.getTranslationUnits(Objects.requireNonNull(getDocument()), elementName);
         Element node = (Element) nodeList.item(0);
         assertEquals(expected, XliffParserUtility.getCode(node, translationUnitIdentifiers));
     }

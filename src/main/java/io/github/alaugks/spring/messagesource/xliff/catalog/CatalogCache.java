@@ -50,7 +50,7 @@ public final class CatalogCache implements CatalogInterface {
 
     @Override
     public String get(Locale locale, String code) {
-        if (locale.toString().length() > 0) {
+        if (!locale.toString().isEmpty()) {
             return this.getValue(
                     this.cache.get(
                             XliffCacheableKeyGenerator.createCode(locale, code)
@@ -66,7 +66,7 @@ public final class CatalogCache implements CatalogInterface {
     }
 
     void put(Locale locale, String code, String targetValue) {
-        if (locale.toString().length() > 0) {
+        if (!locale.toString().isEmpty()) {
             this.cache.put(
                     XliffCacheableKeyGenerator.createCode(locale, code),
                     targetValue

@@ -2,12 +2,16 @@ package io.github.alaugks.spring.messagesource.xliff.ressources;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -18,35 +22,25 @@ class ResourcesLoaderTest {
     private ResourcesLoader resourcesLoader;
 
     @BeforeEach
-    void beforeEach() throws IOException {
+    void beforeEach() {
         this.resourcesLoader = new ResourcesLoader();
         this.resourcesLoader.setDefaultLocale(Locale.forLanguageTag("en"));
 
     }
 
-    @Test
-    void test_setBasenamePattern() throws IOException {
-        this.resourcesLoader.setBasenamePattern(
-                "translations/*"
-        );
-        assertEquals(5, this.resourcesLoader.getResourcesInputStream().size());
+    @ParameterizedTest()
+    @MethodSource("dataProvider_setBasenamePattern")
+    void test_setBasenamePattern(String basename, int size) throws IOException {
+        this.resourcesLoader.setBasenamePattern(basename);
+        assertEquals(size, this.resourcesLoader.getResourcesInputStream().size());
     }
 
-    @Test
-    void test_setBasenamePattern_domainMessages() throws IOException {
-        this.resourcesLoader.setBasenamePattern(
-                "translations/messages*"
+    private static Stream<Arguments> dataProvider_setBasenamePattern() {
+        return Stream.of(
+                Arguments.of("translations/*", 5),
+                Arguments.of("translations/messages*", 3),
+                Arguments.of("translations/*_de*", 2)
         );
-        assertEquals(3, this.resourcesLoader.getResourcesInputStream().size());
-    }
-
-
-    @Test
-    void test_setBasenamePattern_languageDe() throws IOException {
-        this.resourcesLoader.setBasenamePattern(
-                "translations/*_de*"
-        );
-        assertEquals(2, this.resourcesLoader.getResourcesInputStream().size());
     }
 
     @Test
