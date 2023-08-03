@@ -37,6 +37,13 @@ class CatalogWrapperTest {
     }
 
     @Test
+    void test_get_notExists() {
+        for (int i = 0; i < 3; i++) {
+            assertEquals("not-exists-id", this.catalogWrapper.get(this.locale, "not-exists-id").toString());
+        }
+    }
+
+    @Test
     void test_put() {
         this.catalogWrapper.setDefaultDomain("foo");
 
@@ -157,7 +164,6 @@ class CatalogWrapperTest {
         // code add cache
         orderVerifier.verify(mockedCatalogWrapper).put(
                 this.locale,
-                "messages",
                 "messages.hello_language_not_exists",
                 "messages.hello_language_not_exists"
         );
@@ -166,7 +172,6 @@ class CatalogWrapperTest {
         verify(mockedXliffCatalogBuilder, times(2)).createCatalog(resourcesLoader, catalog);
         verify(mockedCatalogWrapper, times(1)).put(
                 this.locale,
-                "messages",
                 "messages.hello_language_not_exists",
                 "messages.hello_language_not_exists"
         );

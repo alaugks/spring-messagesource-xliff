@@ -72,10 +72,18 @@ public class CatalogWrapper {
         String targetValueCode = null;
         if (targetValue == null) {
             targetValueCode = code;
-            this.put(locale, this.defaultDomain, code, targetValueCode);
+            this.put(locale, code, targetValueCode);
         }
 
         return new Translation(code, (targetValue != null ? targetValue : targetValueCode));
+    }
+
+    void put(Locale locale, String code, String targetValue) {
+        this.catalogCache.put(
+                locale,
+                code,
+                targetValue
+        );
     }
 
     void put(Locale locale, String domain, String code, String targetValue) {

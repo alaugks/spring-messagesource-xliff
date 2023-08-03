@@ -1,6 +1,6 @@
 version: '3.6'
 services:
   spring-boot-xliff-example:
-    image: alaugks/spring-boot-xliff-example:1.1.0
+    image: alaugks/spring-boot-xliff-example:1.1.1
     ports:
       - 8080:8080
