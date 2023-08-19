@@ -535,7 +535,7 @@ The article [Custom Validation MessageSource in Spring Boot](https://www.baeldun
 <a name="a9"></a>
 ## 9. Full Example
 
-A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files as a website ([spring-boot-xliff-example.alaugks.de](http://spring-boot-xliff-example.alaugks.de)) or repository (https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot).
+A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files as a website ([spring-boot-xliff-example.alaugks.dev](https://spring-boot-xliff-example.alaugks.dev/)) or repository (https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot).
 
 
 <a name="a10"></a>
