@@ -33,7 +33,7 @@ public final class Catalog implements CatalogInterface {
 
     @Override
     public void put(Locale locale, String domain, String code, String targetValue) {
-        if (locale.toString().length() > 0) {
+        if (!locale.toString().isEmpty()) {
             String concatCode = CatalogUtilities.contactCode(domain, code);
             if (this.localeExists(locale)) {
                 HashMap<String, String> transUnit = this.getLocaleHashMap(locale);
@@ -50,7 +50,7 @@ public final class Catalog implements CatalogInterface {
     }
 
     public boolean localeExists(Locale locale) {
-        if (locale.toString().length() > 0) {
+        if (!locale.toString().isEmpty()) {
             return this.catalogMap.containsKey(CatalogUtilities.localeToKey(locale));
         }
         return false;
