@@ -34,17 +34,17 @@ public final class Catalog implements CatalogInterface {
     @Override
     public void put(Locale locale, String domain, String code, String targetValue) {
         if (!locale.toString().isEmpty()) {
-            String concatCode = CatalogUtilities.contactCode(domain, code);
+            String concatenatedCode = CatalogUtilities.concatCode(domain, code);
             if (this.localeExists(locale)) {
                 HashMap<String, String> transUnit = this.getLocaleHashMap(locale);
-                if (!transUnit.containsKey(concatCode)) {
-                    this.getLocaleHashMap(locale).put(concatCode, targetValue);
+                if (!transUnit.containsKey(concatenatedCode)) {
+                    this.getLocaleHashMap(locale).put(concatenatedCode, targetValue);
                 }
                 return;
             }
             // Init catalog for locale
             HashMap<String, String> transUnit = new HashMap<>();
-            transUnit.put(concatCode, targetValue);
+            transUnit.put(concatenatedCode, targetValue);
             this.catalogMap.put(CatalogUtilities.localeToKey(locale), transUnit);
         }
     }

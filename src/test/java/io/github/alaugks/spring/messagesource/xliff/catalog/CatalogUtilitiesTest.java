@@ -10,7 +10,7 @@ class CatalogUtilitiesTest {
 
     @Test
     void test_contactCode() {
-        assertEquals("domain.code", CatalogUtilities.contactCode("domain", "code"));
+        assertEquals("domain.code", CatalogUtilities.concatCode("domain", "code"));
     }
 
     @Test

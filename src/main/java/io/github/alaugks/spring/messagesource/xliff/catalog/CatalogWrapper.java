@@ -81,7 +81,7 @@ public class CatalogWrapper {
     void put(Locale locale, String domain, String code, String targetValue) {
         this.catalogCache.put(
                 locale,
-                CatalogUtilities.contactCode(domain, code),
+                CatalogUtilities.concatCode(domain, code),
                 targetValue
         );
     }
@@ -140,7 +140,7 @@ public class CatalogWrapper {
             targetValue = this.chainLink(
                     catalog,
                     locale,
-                    CatalogUtilities.contactCode(this.defaultDomain, code)
+                    CatalogUtilities.concatCode(this.defaultDomain, code)
             );
         }
         return targetValue;

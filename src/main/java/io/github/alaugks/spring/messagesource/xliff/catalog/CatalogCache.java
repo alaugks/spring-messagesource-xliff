@@ -62,7 +62,7 @@ public final class CatalogCache implements CatalogInterface {
 
     @Override
     public void put(Locale locale, String domain, String code, String targetValue) {
-        this.put(locale, CatalogUtilities.contactCode(domain, code), targetValue);
+        this.put(locale, CatalogUtilities.concatCode(domain, code), targetValue);
     }
 
     void put(Locale locale, String code, String targetValue) {
