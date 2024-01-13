@@ -24,16 +24,16 @@ final class ResourcesFileNameParser {
         Matcher matcher = pattern.matcher(this.filename);
 
         if (matcher.find()) {
-            String domain = getGroup(matcher, "domain");
-            String language = getGroup(matcher, "language");
-            String region = getGroup(matcher, "region");
+            String domain = this.getGroup(matcher, "domain");
+            String language = this.getGroup(matcher, "language");
+            String region = this.getGroup(matcher, "region");
             return new Dto(
                     domain,
                     language,
                     region
             );
         }
-        return new Dto(null, null, null);
+        return null;
     }
 
     public static class Dto {
@@ -77,7 +77,7 @@ final class ResourcesFileNameParser {
         }
     }
 
-    private static String getGroup(Matcher matcher, String groupName) {
+    private String getGroup(Matcher matcher, String groupName) {
         try {
             return matcher.group(groupName);
         } catch (IllegalArgumentException | IllegalStateException e) {

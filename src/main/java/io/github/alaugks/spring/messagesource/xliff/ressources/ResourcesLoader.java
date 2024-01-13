@@ -65,7 +65,7 @@ public final class ResourcesLoader implements ResourcesLoaderInterface {
 
     private Dto parseFileName(Resource resource) throws IOException {
         ResourcesFileNameParser.Dto dto = new ResourcesFileNameParser(resource.getFilename()).parse();
-        if (dto.hasDomain()) {
+        if (dto != null) {
             return new Dto(
                     dto.getDomain(),
                     dto.hasLocale()
