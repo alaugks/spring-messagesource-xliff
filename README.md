@@ -20,14 +20,15 @@ This package provides a **MessageSource** for using translations from XLIFF file
 ## 1. Versions
 
 
-| Version | Description                                                                               |
-|:--------|:------------------------------------------------------------------------------------------|
-| 1.1.1   | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
-| 1.1.0   | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
-| 1.0.0   | First public version                                                                      |
+| Version        | Description                                                                                        |
+|:---------------|:---------------------------------------------------------------------------------------------------|
+| 1.1.2-SNAPSHOT | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2-SNAPSHOT) |
+| 1.1.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1)          |
+| 1.1.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0)          |
+| 1.0.0          | First public version                                                                               |
 
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.1)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.2-SNAPSHOT)
 
 
 <a name="a2"></a>
@@ -38,13 +39,13 @@ This package provides a **MessageSource** for using translations from XLIFF file
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
 </dependency>
 ```
 
 **Gradle**
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.1.1'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.1.2-SNAPSHOT'
 ```
 
 

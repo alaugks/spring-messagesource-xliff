@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CatalogUtilitiesTest {
 
     @Test
-    void test_contactCode() {
-        assertEquals("domain.code", CatalogUtilities.contactCode("domain", "code"));
+    void test_concat_Code() {
+        assertEquals("domain.code", CatalogUtilities.concatCode("domain", "code"));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceCacheNotExistsException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,7 @@ import java.util.Objects;
 public final class CatalogCache implements CatalogInterface {
     public static final String CACHE_NAME = "messagesource.xliff.catalog.CACHE";
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());
     private Cache cache;
 
     CatalogCache(CacheManager cacheManager) {
@@ -50,7 +51,7 @@ public final class CatalogCache implements CatalogInterface {
 
     @Override
     public String get(Locale locale, String code) {
-        if (locale.toString().length() > 0) {
+        if (!locale.toString().isEmpty()) {
             return this.getValue(
                     this.cache.get(
                             XliffCacheableKeyGenerator.createCode(locale, code)
@@ -62,11 +63,11 @@ public final class CatalogCache implements CatalogInterface {
 
     @Override
     public void put(Locale locale, String domain, String code, String targetValue) {
-        this.put(locale, CatalogUtilities.contactCode(domain, code), targetValue);
+        this.put(locale, CatalogUtilities.concatCode(domain, code), targetValue);
     }
 
     void put(Locale locale, String code, String targetValue) {
-        if (locale.toString().length() > 0) {
+        if (!locale.toString().isEmpty()) {
             this.cache.put(
                     XliffCacheableKeyGenerator.createCode(locale, code),
                     targetValue
@@ -83,7 +84,7 @@ public final class CatalogCache implements CatalogInterface {
 
     void initCache(CatalogInterface catalog) {
         if (catalog != null) {
-            logger.info("Init xliff catalog cache");
+            logger.debug("Init xliff catalog cache");
             catalog.getAll().forEach((langCode, domain) -> domain.forEach((code, targetValue) ->
                 this.put(
                         Locale.forLanguageTag(langCode.replace("_", "-")),

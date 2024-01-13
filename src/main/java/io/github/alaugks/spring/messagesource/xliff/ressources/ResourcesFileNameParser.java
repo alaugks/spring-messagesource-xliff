@@ -1,5 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class ResourcesFileNameParser {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());
     private final String filename;
 
     public ResourcesFileNameParser(String filename) {
@@ -70,7 +71,7 @@ final class ResourcesFileNameParser {
             try {
                 return CatalogUtilities.buildLocale(this.language, this.region);
             } catch (IllformedLocaleException e) {
-                logger.info(e.getMessage());
+                logger.debug(e.getMessage());
                 return null;
             }
         }

@@ -1,5 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoaderInterface;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +11,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class CatalogWrapper {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());
     private final CatalogCache catalogCache;
     private final CatalogInterface catalog;
     private final CatalogBuilderInterface catalogBuilder;
@@ -40,7 +41,7 @@ public class CatalogWrapper {
 
     public Translation get(Locale locale, String code) {
         // Check cache
-        String targetValue = this.getByChain(
+        String targetValue = this.getTranslationItemFromCatalog(
                 this.catalogCache,
                 locale,
                 code
@@ -53,7 +54,7 @@ public class CatalogWrapper {
 
         // Check catalog
         CatalogInterface loadedCatalog = this.loadCatalog();
-        targetValue = this.getByChain(
+        targetValue = this.getTranslationItemFromCatalog(
                 loadedCatalog,
                 locale,
                 code
@@ -61,7 +62,7 @@ public class CatalogWrapper {
 
         // If exists then init cache, because it was not in the cache. Cache empty?
         if (targetValue != null) {
-            logger.info("Re-init xliff catalog cache");
+            logger.debug("Re-init xliff catalog cache");
             this.initCache(loadedCatalog);
         }
 
@@ -89,7 +90,7 @@ public class CatalogWrapper {
     void put(Locale locale, String domain, String code, String targetValue) {
         this.catalogCache.put(
                 locale,
-                CatalogUtilities.contactCode(domain, code),
+                CatalogUtilities.concatCode(domain, code),
                 targetValue
         );
     }
@@ -112,7 +113,7 @@ public class CatalogWrapper {
         return this.catalogBuilder.createCatalog(this.resourcesLoader, this.catalog);
     }
 
-    private String chainLink(CatalogInterface catalog, Locale locale, String code) {
+    private String findTranslationItemInCatalog(CatalogInterface catalog, Locale locale, String code) {
         String targetValue;
         LinkedHashMap<Integer, Locale> locales = new LinkedHashMap<>();
         // Follow the order
@@ -142,13 +143,15 @@ public class CatalogWrapper {
         return null;
     }
 
-    private String getByChain(CatalogInterface catalog, Locale locale, String code) {
-        String targetValue = this.chainLink(catalog, locale, code);
+    private String getTranslationItemFromCatalog(CatalogInterface catalog, Locale locale, String code) {
+        // Find "code"
+        String targetValue = this.findTranslationItemInCatalog(catalog, locale, code);
         if (targetValue == null) {
-            targetValue = this.chainLink(
+            // Find "domain.code"
+            targetValue = this.findTranslationItemInCatalog(
                     catalog,
                     locale,
-                    CatalogUtilities.contactCode(this.defaultDomain, code)
+                    CatalogUtilities.concatCode(this.defaultDomain, code)
             );
         }
         return targetValue;
