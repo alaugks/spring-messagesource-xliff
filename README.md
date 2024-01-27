@@ -421,13 +421,13 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 | messages.headline               | Headline                            | Überschrift                        | Headline**                            |
 | postcode*                       | Postcode                            | Postleitzahl                       | Zip code                              |
 | messages.postcode               | Postcode                            | Postleitzahl                       | Zip code                              |
-| headline-examples               | Examples                            | Beispiele                          | Examples**                            |
+| headline-examples*              | Examples                            | Beispiele                          | Examples**                            |
 | messages.headline-examples      | Examples                            | Beispiele                          | Examples**                            |
-| translation-args-label          | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
+| translation-args-label*         | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
 | messages.translation-args-label | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
-| email-notice                    | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
+| email-notice*                   | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
 | messages.email-notice           | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
-| default-message                 | This is a default message.          | Das ist ein Standardtext.          | This is a default message.**          |
+| default-message*                | This is a default message.          | Das ist ein Standardtext.          | This is a default message.**          |
 | messages.default-message        | This is a default message.          | Das ist ein Standardtext.          | This is a default message.**          |
 | payment.headline                | Payment                             | Zahlung                            | Payment                               |
 | payment.expiry_date             | Expiry date                         | Ablaufdatum                        | Expiration date                       |
