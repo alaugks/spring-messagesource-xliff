@@ -51,10 +51,6 @@ final class ResourcesFileNameParser {
             return domain;
         }
 
-        public boolean hasDomain() {
-            return this.getDomain() != null;
-        }
-
         public String getLanguage() {
             return language;
         }
