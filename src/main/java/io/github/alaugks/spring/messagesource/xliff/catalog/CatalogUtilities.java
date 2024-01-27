@@ -29,7 +29,7 @@ public class CatalogUtilities {
         Locale.Builder localeBuilder = new Locale.Builder();
         if (language != null && !language.isEmpty()) {
             localeBuilder.setLanguage(language);
-            // Set region only language is present
+            // Set region only is present
             if (region != null && !region.isEmpty()) {
                 localeBuilder.setRegion(region);
             }
