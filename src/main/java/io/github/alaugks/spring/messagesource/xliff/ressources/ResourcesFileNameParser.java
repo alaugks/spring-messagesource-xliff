@@ -1,5 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class ResourcesFileNameParser {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());
     private final String filename;
 
     public ResourcesFileNameParser(String filename) {
@@ -23,16 +24,16 @@ final class ResourcesFileNameParser {
         Matcher matcher = pattern.matcher(this.filename);
 
         if (matcher.find()) {
-            String domain = getGroup(matcher, "domain");
-            String language = getGroup(matcher, "language");
-            String region = getGroup(matcher, "region");
+            String domain = this.getGroup(matcher, "domain");
+            String language = this.getGroup(matcher, "language");
+            String region = this.getGroup(matcher, "region");
             return new Dto(
                     domain,
                     language,
                     region
             );
         }
-        return new Dto(null, null, null);
+        return null;
     }
 
     public static class Dto {
@@ -48,10 +49,6 @@ final class ResourcesFileNameParser {
 
         public String getDomain() {
             return domain;
-        }
-
-        public boolean hasDomain() {
-            return this.getDomain() != null;
         }
 
         public String getLanguage() {
@@ -70,13 +67,13 @@ final class ResourcesFileNameParser {
             try {
                 return CatalogUtilities.buildLocale(this.language, this.region);
             } catch (IllformedLocaleException e) {
-                logger.info(e.getMessage());
+                logger.debug(e.getMessage());
                 return null;
             }
         }
     }
 
-    private static String getGroup(Matcher matcher, String groupName) {
+    private String getGroup(Matcher matcher, String groupName) {
         try {
             return matcher.group(groupName);
         } catch (IllegalArgumentException | IllegalStateException e) {

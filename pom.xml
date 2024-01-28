@@ -5,7 +5,7 @@
 
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -15,7 +15,7 @@
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -35,7 +35,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.2</version>
     </parent>
 
     <properties>
@@ -116,8 +116,8 @@
         <profile>
             <id>release</id>
             <properties>
-                <version.maven-release-plugin>3.0.0-M7</version.maven-release-plugin>
-                <version.maven-gpg-plugin>3.0.1</version.maven-gpg-plugin>
+                <version.maven-release-plugin>3.0.1</version.maven-release-plugin>
+                <version.maven-gpg-plugin>3.1.0</version.maven-gpg-plugin>
                 <version.nexus-staging-maven-plugin>1.6.13</version.nexus-staging-maven-plugin>
             </properties>
 
@@ -223,7 +223,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.22.2</version>
+                        <version>3.2.5</version>
                         <configuration>
                             <argLine>
                                 --illegal-access=permit
@@ -237,7 +237,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.10</version>
+                        <version>0.8.11</version>
                         <executions>
                             <execution>
                                 <id>default-prepare-agent</id>
