@@ -18,20 +18,26 @@ public final class ResourcesLoader implements ResourcesLoaderInterface {
 
     @Override
     public ResourcesLoader setBasenamePattern(String basename) {
-        this.setBasenamesPattern(List.of(basename));
+        if (null != basename) {
+            this.setBasenamesPattern(List.of(basename));
+        }
         return this;
     }
 
     @Override
     public ResourcesLoader setBasenamesPattern(Iterable<String> basenames) {
-        this.basenameSet.clear();
-        this.addBasenames(basenames);
+        if (null != basenames) {
+            this.basenameSet.clear();
+            this.addBasenames(basenames);
+        }
         return this;
     }
 
     @Override
     public ResourcesLoader setDefaultLocale(Locale locale) {
-        this.defaultLocale = locale;
+        if (null != locale) {
+            this.defaultLocale = locale;
+        }
         return this;
     }
 

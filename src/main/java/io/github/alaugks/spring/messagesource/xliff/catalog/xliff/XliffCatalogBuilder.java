@@ -35,7 +35,9 @@ public class XliffCatalogBuilder implements CatalogBuilderInterface {
     }
 
     public void setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
-        this.translationUnitIdentifiers = translationUnitIdentifiers;
+        if(null != translationUnitIdentifiers) {
+            this.translationUnitIdentifiers = translationUnitIdentifiers;
+        }
     }
 
     private void readFile(ArrayList<ResourcesLoader.Dto> translationFiles) throws ParserConfigurationException, IOException {
