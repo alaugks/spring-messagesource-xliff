@@ -1,10 +1,10 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
+import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogWrapper;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoaderInterface;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -21,7 +21,7 @@ public final class XliffMessageSource implements MessageSource {
     private final CatalogWrapper catalogWrapper;
 
     private XliffMessageSource(Builder builder) {
-        ResourcesLoaderInterface resourcesLoader = new ResourcesLoader();
+        ResourcesLoader resourcesLoader = new ResourcesLoader();
         resourcesLoader.setDefaultLocale(builder.defaultLocale);
         resourcesLoader.setBasenamePattern(builder.basename);
         resourcesLoader.setBasenamesPattern(builder.basenames);
@@ -30,10 +30,10 @@ public final class XliffMessageSource implements MessageSource {
         xliffCatalogBuilder.setTranslationUnitIdentifiersOrdering(builder.translationUnitIdentifiers);
 
         this.catalogWrapper = new CatalogWrapper(
-                builder.cacheManager,
                 resourcesLoader,
                 xliffCatalogBuilder,
-                new Catalog()
+                new Catalog(),
+                new CatalogCache(builder.cacheManager)
         );
 
         this.catalogWrapper.setDefaultDomain(builder.defaultDomain);
@@ -122,6 +122,10 @@ public final class XliffMessageSource implements MessageSource {
         throw new NoSuchMessageException(codes != null && codes.length > 0 ? codes[codes.length - 1] : "", locale);
     }
 
+    public void initCache() {
+        this.catalogWrapper.initCache();
+    }
+
     private CatalogWrapper.Translation internalMessage(String code, Locale locale) throws NoSuchMessageException {
         return this.findInCatalog(locale, code);
     }
@@ -136,10 +140,6 @@ public final class XliffMessageSource implements MessageSource {
 
     private CatalogWrapper.Translation findInCatalog(Locale locale, String code) {
         return this.catalogWrapper.get(locale, code);
-    }
-
-    public void initCache() {
-        this.catalogWrapper.initCache();
     }
 
     private String format(@Nullable String message, @Nullable Object[] args) {

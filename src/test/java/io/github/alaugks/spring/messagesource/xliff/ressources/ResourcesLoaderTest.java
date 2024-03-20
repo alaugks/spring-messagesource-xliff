@@ -29,7 +29,7 @@ class ResourcesLoaderTest {
         this.resourcesLoader.setBasenamePattern(
                 "translations/*"
         );
-        assertEquals(5, this.resourcesLoader.getResourcesInputStream().size());
+        assertEquals(5, this.resourcesLoader.getTranslationFiles().size());
     }
 
     @Test
@@ -37,7 +37,7 @@ class ResourcesLoaderTest {
         this.resourcesLoader.setBasenamePattern(
                 "translations/messages*"
         );
-        assertEquals(3, this.resourcesLoader.getResourcesInputStream().size());
+        assertEquals(3, this.resourcesLoader.getTranslationFiles().size());
     }
 
 
@@ -46,7 +46,7 @@ class ResourcesLoaderTest {
         this.resourcesLoader.setBasenamePattern(
                 "translations/*_de*"
         );
-        assertEquals(2, this.resourcesLoader.getResourcesInputStream().size());
+        assertEquals(2, this.resourcesLoader.getTranslationFiles().size());
     }
 
     @Test
@@ -57,7 +57,7 @@ class ResourcesLoaderTest {
                         "translations_de/*"
                 )
         );
-        assertEquals(4, this.resourcesLoader.getResourcesInputStream().size());
+        assertEquals(4, this.resourcesLoader.getTranslationFiles().size());
     }
 
     @Test
@@ -65,7 +65,7 @@ class ResourcesLoaderTest {
         this.resourcesLoader.setBasenamePattern(
                 "translations_en_US/*"
         );
-        ResourcesLoader.Dto dto = this.resourcesLoader.getResourcesInputStream().get(0);
+        ResourcesLoader.Dto dto = this.resourcesLoader.getTranslationFiles().get(0);
         assertEquals("messages", dto.getDomain());
         assertEquals("en_US", dto.getLocale().toString());
         assertInstanceOf(InputStream.class, dto.getInputStream());

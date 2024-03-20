@@ -1,10 +1,10 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoaderInterface;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
+import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.cache.CacheManager;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -14,19 +14,20 @@ public class CatalogWrapper {
     private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());
     private final CatalogCache catalogCache;
     private final CatalogInterface catalog;
-    private final CatalogBuilderInterface catalogBuilder;
-    private final ResourcesLoaderInterface resourcesLoader;
+    private final XliffCatalogBuilder catalogBuilder;
+    private final ResourcesLoader resourcesLoader;
     private String defaultDomain = "messages";
 
-    public CatalogWrapper(CacheManager cacheManager,
-                          ResourcesLoaderInterface resourcesLoader,
-                          CatalogBuilderInterface catalogBuilder,
-                          CatalogInterface catalog
+    public CatalogWrapper(
+            ResourcesLoader resourcesLoader,
+            XliffCatalogBuilder catalogBuilder,
+            CatalogInterface catalog,
+            CatalogCache catalogCache
     ) {
-        this.catalog = catalog;
         this.resourcesLoader = resourcesLoader;
         this.catalogBuilder = catalogBuilder;
-        this.catalogCache = new CatalogCache(cacheManager);
+        this.catalog = catalog;
+        this.catalogCache = catalogCache;
     }
 
     private static Locale buildLocaleWithLanguageRegion(Locale locale) {

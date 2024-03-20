@@ -10,13 +10,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public final class ResourcesLoader implements ResourcesLoaderInterface {
+public final class ResourcesLoader {
 
     private final Set<String> basenameSet = new LinkedHashSet<>();
     private Locale defaultLocale;
     private final List<String> fileExtensions = List.of("xlf", "xliff");
 
-    @Override
     public ResourcesLoader setBasenamePattern(String basename) {
         if (null != basename) {
             this.setBasenamesPattern(List.of(basename));
@@ -24,7 +23,6 @@ public final class ResourcesLoader implements ResourcesLoaderInterface {
         return this;
     }
 
-    @Override
     public ResourcesLoader setBasenamesPattern(Iterable<String> basenames) {
         if (null != basenames) {
             this.basenameSet.clear();
@@ -33,7 +31,6 @@ public final class ResourcesLoader implements ResourcesLoaderInterface {
         return this;
     }
 
-    @Override
     public ResourcesLoader setDefaultLocale(Locale locale) {
         if (null != locale) {
             this.defaultLocale = locale;
@@ -41,13 +38,13 @@ public final class ResourcesLoader implements ResourcesLoaderInterface {
         return this;
     }
 
-    @Override
     public Locale getDefaultLocale() {
         return defaultLocale;
     }
 
-    @Override
-    public ArrayList<Dto> getResourcesInputStream() throws IOException {
+
+
+    public List<Dto> getTranslationFiles() throws IOException {
         if (this.defaultLocale == null || this.defaultLocale.toString().isEmpty()) {
             throw new XliffMessageSourceRuntimeException("Default language is not set or empty.");
         }

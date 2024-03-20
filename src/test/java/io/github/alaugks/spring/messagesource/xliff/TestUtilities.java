@@ -6,7 +6,6 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogWrapper;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoaderInterface;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.w3c.dom.Document;
@@ -30,8 +29,10 @@ public class TestUtilities {
 
     public static CatalogWrapper getCacheWrapperWithCachedTestCatalog() {
         CatalogWrapper catalogWrapper = new CatalogWrapper(
-                getMockedCacheManager(),
-                getResourcesLoader(), new XliffCatalogBuilder(), TestUtilities.getTestCatalog()
+                getResourcesLoader(),
+                new XliffCatalogBuilder(),
+                TestUtilities.getTestCatalog(),
+                new CatalogCache(getMockedCacheManager())
         );
         catalogWrapper.initCache();
         return catalogWrapper;
@@ -47,7 +48,7 @@ public class TestUtilities {
         return cacheManager;
     }
 
-    public static ResourcesLoaderInterface getResourcesLoader() {
+    public static ResourcesLoader getResourcesLoader() {
         ResourcesLoader resourcesLoader = new ResourcesLoader();
         resourcesLoader.setBasenamePattern(
                 "translations/*"

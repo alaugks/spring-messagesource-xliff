@@ -19,7 +19,7 @@ public final class CatalogCache implements CatalogInterface {
     private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());
     private Cache cache;
 
-    CatalogCache(CacheManager cacheManager) {
+    public CatalogCache(CacheManager cacheManager) {
         this.loadCache(cacheManager);
     }
 

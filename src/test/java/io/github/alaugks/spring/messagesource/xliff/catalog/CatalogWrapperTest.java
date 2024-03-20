@@ -2,7 +2,7 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoaderInterface;
+import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -58,15 +58,15 @@ class CatalogWrapperTest {
     void test_getTargetValue_fromCache() {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
         CatalogInterface catalog = TestUtilities.getTestCatalog();
-        ResourcesLoaderInterface resourcesLoader = TestUtilities.getResourcesLoader();
+        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
 
         XliffCatalogBuilder mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 
         CatalogWrapper catalogWrapper = new CatalogWrapper(
-                TestUtilities.getMockedCacheManager(),
                 resourcesLoader,
                 mockedXliffCatalogBuilder,
-                catalog
+                catalog,
+                new CatalogCache(TestUtilities.getMockedCacheManager())
         );
 
         CatalogWrapper mockedCatalogWrapper = Mockito.spy(catalogWrapper);
@@ -88,14 +88,14 @@ class CatalogWrapperTest {
     void test_getTargetValue_fromCatalog_fromCache() {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
         CatalogInterface catalog = TestUtilities.getTestCatalog();
-        ResourcesLoaderInterface resourcesLoader = TestUtilities.getResourcesLoader();
+        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
         XliffCatalogBuilder mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 
         CatalogWrapper catalogWrapper = new CatalogWrapper(
-                TestUtilities.getMockedCacheManager(),
                 resourcesLoader,
                 mockedXliffCatalogBuilder,
-                catalog
+                catalog,
+                new CatalogCache(TestUtilities.getMockedCacheManager())
         );
 
         catalogWrapper.get(this.locale, "messages.hello_language"); // From Files + Init Cache
@@ -110,14 +110,14 @@ class CatalogWrapperTest {
     void test_getTargetValue_fromCatalog_cacheNotInit() {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
         CatalogInterface catalog = TestUtilities.getTestCatalog();
-        ResourcesLoaderInterface resourcesLoader = TestUtilities.getResourcesLoader();
+        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
         XliffCatalogBuilder mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 
         CatalogWrapper catalogWrapper = new CatalogWrapper(
-                TestUtilities.getMockedCacheManager(),
                 resourcesLoader,
                 mockedXliffCatalogBuilder,
-                catalog
+                catalog,
+                new CatalogCache(TestUtilities.getMockedCacheManager())
         );
 
         catalogWrapper.get(this.locale, "messages.hello_language");
@@ -129,14 +129,14 @@ class CatalogWrapperTest {
     void test_fillCacheWithCodeBecauseCodeNotExists() {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
         CatalogInterface catalog = TestUtilities.getTestCatalog();
-        ResourcesLoaderInterface resourcesLoader = TestUtilities.getResourcesLoader();
+        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
         XliffCatalogBuilder mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 
         CatalogWrapper catalogWrapper = new CatalogWrapper(
-                TestUtilities.getMockedCacheManager(),
                 resourcesLoader,
                 mockedXliffCatalogBuilder,
-                catalog
+                catalog,
+                new CatalogCache(TestUtilities.getMockedCacheManager())
         );
 
         CatalogWrapper mockedCatalogWrapper = Mockito.spy(catalogWrapper);
