@@ -25,10 +25,6 @@ public class XliffCatalogBuilder {
         this.resourceLoader = resourceLoader;
     }
 
-    public ResourcesLoader getResourceLoader() {
-        return resourceLoader;
-    }
-
     public Catalog createCatalog(Catalog catalog) {
         try {
             this.catalog = catalog;

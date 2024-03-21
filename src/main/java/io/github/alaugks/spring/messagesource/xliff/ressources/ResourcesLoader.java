@@ -4,7 +4,6 @@ import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSource
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,11 +53,9 @@ public final class ResourcesLoader {
         }
 
         private void addBasenames(Iterable<String> basenames) {
-            if (!ObjectUtils.isEmpty(basenames)) {
-                for (String basename : basenames) {
-                    Assert.hasText(basename, "Basename must not be empty");
-                    this.basenameSet.add(basename.trim());
-                }
+            for (String basename : basenames) {
+                Assert.hasText(basename, "Basename must not be empty");
+                this.basenameSet.add(basename.trim());
             }
         }
 
