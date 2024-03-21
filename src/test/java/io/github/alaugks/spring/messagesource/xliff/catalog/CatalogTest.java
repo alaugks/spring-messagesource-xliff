@@ -75,15 +75,4 @@ class CatalogTest {
         assertNull(catalog.get(locale, "foo.key_2"));
     }
 
-    @Test
-    void test_hasTranslation_true() {
-        Locale locale = Locale.forLanguageTag("en");
-        assertTrue(catalog.has(locale, "foo.key_1"));
-    }
-
-    @Test
-    void test_hasTranslation_false() {
-        Locale locale = Locale.forLanguageTag("en");
-        assertFalse(catalog.has(locale, "key_3"));
-    }
 }

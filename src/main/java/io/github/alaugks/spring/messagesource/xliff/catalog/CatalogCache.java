@@ -56,14 +56,6 @@ public final class CatalogCache extends ChainAbstractHandler {
     }
 
     @Override
-    public boolean has(Locale locale, String code) {
-        if (null != this.get(locale, code)) {
-            return true;
-        }
-        return super.has(locale, code);
-    }
-
-    @Override
     public void put(Locale locale, String domain, String code, String targetValue) {
         this.put(locale, CatalogUtilities.concatCode(domain, code), targetValue);
     }

@@ -40,15 +40,6 @@ abstract class ChainAbstractHandler implements CatalogInterface {
     }
 
     @Override
-    public boolean has(Locale locale, String code) {
-        if (this.nextHandler == null) {
-            return false;
-        }
-
-        return this.nextHandler.has(locale, code);
-    }
-
-    @Override
     public void initCache() {
         this.nextHandler.initCache();
     }

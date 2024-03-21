@@ -41,26 +41,10 @@ class CatalogCacheTest {
     }
 
     @Test
-    void test_put_has_withDomain() {
-        Locale locale = Locale.forLanguageTag("en");
-        this.catalogCache.put(this.locale, "domain", "code", "targetValue");
-        assertTrue(this.catalogCache.has(locale, "domain.code"));
-        assertFalse(this.catalogCache.has(locale, "domain.bar"));
-    }
-
-    @Test
     void test_put_get() {
         Locale locale = Locale.forLanguageTag("en");
         this.catalogCache.put(this.locale, "code", "targetValue");
         assertEquals("targetValue", this.catalogCache.get(this.locale, "code"));
-    }
-
-    @Test
-    void test_put_has() {
-        Locale locale = Locale.forLanguageTag("en");
-        this.catalogCache.put(this.locale, "code", "targetValue");
-        assertTrue(this.catalogCache.has(locale, "code"));
-        assertFalse(this.catalogCache.has(locale, "bar"));
     }
 
     @Test

@@ -45,15 +45,6 @@ public final class Catalog extends ChainAbstractHandler {
     }
 
     @Override
-    public boolean has(Locale locale, String code) {
-        if (null != this.get(locale, code)) {
-            return true;
-        }
-
-        return super.get(locale, code) != null;
-    }
-
-    @Override
     public void put(Locale locale, String domain, String code, String targetValue) {
         if (!locale.toString().isEmpty()) {
             String concatenatedCode = CatalogUtilities.concatCode(domain, code);
