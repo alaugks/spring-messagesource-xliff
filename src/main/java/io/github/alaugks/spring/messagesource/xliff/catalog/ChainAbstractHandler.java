@@ -31,14 +31,6 @@ abstract class ChainAbstractHandler implements CatalogInterface {
         return this.nextHandler.get(locale, code);
     }
 
-    public void put(Locale locale, String domain, String code, String targetValue) {
-        if (this.nextHandler == null) {
-            return;
-        }
-
-        this.nextHandler.put(locale, domain, code, targetValue);
-    }
-
     @Override
     public void initCache() {
         this.nextHandler.initCache();
