@@ -21,7 +21,7 @@ class CatalogCacheAdapterTest {
         catalog.put(Locale.forLanguageTag("en"), "domain", "key_2", "value_en_2");
         catalog.put(Locale.forLanguageTag("en"), "domain", "key_1", "value_en_3");
 
-        var adapter = new CatalogCacheAdapter(catalog.getCache());
+        var adapter = new CatalogCacheAdapter(cacheManager.getCache(CatalogCache.CACHE_NAME));
 
         assertEquals("value_en_3", adapter.find(Locale.forLanguageTag("en"), "domain.key_1"));
         assertNull(adapter.find(Locale.forLanguageTag("en"), "domain.not_exists"));

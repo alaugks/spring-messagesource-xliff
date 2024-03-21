@@ -48,7 +48,7 @@ class CatalogItemFinderTest {
         catalog.put(Locale.forLanguageTag("de"), "domain", "key_1", "value_de_3");
 
         var finder = new CatalogFinder(
-                new CatalogCacheAdapter(catalog.getCache()),
+                new CatalogCacheAdapter(cacheManager.getCache(CatalogCache.CACHE_NAME)),
                 Locale.forLanguageTag("en"),
                 "domain"
         );

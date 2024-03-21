@@ -5,6 +5,7 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogWrapper;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.w3c.dom.Document;
@@ -15,8 +16,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TestUtilities {
     public static Catalog getTestCatalog() {
@@ -63,4 +67,10 @@ public class TestUtilities {
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(inputStream);
     }
+
+    public static Map<Object, Object> cacheToArray(Cache cache) {
+        var nativeCache = (ConcurrentHashMap<?, ?>) cache.getNativeCache();
+        return new HashMap<>(nativeCache);
+    }
+
 }

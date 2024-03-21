@@ -28,11 +28,6 @@ public final class CatalogCache extends ChainAbstractHandler {
         this.loadCache(cacheManager);
     }
 
-    // TODO??? //NOSONAR
-    public Cache getCache() {
-        return cache;
-    }
-
     @Override
     public String get(Locale locale, String code) {
 

@@ -21,14 +21,6 @@ class CatalogCacheTest {
         this.locale = Locale.forLanguageTag("en");
     }
 
-//    @Test
-//    void test_initCache() {
-//        Catalog catalog = new Catalog();
-//        catalog.put(this.locale, "domain", "code", "targetValue");
-//        this.catalogCache.initCache(catalog);
-//        assertTrue(catalog.has(locale, "domain.code"));
-//    }
-
     @Test
     void test_getAll() {
         assertInstanceOf(HashMap.class, this.catalogCache.getAll());
@@ -57,6 +49,14 @@ class CatalogCacheTest {
     void test_get_onNull_localeEmpty() {
         this.catalogCache.put(this.locale, "domain", "code", "targetValue");
         assertNull(this.catalogCache.get(Locale.forLanguageTag(""), "domain.foo"));
+    }
+
+    @Test
+    void test_put_not_overwrite() {
+        this.catalogCache.put(this.locale, "domain", "code", "targetValue_1");
+        this.catalogCache.put(this.locale, "domain", "code", "targetValue_2");
+        this.catalogCache.put(this.locale, "domain", "code", "targetValue_3");
+        assertEquals("targetValue_1", this.catalogCache.get(this.locale, "domain.code"));
     }
 
     @Test
