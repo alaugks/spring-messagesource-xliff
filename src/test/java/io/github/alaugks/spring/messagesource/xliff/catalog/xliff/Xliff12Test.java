@@ -29,7 +29,7 @@ class Xliff12Test {
     @Test
     void test_readXliffFile() {
         Xliff12 version = new Xliff12();
-        CatalogInterface catalog = new Catalog();
+        CatalogInterface catalog = new Catalog(Locale.forLanguageTag("en"), "domain");
         Locale locale = Locale.forLanguageTag("en");
         version.read(catalog, document, "domain", locale);
 

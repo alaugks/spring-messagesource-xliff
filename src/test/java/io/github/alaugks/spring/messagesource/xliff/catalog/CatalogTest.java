@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CatalogTest {
 
-    static Catalog catalog = new Catalog();
+    static Catalog catalog = new Catalog(Locale.forLanguageTag("en"), "foo");
 
     @BeforeEach
     void BeforeEach() {
@@ -25,6 +25,15 @@ class CatalogTest {
         catalog.put(Locale.forLanguageTag("en-US"), "foo", "key_1", "value_en_us_1");
         catalog.put(Locale.forLanguageTag("en_US"), "foo", "key_2", "value_en_us_2");
     }
+
+    @Test
+    void test_fallback() {
+        // Domain foo
+        Locale locale = Locale.forLanguageTag("en");
+        assertEquals("value_en_1", catalog.get(locale, "foo.key_1"));
+        assertEquals("value_en_1", catalog.get(locale, "key_1"));
+    }
+
 
     @Test
     void test_en() {
@@ -44,13 +53,13 @@ class CatalogTest {
         assertNull(catalog.get(locale, "foo.key_3"));
     }
 
-    @Test
-    void test_localeExists() {
-        assertTrue(catalog.localeExists(Locale.forLanguageTag("en")));
-        assertTrue(catalog.localeExists(Locale.forLanguageTag("en-US")));
-        assertFalse(catalog.localeExists(Locale.forLanguageTag("en_US")));
-        assertFalse(catalog.localeExists(Locale.forLanguageTag("jp")));
-    }
+//    @Test
+//    void test_localeExists() {
+//        assertTrue(catalog.localeExists(Locale.forLanguageTag("en")));
+//        assertTrue(catalog.localeExists(Locale.forLanguageTag("en-US")));
+//        assertFalse(catalog.localeExists(Locale.forLanguageTag("en_US")));
+//        assertFalse(catalog.localeExists(Locale.forLanguageTag("jp")));
+//    }
 
     @Test
     void test_enUk_withDash() {

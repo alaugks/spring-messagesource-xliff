@@ -16,25 +16,30 @@ class XliffCatalogBuilderTest {
 
     @Test
     void test_createCatalog() {
-        ResourcesLoader resourcesLoader = new ResourcesLoader();
-        resourcesLoader.setBasenamePattern("translations/*");
-        resourcesLoader.setDefaultLocale(Locale.forLanguageTag("en"));
-        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
-        CatalogInterface catalog = xliffCatalogBuilder.createCatalog(resourcesLoader, new Catalog());
+        ResourcesLoader resourcesLoader = ResourcesLoader
+                .builder()
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setBasenamePattern("translations/*")
+                .build();
+
+        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(resourcesLoader);
+        CatalogInterface catalog = xliffCatalogBuilder.createCatalog(new Catalog(Locale.forLanguageTag("en"), "messages"));
         assertEquals("Hello EN (messages)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_language"));
     }
 
     @Test
     void test_createCatalog_versionNotSupported() {
-        Catalog catalog = new Catalog();
-        ResourcesLoader resourcesLoader = new ResourcesLoader();
-        resourcesLoader.setBasenamePattern("fixtures/*");
-        resourcesLoader.setDefaultLocale(Locale.forLanguageTag("en-GB"));
-        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
+        Catalog catalog = new Catalog(Locale.forLanguageTag("en"), "messages");
+        ResourcesLoader resourcesLoader = ResourcesLoader
+                .builder()
+                .setDefaultLocale(Locale.forLanguageTag("en-GB"))
+                .setBasenamePattern("fixtures/*")
+                .build();
 
+        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(resourcesLoader);
         XliffMessageSourceVersionSupportException exception = assertThrows(
                 XliffMessageSourceVersionSupportException.class, () -> {
-                xliffCatalogBuilder.createCatalog(resourcesLoader, catalog);
+                xliffCatalogBuilder.createCatalog(catalog);
             }
         );
         assertEquals("XLIFF version \"1.0\" not supported.", exception.getMessage());
@@ -44,15 +49,19 @@ class XliffCatalogBuilderTest {
     @Disabled("Todo: Handling [Fatal Error] :9:7: The element type \"body\" must be terminated by the matching end-tag \"</body>\".")
     void test_createCatalog_parseError() {
         // ErrorHandler errorHandler = new SimpleSaxErrorHandler(new NoOpLog());
-        var catalog = new Catalog();
-        ResourcesLoader resourcesLoader = new ResourcesLoader();
-        resourcesLoader.setBasenamePattern("translations_broken/*");
-        resourcesLoader.setDefaultLocale(Locale.forLanguageTag("en"));
-        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
+        var catalog = new Catalog(Locale.forLanguageTag("en"), "messages");
+
+        ResourcesLoader resourcesLoader = ResourcesLoader
+                .builder()
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setBasenamePattern("translations_broken/*")
+                .build();
+
+        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(resourcesLoader);
 
         Throwable exception = assertThrows(
             Throwable.class, () -> {
-                xliffCatalogBuilder.createCatalog(resourcesLoader, catalog);
+                xliffCatalogBuilder.createCatalog(catalog);
             }
         );
         //assertTrue(exception.getMessage().indexOf("body") > 0);

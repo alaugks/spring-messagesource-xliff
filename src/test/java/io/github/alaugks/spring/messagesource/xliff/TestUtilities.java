@@ -2,7 +2,6 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogWrapper;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
@@ -20,19 +19,22 @@ import java.util.List;
 import java.util.Locale;
 
 public class TestUtilities {
-    public static CatalogInterface getTestCatalog() {
-        ResourcesLoader translationResourcesLoader = new ResourcesLoader();
-        translationResourcesLoader.setBasenamePattern("translations/*");
-        translationResourcesLoader.setDefaultLocale(Locale.forLanguageTag("en"));
-        return new XliffCatalogBuilder().createCatalog(translationResourcesLoader, new Catalog());
+    public static Catalog getTestCatalog() {
+        ResourcesLoader resourcesLoader = ResourcesLoader
+                .builder()
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setBasenamePattern("translations/*")
+                .build();
+        return new XliffCatalogBuilder(resourcesLoader).createCatalog(
+                new Catalog(Locale.forLanguageTag("en"), "messages")
+        );
     }
 
-    public static CatalogWrapper getCacheWrapperWithCachedTestCatalog() {
+    public static CatalogWrapper getCacheWrapperWithCachedTestCatalog(Locale locale, String domain) {
         CatalogWrapper catalogWrapper = new CatalogWrapper(
-                getResourcesLoader(),
-                new XliffCatalogBuilder(),
                 TestUtilities.getTestCatalog(),
-                new CatalogCache(getMockedCacheManager())
+                new CatalogCache(Locale.forLanguageTag("en"), "messages", getMockedCacheManager()),
+                new XliffCatalogBuilder(getResourcesLoader())
         );
         catalogWrapper.initCache();
         return catalogWrapper;
@@ -49,12 +51,11 @@ public class TestUtilities {
     }
 
     public static ResourcesLoader getResourcesLoader() {
-        ResourcesLoader resourcesLoader = new ResourcesLoader();
-        resourcesLoader.setBasenamePattern(
-                "translations/*"
-        );
-        resourcesLoader.setDefaultLocale(Locale.forLanguageTag("en"));
-        return resourcesLoader;
+        return ResourcesLoader
+                .builder()
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setBasenamePattern("translations/*")
+                .build();
     }
 
     public static Document getDocument(InputStream inputStream) throws ParserConfigurationException, SAXException, IOException {

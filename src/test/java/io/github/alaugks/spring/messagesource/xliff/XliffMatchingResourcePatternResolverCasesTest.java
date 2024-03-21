@@ -19,33 +19,50 @@ class XliffMatchingResourcePatternResolverCasesTest {
 
     @Test
     void test_withRegion_setDefaultLocale_notSet() {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamePattern("translations/*");
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamePattern("translations/*");
+
+        var resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*");
 
         XliffMessageSourceRuntimeException exception = assertThrows(
-                XliffMessageSourceRuntimeException.class, resolver::initCache
+                XliffMessageSourceRuntimeException.class, resolver::build
         );
         assertEquals("Default language is not set or empty.", exception.getMessage());
     }
 
     @Test
     void test_withRegion_setDefaultLocale_empty() {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamePattern("translations/*");
-        resolver.setDefaultLocale(Locale.forLanguageTag(""));
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamePattern("translations/*");
+        //resolver.setDefaultLocale(Locale.forLanguageTag(""));
+
+        var resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*")
+                .setDefaultLocale(Locale.forLanguageTag(""));
 
         XliffMessageSourceRuntimeException exception = assertThrows(
-                XliffMessageSourceRuntimeException.class, resolver::initCache
+                XliffMessageSourceRuntimeException.class, resolver::build
         );
         assertEquals("Default language is not set or empty.", exception.getMessage());
     }
 
     @Test
     void test_withRegion_enUS() {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamePattern("translations/*");
-        resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamePattern("translations/*");
+        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //resolver.initCache();
+
+        XliffTranslationMessageSource resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*")
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .build();
         resolver.initCache();
+
         String message = resolver.getMessage(
                 "hello_language",
                 null,
@@ -56,10 +73,18 @@ class XliffMatchingResourcePatternResolverCasesTest {
 
     @Test
     void test_withRegion_fallback() {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamePattern("translations/*");
-        resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamePattern("translations/*");
+        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //resolver.initCache();
+
+        XliffTranslationMessageSource resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*")
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .build();
         resolver.initCache();
+
         String message = resolver.getMessage(
                 "hello_language",
                 null,
@@ -71,11 +96,20 @@ class XliffMatchingResourcePatternResolverCasesTest {
 
     @Test
     void test_setDefaultDomain() {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamePattern("translations/*");
-        resolver.setDefaultLocale(Locale.forLanguageTag("en"));
-        resolver.setDefaultDomain("otherdomain");
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamePattern("translations/*");
+        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //resolver.setDefaultDomain("otherdomain");
+        //resolver.initCache();
+
+        XliffTranslationMessageSource resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*")
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setDefaultDomain("otherdomain")
+                .build();
         resolver.initCache();
+
         String message = resolver.getMessage(
                 "hello_language",
                 null,
@@ -86,11 +120,20 @@ class XliffMatchingResourcePatternResolverCasesTest {
 
     @Test
     void test_setBasenamePattern() {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamesPattern(List.of("translations/*"));
-        resolver.setDefaultLocale(Locale.forLanguageTag("en"));
-        resolver.setDefaultDomain("otherdomain");
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamesPattern(List.of("translations/*"));
+        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //resolver.setDefaultDomain("otherdomain");
+        //resolver.initCache();
+
+        XliffTranslationMessageSource resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*")
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setDefaultDomain("otherdomain")
+                .build();
         resolver.initCache();
+
         String message = resolver.getMessage(
                 "hello_language",
                 null,
@@ -102,10 +145,18 @@ class XliffMatchingResourcePatternResolverCasesTest {
     @ParameterizedTest(name = "{index} => translationUnitIdentifiers={0}, code={1}, expected={2}, targetValue={3}")
     @MethodSource("dataProvider_setTranslationUnitIdentifiersOrdering")
     void test_setTranslationUnitIdentifiersOrdering(ArrayList<String> translationUnitIdentifiers, String code, String expected) {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamesPattern(List.of("translations/*"));
-        resolver.setDefaultLocale(Locale.forLanguageTag("en"));
-        resolver.setTranslationUnitIdentifiersOrdering(translationUnitIdentifiers);
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamesPattern(List.of("translations/*"));
+        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //resolver.setTranslationUnitIdentifiersOrdering(translationUnitIdentifiers);
+        //resolver.initCache();
+
+        XliffTranslationMessageSource resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*")
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setTranslationUnitIdentifiersOrdering(translationUnitIdentifiers)
+                .build();
         resolver.initCache();
 
         String message = resolver.getMessage(

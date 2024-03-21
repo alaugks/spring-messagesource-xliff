@@ -12,43 +12,66 @@ import java.util.*;
 
 public final class ResourcesLoader {
 
-    private final Set<String> basenameSet = new LinkedHashSet<>();
-    private Locale defaultLocale;
+    private final Locale defaultLocale;
+    private final Set<String> basenameSet;
     private final List<String> fileExtensions = List.of("xlf", "xliff");
 
-    public ResourcesLoader setBasenamePattern(String basename) {
-        if (null != basename) {
-            this.setBasenamesPattern(List.of(basename));
-        }
-        return this;
+    private ResourcesLoader(ResourcesLoader.Builder builder) {
+        this.defaultLocale = builder.defaultLocale;
+        this.basenameSet = builder.basenameSet;
     }
 
-    public ResourcesLoader setBasenamesPattern(Iterable<String> basenames) {
-        if (null != basenames) {
-            this.basenameSet.clear();
-            this.addBasenames(basenames);
-        }
-        return this;
+    public static ResourcesLoader.Builder builder() {
+        return new ResourcesLoader.Builder();
     }
 
-    public ResourcesLoader setDefaultLocale(Locale locale) {
-        if (null != locale) {
+    public static final class Builder {
+        Locale defaultLocale;
+        String defaultDomain;
+        private final Set<String> basenameSet = new LinkedHashSet<>();
+
+        public ResourcesLoader.Builder setDefaultLocale(Locale locale) {
             this.defaultLocale = locale;
+            return this;
         }
-        return this;
+
+        public ResourcesLoader.Builder setDefaultDomain(String defaultDomain) {
+            this.defaultDomain = defaultDomain;
+            return this;
+        }
+
+        public ResourcesLoader.Builder setBasenamePattern(String basename) {
+            this.setBasenamesPattern(List.of(basename));
+            return this;
+        }
+
+        public ResourcesLoader.Builder setBasenamesPattern(Iterable<String> basenames) {
+            if (null != basenames) {
+                this.basenameSet.clear();
+                this.addBasenames(basenames);
+            }
+            return this;
+        }
+
+        private void addBasenames(Iterable<String> basenames) {
+            if (!ObjectUtils.isEmpty(basenames)) {
+                for (String basename : basenames) {
+                    Assert.hasText(basename, "Basename must not be empty");
+                    this.basenameSet.add(basename.trim());
+                }
+            }
+        }
+
+        public ResourcesLoader build() {
+            return new ResourcesLoader(this);
+        }
+
     }
-
-    public Locale getDefaultLocale() {
-        return defaultLocale;
-    }
-
-
 
     public List<Dto> getTranslationFiles() throws IOException {
         if (this.defaultLocale == null || this.defaultLocale.toString().isEmpty()) {
             throw new XliffMessageSourceRuntimeException("Default language is not set or empty.");
         }
-
         ArrayList<Dto> translationFiles = new ArrayList<>();
         PathMatchingResourcePatternResolver resourceLoader = new PathMatchingResourcePatternResolver();
         for (String basename : getBasenameSet()) {
@@ -113,15 +136,6 @@ public final class ResourcesLoader {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1)).orElse(null);
-    }
-
-    private void addBasenames(Iterable<String> basenames) {
-        if (!ObjectUtils.isEmpty(basenames)) {
-            for (String basename : basenames) {
-                Assert.hasText(basename, "Basename must not be empty");
-                this.basenameSet.add(basename.trim());
-            }
-        }
     }
 
     private Set<String> getBasenameSet() {

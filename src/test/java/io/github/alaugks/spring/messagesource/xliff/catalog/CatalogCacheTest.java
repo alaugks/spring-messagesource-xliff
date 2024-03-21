@@ -17,17 +17,17 @@ class CatalogCacheTest {
 
     @BeforeEach
     void beforeEach() {
-        this.catalogCache = new CatalogCache(TestUtilities.getMockedCacheManager());
+        this.catalogCache = new CatalogCache(Locale.forLanguageTag("en"), "messages", TestUtilities.getMockedCacheManager());
         this.locale = Locale.forLanguageTag("en");
     }
 
-    @Test
-    void test_initCache() {
-        Catalog catalog = new Catalog();
-        catalog.put(this.locale, "domain", "code", "targetValue");
-        this.catalogCache.initCache(catalog);
-        assertTrue(catalog.has(locale, "domain.code"));
-    }
+//    @Test
+//    void test_initCache() {
+//        Catalog catalog = new Catalog();
+//        catalog.put(this.locale, "domain", "code", "targetValue");
+//        this.catalogCache.initCache(catalog);
+//        assertTrue(catalog.has(locale, "domain.code"));
+//    }
 
     @Test
     void test_getAll() {
@@ -81,7 +81,7 @@ class CatalogCacheTest {
 
         XliffMessageSourceCacheNotExistsException exception = assertThrows(
             XliffMessageSourceCacheNotExistsException.class, () -> {
-                new CatalogCache(cacheManager);
+                new CatalogCache(Locale.forLanguageTag("en"), "messages", cacheManager);
             }
         );
         assertEquals(
@@ -94,14 +94,9 @@ class CatalogCacheTest {
     void test_exception() {
         XliffMessageSourceCacheNotExistsException exception = assertThrows(
             XliffMessageSourceCacheNotExistsException.class, () -> {
-                new CatalogCache(null);
+                new CatalogCache(Locale.forLanguageTag("en"), "messages", null);
             }
         );
         assertEquals("org.springframework.cache.CacheManager not available.", exception.getMessage());
-    }
-
-    @Test
-    void test_Constants() {
-        assertEquals("messagesource.xliff.catalog.CACHE", CatalogCache.CACHE_NAME);
     }
 }

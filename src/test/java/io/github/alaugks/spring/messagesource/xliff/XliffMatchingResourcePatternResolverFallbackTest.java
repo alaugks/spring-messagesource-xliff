@@ -10,10 +10,18 @@ class XliffMatchingResourcePatternResolverFallbackTest {
 
     @Test
     void test_fallbackDefaultLanguage() {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamePattern("translations/*");
-        resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamePattern("translations/*");
+        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //resolver.initCache();
+
+        XliffTranslationMessageSource resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*")
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .build();
         resolver.initCache();
+
         String message = resolver.getMessage(
                 "hello_language",
                 null,
@@ -24,10 +32,18 @@ class XliffMatchingResourcePatternResolverFallbackTest {
 
     @Test
     void test_getMessage_withDefaultMessage_messageNotExists_defaultMessageWithArgs() {
-        var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        resolver.setBasenamePattern("translations/*");
-        resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        //resolver.setBasenamePattern("translations/*");
+        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
+        //resolver.initCache();
+
+        XliffTranslationMessageSource resolver = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .setBasenamePattern("translations/*")
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .build();
         resolver.initCache();
+
 
         Object[] args = {"Road Runner", "Wile E. Coyote"};
         String message = resolver.getMessage(

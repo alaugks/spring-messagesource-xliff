@@ -16,50 +16,73 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class XliffTranslationMessageSource implements MessageSource {
+public final class XliffTranslationMessageSource implements MessageSource {
 
     private final CatalogWrapper catalogWrapper;
-    private final ResourcesLoader resourcesLoader = new ResourcesLoader();
-    private final XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
 
-    @Deprecated(since = "1.2")
-    public XliffTranslationMessageSource(CacheManager cacheManager) {
+    private XliffTranslationMessageSource(Builder builder) {
+        ResourcesLoader resourcesLoader = ResourcesLoader
+                .builder()
+                .setDefaultLocale(builder.defaultLocale)
+                .setDefaultDomain(builder.defaultDomain)
+                .setBasenamePattern(builder.basename)
+                .setBasenamesPattern(builder.basenames)
+                .build();
+
+        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(resourcesLoader);
+        xliffCatalogBuilder.setTranslationUnitIdentifiersOrdering(builder.translationUnitIdentifiers);
+
         this.catalogWrapper = new CatalogWrapper(
-                this.resourcesLoader,
-                this.xliffCatalogBuilder,
-                new Catalog(),
-                new CatalogCache(cacheManager)
+                new Catalog(builder.defaultLocale, builder.defaultDomain),
+                new CatalogCache(builder.defaultLocale, builder.defaultDomain, builder.cacheManager),
+                xliffCatalogBuilder
         );
     }
 
-    @Deprecated(since = "1.2")
-    public XliffTranslationMessageSource setDefaultLocale(Locale locale) {
-        this.resourcesLoader.setDefaultLocale(locale);
-        return this;
+    public static Builder builder(CacheManager cacheManager) {
+        return new Builder(cacheManager);
     }
 
-    @Deprecated(since = "1.2")
-    public XliffTranslationMessageSource setBasenamePattern(String basename) {
-        this.resourcesLoader.setBasenamePattern(basename);
-        return this;
-    }
+    public static final class Builder {
+        private final CacheManager cacheManager;
+        private Locale defaultLocale;
+        private String basename;
+        private Iterable<String> basenames;
+        private String defaultDomain = "messages";
+        private List<String> translationUnitIdentifiers;
 
-    @Deprecated(since = "1.2")
-    public XliffTranslationMessageSource setBasenamesPattern(Iterable<String> basenames) {
-        this.resourcesLoader.setBasenamesPattern(basenames);
-        return this;
-    }
+        private Builder(CacheManager cacheManager) {
+            this.cacheManager = cacheManager;
+        }
 
-    @Deprecated(since = "1.2")
-    public XliffTranslationMessageSource setDefaultDomain(String defaultDomain) {
-        this.catalogWrapper.setDefaultDomain(defaultDomain);
-        return this;
-    }
+        public Builder setDefaultLocale(Locale locale) {
+            this.defaultLocale = locale;
+            return this;
+        }
 
-    @Deprecated(since = "1.2")
-    public XliffTranslationMessageSource setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
-        this.xliffCatalogBuilder.setTranslationUnitIdentifiersOrdering(translationUnitIdentifiers);
-        return this;
+        public Builder setBasenamePattern(String basename) {
+            this.basename = basename;
+            return this;
+        }
+
+        public Builder setBasenamesPattern(Iterable<String> basenames) {
+            this.basenames = basenames;
+            return this;
+        }
+
+        public Builder setDefaultDomain(String defaultDomain) {
+            this.defaultDomain = defaultDomain;
+            return this;
+        }
+
+        public Builder setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
+            this.translationUnitIdentifiers = translationUnitIdentifiers;
+            return this;
+        }
+
+        public XliffTranslationMessageSource build() {
+            return new XliffTranslationMessageSource(this);
+        }
     }
 
     @Nullable
@@ -99,6 +122,10 @@ public class XliffTranslationMessageSource implements MessageSource {
         throw new NoSuchMessageException(codes != null && codes.length > 0 ? codes[codes.length - 1] : "", locale);
     }
 
+    public void initCache() {
+        this.catalogWrapper.initCache();
+    }
+
     private CatalogWrapper.Translation internalMessage(String code, Locale locale) throws NoSuchMessageException {
         return this.findInCatalog(locale, code);
     }
@@ -113,10 +140,6 @@ public class XliffTranslationMessageSource implements MessageSource {
 
     private CatalogWrapper.Translation findInCatalog(Locale locale, String code) {
         return this.catalogWrapper.get(locale, code);
-    }
-
-    public void initCache() {
-        this.catalogWrapper.initCache();
     }
 
     private String format(@Nullable String message, @Nullable Object[] args) {

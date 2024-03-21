@@ -1,6 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
+import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
@@ -17,10 +17,19 @@ import java.util.List;
 
 public class XliffCatalogBuilder {
 
-    private CatalogInterface catalog;
+    private final ResourcesLoader resourceLoader;
+    private Catalog catalog;
     private List<String> translationUnitIdentifiers;
 
-    public CatalogInterface createCatalog(ResourcesLoader resourceLoader, CatalogInterface catalog) {
+    public XliffCatalogBuilder(ResourcesLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    public ResourcesLoader getResourceLoader() {
+        return resourceLoader;
+    }
+
+    public Catalog createCatalog(Catalog catalog) {
         try {
             this.catalog = catalog;
             this.readFile(resourceLoader.getTranslationFiles());
@@ -35,8 +44,6 @@ public class XliffCatalogBuilder {
             this.translationUnitIdentifiers = translationUnitIdentifiers;
         }
     }
-
-
 
     private void readFile(List<ResourcesLoader.Dto> translationFiles) throws ParserConfigurationException, IOException {
 

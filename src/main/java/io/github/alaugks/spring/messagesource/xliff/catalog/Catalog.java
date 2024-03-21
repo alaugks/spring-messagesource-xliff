@@ -1,34 +1,56 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
+import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
+import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogIOAdapter;
+
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
-public final class Catalog implements CatalogInterface {
+public final class Catalog extends ChainAbstractHandler {
 
-    private final HashMap<String, HashMap<String, String>> catalogMap;
+    private final HashMap<String, Map<String, String>> catalogMap;
+    private final Locale defaultLocale;
+    private final String domain;
 
-    public Catalog() {
+    public Catalog(Locale defaultLocal, String domain) {
         this.catalogMap = new HashMap<>();
+        this.defaultLocale = defaultLocal;
+        this.domain = domain;
     }
 
     @Override
-    public HashMap<String, HashMap<String, String>> getAll() {
-        return this.catalogMap;
+    public Map<String, Map<String, String>> getAll() {
+        if (!this.catalogMap.isEmpty()) {
+            return this.catalogMap;
+        }
+
+        return super.getAll();
     }
 
     @Override
     public String get(Locale locale, String code) {
-        if (this.localeExists(locale)) {
-            HashMap<String, String> languageCatalog = this.getLocaleMap(locale);
-            if (languageCatalog.containsKey(code)) {
-                return languageCatalog.get(code);
-            }
+        CatalogFinder finder = new CatalogFinder(
+                new CatalogIOAdapter(this.getAll()),
+                this.defaultLocale,
+                this.domain
+        );
+
+        String message = finder.find(locale, code);
+        if (null != message) {
+            return message;
         }
-        return null;
+
+        return super.get(locale, code);
     }
 
+    @Override
     public boolean has(Locale locale, String code) {
-        return this.get(locale, code) != null;
+        if (null != this.get(locale, code)) {
+            return true;
+        }
+
+        return super.get(locale, code) != null;
     }
 
     @Override
@@ -36,7 +58,7 @@ public final class Catalog implements CatalogInterface {
         if (!locale.toString().isEmpty()) {
             String concatenatedCode = CatalogUtilities.concatCode(domain, code);
             if (this.localeExists(locale)) {
-                HashMap<String, String> transUnit = this.getLocaleMap(locale);
+                Map<String, String> transUnit = this.getLocaleMap(locale);
                 if (!transUnit.containsKey(concatenatedCode)) {
                     this.getLocaleMap(locale).put(concatenatedCode, targetValue);
                 }
@@ -49,7 +71,7 @@ public final class Catalog implements CatalogInterface {
         }
     }
 
-    public boolean localeExists(Locale locale) {
+    private boolean localeExists(Locale locale) {
         if (!locale.toString().isEmpty()) {
             return this.catalogMap.containsKey(CatalogUtilities.localeToKey(locale));
         }
@@ -57,7 +79,7 @@ public final class Catalog implements CatalogInterface {
     }
 
 
-    private HashMap<String, String> getLocaleMap(Locale locale) {
+    private Map<String, String> getLocaleMap(Locale locale) {
         return this.catalogMap.get(CatalogUtilities.localeToKey(locale));
     }
 }
