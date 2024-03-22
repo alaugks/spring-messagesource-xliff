@@ -68,18 +68,6 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 `setDefaultDomain(String defaultDomain)`
 * Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a7).
 
-`setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers)`
-* The Identifiers can be defined with attributes on a translation unit (`<trans-unit/>` and `<segment/>`). The attribute `id` is required for XLIFF 1.2 and 2.*. For XLIFF 1.2, the attribute `resname` can also be defined.
-    * **XLIFF 2.1**:
-        * Default definition is `"resname", "id"`.
-        * If the attribute `resname` does not exist, the attribute `id` is used to determine the identifier.
-        * Documentation identifier: [XLIFF 1.2](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers)
-    * **XLIFF 2.\***:
-        * Default definition is `"id"`.
-        * The attribute `id` is optional by standard in XLIFF 2.*. However, this package requires the `id` on a translation unit.
-        * Documentation identifier: [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment) and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
-
-
 > Please note the [Minimal CacheManager Configuration](#a4).
 
 ```java
@@ -97,7 +85,7 @@ public class MessageConfig {
     
     @Bean("messageSource")
     public MessageSource messageSource(CacheManager cacheManager) {
-        XliffMessageSourcePatternResolver messageSource =  new XliffTranslationMessageSource(cacheManager);
+        XliffTranslationMessageSource messageSource =  new XliffTranslationMessageSource(cacheManager);
         messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
         messageSource.setBasenamePattern("translations/*");
         return messageSource;
@@ -225,6 +213,12 @@ public class AppStartupRunner implements ApplicationRunner {
 * The default domain can be defined.
 * Translation files must be stored in the resource folder and have the extension `xliff` or `xlf`.
 * In the XLIFF files, the `<target/>` is retrieved in a `<trans-unit/>` (XLIFF 1.2) or `<segment/>` (XLIFF 2.*).
+  * **XLIFF 1.2**:
+    * If the attribute `resname` does not exist, the attribute `id` is used to determine the identifier.
+    * Documentation identifier: [XLIFF 1.2](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers)
+  * XLIFF 2.*:
+    * The attribute `id` is optional by standard in XLIFF 2.*. However, this package requires the `id` on a translation unit.
+    * Documentation identifier: [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment) and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
 * For performance reasons, there is no validation of XLIFF files with an XMLSchema. If there is any corrupt XML in an XLIFF file, the SAX parser will throw a [Fatal Error].
 
 ### Structure of the Translation Filename
