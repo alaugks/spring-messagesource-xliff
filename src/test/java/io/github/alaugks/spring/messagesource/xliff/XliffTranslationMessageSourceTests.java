@@ -12,23 +12,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class XliffMatchingResourcePatternResolverInitCacheTest {
+class XliffTranslationMessageSourceTests {
 
     @BeforeAll
     void beforeAll() {
         //messageSource = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
         //messageSource.setBasenamePattern("translations/*");
         //messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
-        //messageSource.initCache();
 
         messageSource = XliffTranslationMessageSource
                 .builder(TestUtilities.getMockedCacheManager())
                 .setBasenamePattern("translations/*")
                 .setDefaultLocale(Locale.forLanguageTag("en"))
                 .build();
-        messageSource.initCache();
     }
-
 
     protected static XliffTranslationMessageSource messageSource;
 

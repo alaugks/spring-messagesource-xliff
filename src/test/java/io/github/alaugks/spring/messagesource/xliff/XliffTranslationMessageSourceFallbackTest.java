@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class XliffMatchingResourcePatternResolverFallbackTest {
+class XliffTranslationMessageSourceFallbackTest {
 
     @Test
     void test_fallbackDefaultLanguage() {
