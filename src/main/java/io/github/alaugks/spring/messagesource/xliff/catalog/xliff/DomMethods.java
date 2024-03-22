@@ -5,10 +5,10 @@ import org.w3c.dom.*;
 
 import java.util.List;
 
-final class XliffReader {
+final class DomMethods {
 
-    private XliffReader() {
-        throw new IllegalStateException("XliffReader class");
+    private DomMethods() {
+        throw new IllegalStateException("DomMethods class");
     }
 
     static Node getFirstChild(NodeList nodeList) {

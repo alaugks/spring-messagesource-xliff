@@ -76,7 +76,7 @@ public final class XliffCatalogBuilder {
                 continue;
             }
 
-            String version = XliffReader.getAttributeValue(
+            String version = DomMethods.getAttributeValue(
                     root.getAttributes().getNamedItem("version")
             );
 

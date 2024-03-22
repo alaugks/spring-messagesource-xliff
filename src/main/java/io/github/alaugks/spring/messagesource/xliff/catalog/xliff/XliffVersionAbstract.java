@@ -25,9 +25,9 @@ abstract class XliffVersionAbstract {
             /* Translation Node */
             Element translationNodeElement = (Element) translationNode;
             /* <target> */
-            String targetValue = XliffReader.getTargetValue(translationNodeElement);
+            String targetValue = DomMethods.getTargetValue(translationNodeElement);
             /* code */
-            String code = XliffReader.getCode(translationNodeElement, translationUnitIdentifiers);
+            String code = DomMethods.getCode(translationNodeElement, translationUnitIdentifiers);
 
             /* Add catalog */
             catalog.put(locale, domain, code, targetValue);

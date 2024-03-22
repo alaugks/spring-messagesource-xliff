@@ -31,27 +31,27 @@ class XliffReaderTest {
             ArrayList<String> translationUnitIdentifiers,
             String expected
     ) {
-        NodeList nodeList = XliffReader.getTranslationUnits(getDocument(), elementName);
+        NodeList nodeList = DomMethods.getTranslationUnits(getDocument(), elementName);
         Element node = (Element) nodeList.item(0);
-        assertEquals(expected, XliffReader.getCode(node, translationUnitIdentifiers));
+        assertEquals(expected, DomMethods.getCode(node, translationUnitIdentifiers));
     }
 
     @Test
     void test_getElementValue_getCharacterDataFromElement_TextNode() {
         String value;
-        value = XliffReader.getElementValue(getRootElement(), "element");
+        value = DomMethods.getElementValue(getRootElement(), "element");
         assertEquals("value", value);
-        value = XliffReader.getElementValue(getRootElement(), "element-newline");
+        value = DomMethods.getElementValue(getRootElement(), "element-newline");
         assertEquals("value", value);
-        value = XliffReader.getElementValue(getRootElement(), "element-with-cdata");
+        value = DomMethods.getElementValue(getRootElement(), "element-with-cdata");
         assertEquals("value", value);
-        value = XliffReader.getElementValue(getRootElement(), "element-with-cdata-newline");
+        value = DomMethods.getElementValue(getRootElement(), "element-with-cdata-newline");
         assertEquals("value", value);
     }
 
     @Test
     void test_getElementValue_getCharacterDataFromElement_Node() {
-        String value = XliffReader.getElementValue(getRootElement(), "dummy");
+        String value = DomMethods.getElementValue(getRootElement(), "dummy");
         assertNull(value);
     }
 
