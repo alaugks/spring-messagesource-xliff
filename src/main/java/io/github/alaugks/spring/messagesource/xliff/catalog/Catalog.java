@@ -1,7 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFileAdapter;
+import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
 
 import java.util.HashMap;
 import java.util.Locale;

@@ -25,9 +25,9 @@ abstract class XliffAbstract {
             /* Translation Node */
             Element translationNodeElement = (Element) translationNode;
             /* <target> */
-            String targetValue = XliffParserUtility.getTargetValue(translationNodeElement);
+            String targetValue = XliffReader.getTargetValue(translationNodeElement);
             /* code */
-            String code = XliffParserUtility.getCode(translationNodeElement, translationUnitIdentifiers);
+            String code = XliffReader.getCode(translationNodeElement, translationUnitIdentifiers);
 
             /* Add catalog */
             catalog.put(locale, domain, code, targetValue);

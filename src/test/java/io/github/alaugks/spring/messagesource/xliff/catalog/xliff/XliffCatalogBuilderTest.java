@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class XliffCatalogBuilderTest {
 
@@ -66,5 +65,19 @@ class XliffCatalogBuilderTest {
         );
         //assertTrue(exception.getMessage().indexOf("body") > 0);
         //assertEquals("The element type \"body\" must be terminated by the matching end-tag \"</body>\".", exception.getMessage());
+    }
+
+    @Test
+    void test_supportedVersions() {
+        var xliffCatalogBuilder = new XliffCatalogBuilder(ResourcesLoader.builder().build());
+        assertInstanceOf(Xliff12.class, xliffCatalogBuilder.getReader("1.2"));
+        assertInstanceOf(Xliff2.class, xliffCatalogBuilder.getReader("2.0"));
+        assertInstanceOf(Xliff2.class, xliffCatalogBuilder.getReader("2.1"));
+    }
+
+    @Test
+    void test_versionNotSupported() {
+        var xliffCatalogBuilder = new XliffCatalogBuilder(ResourcesLoader.builder().build());
+        assertNull(xliffCatalogBuilder.getReader("1.0"));
     }
 }

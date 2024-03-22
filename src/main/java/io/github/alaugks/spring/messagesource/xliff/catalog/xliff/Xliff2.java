@@ -23,7 +23,7 @@ final class Xliff2 extends XliffAbstract implements XliffInterface {
 
     @Override
     public void read(CatalogInterface catalog, Document document, String domain, Locale locale) {
-        NodeList translationUnits = XliffParserUtility.getTranslationUnits(document, "segment");
+        NodeList translationUnits = XliffReader.getTranslationUnits(document, "segment");
         this.readItems(catalog, domain, locale, translationUnits, this.translationUnitIdentifiers);
     }
 }

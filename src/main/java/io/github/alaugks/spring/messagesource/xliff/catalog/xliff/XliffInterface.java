@@ -8,8 +8,7 @@ import java.util.Locale;
 
 public interface XliffInterface {
     boolean support(String version);
-
+    @Deprecated(since = "1.2")
     void setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers);
-
     void read(CatalogInterface catalog, Document document, String domain, Locale locale);
 }

@@ -14,12 +14,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public class XliffCatalogBuilder {
 
     private final ResourcesLoader resourceLoader;
     private Catalog catalog;
     private List<String> translationUnitIdentifiers;
+    Set<XliffInterface> supportedVersions = Set.of(
+            new Xliff12(),
+            new Xliff2()
+    );
 
     public XliffCatalogBuilder(ResourcesLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -41,9 +46,16 @@ public class XliffCatalogBuilder {
         }
     }
 
-    private void readFile(List<ResourcesLoader.Dto> translationFiles) throws ParserConfigurationException, IOException {
+    public XliffInterface getReader(String version) {
+        for (XliffInterface xliffClass : this.supportedVersions) {
+            if (xliffClass.support(version)) {
+                return xliffClass;
+            }
+        }
+        return null;
+    }
 
-        XliffReader xliffReader = new XliffReader();
+    private void readFile(List<ResourcesLoader.Dto> translationFiles) throws ParserConfigurationException, IOException {
 
         for (ResourcesLoader.Dto translationFile : translationFiles) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -64,11 +76,11 @@ public class XliffCatalogBuilder {
                 continue;
             }
 
-            String version = XliffParserUtility.getAttributeValue(
+            String version = XliffReader.getAttributeValue(
                     root.getAttributes().getNamedItem("version")
             );
 
-            XliffInterface xliffInterface = xliffReader.getReader(version);
+            XliffInterface xliffInterface = this.getReader(version);
             if (xliffInterface != null) {
                 if (this.translationUnitIdentifiers != null) {
                     xliffInterface.setTranslationUnitIdentifiersOrdering(this.translationUnitIdentifiers);
