@@ -15,7 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public final class CatalogCache extends ChainAbstractHandler {
+public final class CatalogCache extends CatalogAbstractHandler {
     public static final String CACHE_NAME = "messagesource.xliff.catalog.CACHE";
 
     private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());

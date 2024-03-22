@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public final class Catalog extends ChainAbstractHandler {
+public final class Catalog extends CatalogAbstractHandler {
 
     private final HashMap<String, Map<String, String>> catalogMap;
     private final Locale defaultLocale;

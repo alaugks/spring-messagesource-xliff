@@ -12,7 +12,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class ChainAbstractHandlerTest {
+class CatalogAbstractHandlerTest {
 
     private String domain;
     private Locale locale;
