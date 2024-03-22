@@ -2,7 +2,7 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 
-public class CatalogReader {
+public final class CatalogReader {
 
     private final Catalog catalog;
     private final XliffCatalogBuilder catalogBuilder;

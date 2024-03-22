@@ -2,7 +2,7 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import java.util.Locale;
 
-public class CatalogUtilities {
+public final class CatalogUtilities {
 
     private CatalogUtilities() {
         throw new IllegalStateException("CatalogUtilities class");

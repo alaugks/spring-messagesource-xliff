@@ -15,20 +15,20 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Xliff12Test {
+class XliffVersion20Test {
 
     private Document document;
 
     @BeforeEach
     void beforeEach() throws ParserConfigurationException, IOException, SAXException {
-        String filePath = "fixtures/xliff12.xliff";
+        String filePath = "fixtures/xliff20.xliff";
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
         this.document = TestUtilities.getDocument(inputStream);
     }
 
     @Test
     void test_readXliffFile() {
-        Xliff12 version = new Xliff12();
+        XliffVersion2 version = new XliffVersion2();
         CatalogInterface catalog = new Catalog(Locale.forLanguageTag("en"), "domain");
         Locale locale = Locale.forLanguageTag("en");
         version.read(catalog, document, "domain", locale);

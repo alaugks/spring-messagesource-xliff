@@ -16,14 +16,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public class XliffCatalogBuilder {
+public final class XliffCatalogBuilder {
 
     private final ResourcesLoader resourceLoader;
     private Catalog catalog;
     private List<String> translationUnitIdentifiers;
     Set<XliffInterface> supportedVersions = Set.of(
-            new Xliff12(),
-            new Xliff2()
+            new XliffVersion12(),
+            new XliffVersion2()
     );
 
     public XliffCatalogBuilder(ResourcesLoader resourceLoader) {

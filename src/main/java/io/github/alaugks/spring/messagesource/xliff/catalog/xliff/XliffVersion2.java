@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-final class Xliff2 extends XliffAbstract implements XliffInterface {
+final class XliffVersion2 extends XliffVersionAbstract implements XliffInterface {
     private List<String> translationUnitIdentifiers = new ArrayList<>(List.of("id"));
 
     @Override

@@ -70,9 +70,9 @@ class XliffCatalogBuilderTest {
     @Test
     void test_supportedVersions() {
         var xliffCatalogBuilder = new XliffCatalogBuilder(ResourcesLoader.builder().build());
-        assertInstanceOf(Xliff12.class, xliffCatalogBuilder.getReader("1.2"));
-        assertInstanceOf(Xliff2.class, xliffCatalogBuilder.getReader("2.0"));
-        assertInstanceOf(Xliff2.class, xliffCatalogBuilder.getReader("2.1"));
+        assertInstanceOf(XliffVersion12.class, xliffCatalogBuilder.getReader("1.2"));
+        assertInstanceOf(XliffVersion2.class, xliffCatalogBuilder.getReader("2.0"));
+        assertInstanceOf(XliffVersion2.class, xliffCatalogBuilder.getReader("2.1"));
     }
 
     @Test

@@ -15,25 +15,25 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Xliff21Test {
+class XliffVersion12Test {
 
     private Document document;
 
     @BeforeEach
     void beforeEach() throws ParserConfigurationException, IOException, SAXException {
-        String filePath = "fixtures/xliff21.xliff";
+        String filePath = "fixtures/xliff12.xliff";
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
         this.document = TestUtilities.getDocument(inputStream);
     }
 
     @Test
     void test_readXliffFile() {
-        Xliff2 version = new Xliff2();
+        XliffVersion12 version = new XliffVersion12();
         CatalogInterface catalog = new Catalog(Locale.forLanguageTag("en"), "domain");
         Locale locale = Locale.forLanguageTag("en");
         version.read(catalog, document, "domain", locale);
 
         assertEquals("Hallo, Welt!", catalog.get(locale, "domain.code-1"));
-        //assertEquals("Dies ist ein weiterer Satz.", catalog.get(locale, "code-2"));
+        assertEquals("Dies ist ein weiterer Satz.", catalog.get(locale, "domain.code-2"));
     }
 }

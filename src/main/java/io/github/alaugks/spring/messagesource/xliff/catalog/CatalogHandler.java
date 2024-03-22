@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class CatalogHandler {
+public final class CatalogHandler {
     private final CatalogCache catalogCache;
 
     public CatalogHandler(

@@ -11,7 +11,7 @@ import java.util.Locale;
 // https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers
 // https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment
 // https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment
-abstract class XliffAbstract {
+abstract class XliffVersionAbstract {
     protected void readItems(
             CatalogInterface catalog,
             String domain,

@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-final class Xliff12 extends XliffAbstract implements XliffInterface {
+final class XliffVersion12 extends XliffVersionAbstract implements XliffInterface {
     private List<String> translationUnitIdentifiers = new ArrayList<>(Arrays.asList("resname", "id"));
 
     @Override
