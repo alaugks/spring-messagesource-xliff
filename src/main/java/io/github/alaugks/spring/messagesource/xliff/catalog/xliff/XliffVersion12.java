@@ -1,13 +1,12 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 final class XliffVersion12 extends XliffVersionAbstract implements XliffInterface {
     private List<String> translationUnitIdentifiers = new ArrayList<>(Arrays.asList("resname", "id"));

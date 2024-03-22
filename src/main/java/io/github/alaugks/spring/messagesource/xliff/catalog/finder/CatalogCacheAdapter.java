@@ -1,10 +1,9 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.finder;
 
 import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
-import org.springframework.cache.Cache;
-
 import java.util.Locale;
 import java.util.Objects;
+import org.springframework.cache.Cache;
 
 public class CatalogCacheAdapter implements CatalogAdapterInterface {
     private final Cache cache;

@@ -1,15 +1,17 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
+import java.util.Locale;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class XliffCatalogBuilderTest {
 
@@ -21,7 +23,9 @@ class XliffCatalogBuilderTest {
                 .setBasenamePattern("translations/*")
                 .build();
 
-        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(resourcesLoader);
+        XliffCatalogBuilder xliffCatalogBuilder = XliffCatalogBuilder
+                .builder(resourcesLoader)
+                .build();
         CatalogInterface catalog = xliffCatalogBuilder.createCatalog(new Catalog(Locale.forLanguageTag("en"), "messages"));
         assertEquals("Hello EN (messages)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_language"));
     }
@@ -35,7 +39,10 @@ class XliffCatalogBuilderTest {
                 .setBasenamePattern("fixtures/*")
                 .build();
 
-        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(resourcesLoader);
+        XliffCatalogBuilder xliffCatalogBuilder = XliffCatalogBuilder
+                .builder(resourcesLoader)
+                .build();
+
         XliffMessageSourceVersionSupportException exception = assertThrows(
                 XliffMessageSourceVersionSupportException.class, () -> {
                 xliffCatalogBuilder.createCatalog(catalog);
@@ -56,7 +63,9 @@ class XliffCatalogBuilderTest {
                 .setBasenamePattern("translations_broken/*")
                 .build();
 
-        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(resourcesLoader);
+        XliffCatalogBuilder xliffCatalogBuilder = XliffCatalogBuilder
+                .builder(resourcesLoader)
+                .build();
 
         Throwable exception = assertThrows(
             Throwable.class, () -> {
@@ -69,7 +78,13 @@ class XliffCatalogBuilderTest {
 
     @Test
     void test_supportedVersions() {
-        var xliffCatalogBuilder = new XliffCatalogBuilder(ResourcesLoader.builder().build());
+        var xliffCatalogBuilder = XliffCatalogBuilder
+                .builder(
+                        ResourcesLoader
+                                .builder()
+                                .build()
+                ).build();
+
         assertInstanceOf(XliffVersion12.class, xliffCatalogBuilder.getReader("1.2"));
         assertInstanceOf(XliffVersion2.class, xliffCatalogBuilder.getReader("2.0"));
         assertInstanceOf(XliffVersion2.class, xliffCatalogBuilder.getReader("2.1"));
@@ -77,7 +92,13 @@ class XliffCatalogBuilderTest {
 
     @Test
     void test_versionNotSupported() {
-        var xliffCatalogBuilder = new XliffCatalogBuilder(ResourcesLoader.builder().build());
+        var xliffCatalogBuilder = XliffCatalogBuilder
+                .builder(
+                        ResourcesLoader
+                                .builder()
+                                .build()
+                )
+                .build();
         assertNull(xliffCatalogBuilder.getReader("1.0"));
     }
 }

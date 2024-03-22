@@ -4,30 +4,56 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 public final class XliffCatalogBuilder {
 
     private final ResourcesLoader resourceLoader;
     private Catalog catalog;
-    private List<String> translationUnitIdentifiers;
+    private final List<String> translationUnitIdentifiers;
     Set<XliffInterface> supportedVersions = Set.of(
             new XliffVersion12(),
             new XliffVersion2()
     );
 
-    public XliffCatalogBuilder(ResourcesLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
+    public XliffCatalogBuilder(Builder builder) {
+        this.resourceLoader = builder.resourceLoader;
+        this.translationUnitIdentifiers = builder.translationUnitIdentifiers;
+    }
+
+    public static Builder builder(ResourcesLoader resourceLoader) {
+        return new Builder(resourceLoader);
+    }
+
+    public static final class Builder {
+
+        private final ResourcesLoader resourceLoader;
+        private List<String> translationUnitIdentifiers;
+
+        private Builder(ResourcesLoader resourceLoader) {
+            this.resourceLoader = resourceLoader;
+        }
+
+        public Builder setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
+            if (null != translationUnitIdentifiers) {
+                this.translationUnitIdentifiers = translationUnitIdentifiers;
+            }
+            return this;
+        }
+
+        public XliffCatalogBuilder build() {
+            return new XliffCatalogBuilder(this);
+        }
+
     }
 
     public Catalog createCatalog(Catalog catalog) {
@@ -37,12 +63,6 @@ public final class XliffCatalogBuilder {
             return this.catalog;
         } catch (ParserConfigurationException | IOException e) {
             throw new XliffMessageSourceRuntimeException(e);
-        }
-    }
-
-    public void setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
-        if(null != translationUnitIdentifiers) {
-            this.translationUnitIdentifiers = translationUnitIdentifiers;
         }
     }
 

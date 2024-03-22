@@ -1,14 +1,13 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.finder;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.CacheManager;
-
-import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CatalogItemFinderTest {
 

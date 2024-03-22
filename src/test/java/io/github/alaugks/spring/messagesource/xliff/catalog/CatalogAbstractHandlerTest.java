@@ -1,16 +1,15 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
+import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-
-import java.util.List;
-import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CatalogAbstractHandlerTest {
 

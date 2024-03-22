@@ -1,12 +1,11 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
+import java.util.List;
+import java.util.Locale;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import java.util.List;
-import java.util.Locale;
 
 // https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers
 // https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment

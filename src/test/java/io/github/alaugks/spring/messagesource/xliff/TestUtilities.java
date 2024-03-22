@@ -5,15 +5,6 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -21,24 +12,32 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class TestUtilities {
     public static Catalog getTestCatalog() {
-        ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .setDefaultLocale(Locale.forLanguageTag("en"))
-                .setBasenamePattern("translations/*")
-                .build();
-        return new XliffCatalogBuilder(resourcesLoader).createCatalog(
-                new Catalog(Locale.forLanguageTag("en"), "messages")
-        );
+        return XliffCatalogBuilder
+                .builder(getResourcesLoader())
+                .build()
+                .createCatalog(
+                        new Catalog(Locale.forLanguageTag("en"), "messages")
+                );
     }
 
     public static CatalogHandler getCacheWrapperWithCachedTestCatalog(Locale locale, String domain) {
         CatalogHandler catalogHandler = new CatalogHandler(
                 TestUtilities.getTestCatalog(),
                 new CatalogCache(Locale.forLanguageTag("en"), "messages", getMockedCacheManager()),
-                new XliffCatalogBuilder(getResourcesLoader())
+                XliffCatalogBuilder
+                        .builder(getResourcesLoader())
+                        .build()
         );
         catalogHandler.initCache();
         return catalogHandler;

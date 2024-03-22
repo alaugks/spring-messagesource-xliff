@@ -1,10 +1,9 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
-import org.w3c.dom.Document;
-
 import java.util.List;
 import java.util.Locale;
+import org.w3c.dom.Document;
 
 public interface XliffInterface {
     boolean support(String version);

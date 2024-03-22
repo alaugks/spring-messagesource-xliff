@@ -1,7 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
-
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
