@@ -13,6 +13,7 @@ import org.springframework.cache.CacheManager;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public final class CatalogCache extends ChainAbstractHandler {
     public static final String CACHE_NAME = "messagesource.xliff.catalog.CACHE";
@@ -57,11 +58,20 @@ public final class CatalogCache extends ChainAbstractHandler {
 
     public void put(Locale locale, String code, String targetValue) {
         if (!locale.toString().isEmpty()) {
-            // TODO: Check if exists    //NOSONAR
-            this.cache.put(
-                    XliffCacheableKeyGenerator.createCode(locale, code),
-                    targetValue
-            );
+            String key = XliffCacheableKeyGenerator.createCode(locale, code);
+            String itemExists = null;
+
+            Cache.ValueWrapper valueWrapper = cache.get(key);
+            if (valueWrapper != null) {
+                itemExists = Objects.requireNonNull(valueWrapper.get()).toString();
+            }
+
+            if (null == itemExists) {
+                this.cache.put(
+                        key,
+                        targetValue
+                );
+            }
         }
     }
 

@@ -54,6 +54,9 @@ class ChainAbstractHandlerTest {
 
     @Test
     void test_initCache() {
+        // Create CacheKey
+        var key = XliffCacheableKeyGenerator.createCode(this.locale, this.domain+".key");
+
         // Init CatalogCache
         var catalogCache = new CatalogCache(this.locale, this.domain, this.cacheManager);
 
@@ -64,17 +67,14 @@ class ChainAbstractHandlerTest {
         catalogCache.setNextHandler(catalog);
 
         // Add item in CatalogCache and Catalog with the same Key
-        catalog.put(this.locale, this.domain, "key", "value_from_file");
-
-        // Create CacheKey
-        var key = XliffCacheableKeyGenerator.createCode(this.locale, this.domain+".key");
+        catalog.put(this.locale, this.domain, "key", "value");
 
         // Get Cache
         var cache = this.cacheManager.getCache(CatalogCache.CACHE_NAME);
         var cacheAsArray = TestUtilities.cacheToArray(cache);
 
         // Key must not exist
-        assertNull(cacheAsArray.get(key));
+        assertNull(cacheAsArray.get("key"));
 
         // Init Cache (Chain of Responsibility: CatalogCache -> Catalog)
         catalogCache.initCache();
@@ -84,6 +84,9 @@ class ChainAbstractHandlerTest {
         cacheAsArray = TestUtilities.cacheToArray(cache);
 
         // Key must exist
-        assertEquals("value_from_file", cacheAsArray.get(key));
+        assertEquals(
+                "value",
+                cacheAsArray.get(key)
+        );
     }
 }

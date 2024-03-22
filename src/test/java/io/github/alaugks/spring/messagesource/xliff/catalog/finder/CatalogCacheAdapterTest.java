@@ -23,7 +23,7 @@ class CatalogCacheAdapterTest {
 
         var adapter = new CatalogCacheAdapter(cacheManager.getCache(CatalogCache.CACHE_NAME));
 
-        assertEquals("value_en_3", adapter.find(Locale.forLanguageTag("en"), "domain.key_1"));
+        assertEquals("value_en_1", adapter.find(Locale.forLanguageTag("en"), "domain.key_1"));
         assertNull(adapter.find(Locale.forLanguageTag("en"), "domain.not_exists"));
     }
 }

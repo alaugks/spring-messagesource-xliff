@@ -53,11 +53,11 @@ class CatalogItemFinderTest {
                 "domain"
         );
 
-        assertEquals("value_en_3", finder.find(Locale.forLanguageTag("en"), "domain.key_1"));
-        assertEquals("value_en_3", finder.find(Locale.forLanguageTag("en"), "key_1"));
-        assertEquals("value_en_3", finder.find(Locale.forLanguageTag("en-UK"), "domain.key_1"));
-        assertEquals("value_en_3", finder.find(Locale.forLanguageTag("en-UK"), "key_1"));
-        assertEquals("value_en_3", finder.find(Locale.forLanguageTag("jp"), "key_1"));
+        assertEquals("value_en_1", finder.find(Locale.forLanguageTag("en"), "domain.key_1"));
+        assertEquals("value_en_1", finder.find(Locale.forLanguageTag("en"), "key_1"));
+        assertEquals("value_en_1", finder.find(Locale.forLanguageTag("en-UK"), "domain.key_1"));
+        assertEquals("value_en_1", finder.find(Locale.forLanguageTag("en-UK"), "key_1"));
+        assertEquals("value_en_1", finder.find(Locale.forLanguageTag("jp"), "key_1"));
     }
 
 }
