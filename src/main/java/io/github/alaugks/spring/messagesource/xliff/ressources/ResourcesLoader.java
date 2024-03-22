@@ -49,7 +49,7 @@ public final class ResourcesLoader {
         }
 
         public ResourcesLoader.Builder setBasenamesPattern(Iterable<String> basenames) {
-            if (null != basenames) {
+            if (basenames != null) {
                 this.basenameSet.clear();
                 this.addBasenames(basenames);
             }

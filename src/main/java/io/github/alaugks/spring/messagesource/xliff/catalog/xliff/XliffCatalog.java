@@ -44,7 +44,7 @@ public final class XliffCatalog {
         }
 
         public Builder setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
-            if (null != translationUnitIdentifiers) {
+            if (translationUnitIdentifiers != null) {
                 this.translationUnitIdentifiers = translationUnitIdentifiers;
             }
             return this;

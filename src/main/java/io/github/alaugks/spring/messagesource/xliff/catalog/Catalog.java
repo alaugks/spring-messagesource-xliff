@@ -36,7 +36,7 @@ public final class Catalog extends CatalogAbstractHandler {
         );
 
         String message = finder.find(locale, code);
-        if (null != message) {
+        if (message != null) {
             return message;
         }
 
