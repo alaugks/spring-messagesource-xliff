@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-public final class XliffCatalogBuilder {
+public final class XliffCatalog {
 
     private final ResourcesLoader resourceLoader;
     private Catalog catalog;
@@ -25,7 +25,7 @@ public final class XliffCatalogBuilder {
             new XliffVersion2()
     );
 
-    public XliffCatalogBuilder(Builder builder) {
+    public XliffCatalog(Builder builder) {
         this.resourceLoader = builder.resourceLoader;
         this.translationUnitIdentifiers = builder.translationUnitIdentifiers;
     }
@@ -50,8 +50,8 @@ public final class XliffCatalogBuilder {
             return this;
         }
 
-        public XliffCatalogBuilder build() {
-            return new XliffCatalogBuilder(this);
+        public XliffCatalog build() {
+            return new XliffCatalog(this);
         }
 
     }

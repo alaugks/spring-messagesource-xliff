@@ -1,6 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalog;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -11,9 +11,9 @@ public final class CatalogHandler {
     public CatalogHandler(
             Catalog catalog,
             CatalogCache catalogCache,
-            XliffCatalogBuilder catalogBuilder
+            XliffCatalog xliffCatalog
     ) {
-        CatalogReader catalogReader = new CatalogReader(catalog, catalogBuilder);
+        CatalogReader catalogReader = new CatalogReader(catalog, xliffCatalog);
 
         this.catalogCache = catalogCache;
         this.catalogCache.setNextHandler(catalogReader.loadCatalog());

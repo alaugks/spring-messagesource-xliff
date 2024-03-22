@@ -1,18 +1,18 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalog;
 
 public final class CatalogReader {
 
     private final Catalog catalog;
-    private final XliffCatalogBuilder catalogBuilder;
+    private final XliffCatalog xliffCatalog;
 
-    public CatalogReader(Catalog catalog, XliffCatalogBuilder catalogBuilder) {
+    public CatalogReader(Catalog catalog, XliffCatalog xliffCatalog) {
         this.catalog = catalog;
-        this.catalogBuilder = catalogBuilder;
+        this.xliffCatalog = xliffCatalog;
     }
 
     public Catalog loadCatalog() {
-        return this.catalogBuilder.createCatalog(this.catalog);
+        return this.xliffCatalog.createCatalog(this.catalog);
     }
 }

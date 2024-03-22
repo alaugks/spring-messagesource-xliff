@@ -3,7 +3,7 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalog;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 
 public class TestUtilities {
     public static Catalog getTestCatalog() {
-        return XliffCatalogBuilder
+        return XliffCatalog
                 .builder(getResourcesLoader())
                 .build()
                 .createCatalog(
@@ -35,7 +35,7 @@ public class TestUtilities {
         CatalogHandler catalogHandler = new CatalogHandler(
                 TestUtilities.getTestCatalog(),
                 new CatalogCache(Locale.forLanguageTag("en"), "messages", getMockedCacheManager()),
-                XliffCatalogBuilder
+                XliffCatalog
                         .builder(getResourcesLoader())
                         .build()
         );

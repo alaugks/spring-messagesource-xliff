@@ -13,7 +13,7 @@ import java.util.Locale;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-class XliffCatalogBuilderTest {
+class XliffCatalogTest {
 
     @Test
     void test_createCatalog() {
@@ -23,10 +23,10 @@ class XliffCatalogBuilderTest {
                 .setBasenamePattern("translations/*")
                 .build();
 
-        XliffCatalogBuilder xliffCatalogBuilder = XliffCatalogBuilder
+        XliffCatalog xliffCatalog = XliffCatalog
                 .builder(resourcesLoader)
                 .build();
-        CatalogInterface catalog = xliffCatalogBuilder.createCatalog(new Catalog(Locale.forLanguageTag("en"), "messages"));
+        CatalogInterface catalog = xliffCatalog.createCatalog(new Catalog(Locale.forLanguageTag("en"), "messages"));
         assertEquals("Hello EN (messages)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_language"));
     }
 
@@ -39,13 +39,13 @@ class XliffCatalogBuilderTest {
                 .setBasenamePattern("fixtures/*")
                 .build();
 
-        XliffCatalogBuilder xliffCatalogBuilder = XliffCatalogBuilder
+        XliffCatalog xliffCatalog = XliffCatalog
                 .builder(resourcesLoader)
                 .build();
 
         XliffMessageSourceVersionSupportException exception = assertThrows(
                 XliffMessageSourceVersionSupportException.class, () -> {
-                xliffCatalogBuilder.createCatalog(catalog);
+                xliffCatalog.createCatalog(catalog);
             }
         );
         assertEquals("XLIFF version \"1.0\" not supported.", exception.getMessage());
@@ -63,13 +63,13 @@ class XliffCatalogBuilderTest {
                 .setBasenamePattern("translations_broken/*")
                 .build();
 
-        XliffCatalogBuilder xliffCatalogBuilder = XliffCatalogBuilder
+        XliffCatalog xliffCatalog = XliffCatalog
                 .builder(resourcesLoader)
                 .build();
 
         Throwable exception = assertThrows(
             Throwable.class, () -> {
-                xliffCatalogBuilder.createCatalog(catalog);
+                xliffCatalog.createCatalog(catalog);
             }
         );
         //assertTrue(exception.getMessage().indexOf("body") > 0);
@@ -78,7 +78,7 @@ class XliffCatalogBuilderTest {
 
     @Test
     void test_supportedVersions() {
-        var xliffCatalogBuilder = XliffCatalogBuilder
+        var xliffCatalogBuilder = XliffCatalog
                 .builder(
                         ResourcesLoader
                                 .builder()
@@ -92,7 +92,7 @@ class XliffCatalogBuilderTest {
 
     @Test
     void test_versionNotSupported() {
-        var xliffCatalogBuilder = XliffCatalogBuilder
+        var xliffCatalogBuilder = XliffCatalog
                 .builder(
                         ResourcesLoader
                                 .builder()
