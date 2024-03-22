@@ -15,11 +15,6 @@ class XliffTranslationMessageSourceInitCacheTest {
 
     @BeforeAll
     void beforeAll() {
-        //messageSource = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        //messageSource.setBasenamePattern("translations/*");
-        //messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
-        //messageSource.initCache();
-
         messageSource = XliffTranslationMessageSource
                 .builder(TestUtilities.getMockedCacheManager())
                 .setBasenamePattern("translations/*")

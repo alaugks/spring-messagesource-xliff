@@ -9,11 +9,6 @@ class XliffTranslationMessageSourceFallbackTest {
 
     @Test
     void test_fallbackDefaultLanguage() {
-        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        //resolver.setBasenamePattern("translations/*");
-        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
-        //resolver.initCache();
-
         XliffTranslationMessageSource resolver = XliffTranslationMessageSource
                 .builder(TestUtilities.getMockedCacheManager())
                 .setBasenamePattern("translations/*")
@@ -31,11 +26,6 @@ class XliffTranslationMessageSourceFallbackTest {
 
     @Test
     void test_getMessage_withDefaultMessage_messageNotExists_defaultMessageWithArgs() {
-        //var resolver = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
-        //resolver.setBasenamePattern("translations/*");
-        //resolver.setDefaultLocale(Locale.forLanguageTag("en"));
-        //resolver.initCache();
-
         XliffTranslationMessageSource resolver = XliffTranslationMessageSource
                 .builder(TestUtilities.getMockedCacheManager())
                 .setBasenamePattern("translations/*")
