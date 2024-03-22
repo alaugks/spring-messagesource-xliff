@@ -23,7 +23,7 @@ class CatalogItemFinderTest {
         catalog.put(Locale.forLanguageTag("de"), "domain", "key_1", "value_de_3");
 
         var finder = new CatalogFinder(
-                new CatalogIOAdapter(catalog.getAll()),
+                new CatalogFileAdapter(catalog.getAll()),
                 Locale.forLanguageTag("en"),
                 "domain"
         );

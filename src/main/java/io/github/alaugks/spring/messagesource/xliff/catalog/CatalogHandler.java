@@ -6,10 +6,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class CatalogWrapper {
+public class CatalogHandler {
     private final CatalogCache catalogCache;
 
-    public CatalogWrapper(
+    public CatalogHandler(
             Catalog catalog,
             CatalogCache catalogCache,
             XliffCatalogBuilder catalogBuilder

@@ -1,7 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
-import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogIOAdapter;
+import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFileAdapter;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -31,7 +31,7 @@ public final class Catalog extends ChainAbstractHandler {
     @Override
     public String get(Locale locale, String code) {
         CatalogFinder finder = new CatalogFinder(
-                new CatalogIOAdapter(this.getAll()),
+                new CatalogFileAdapter(this.getAll()),
                 this.defaultLocale,
                 this.domain
         );

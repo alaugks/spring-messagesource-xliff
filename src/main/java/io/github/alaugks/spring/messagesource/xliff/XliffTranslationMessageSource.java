@@ -2,7 +2,7 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogWrapper;
+import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import org.springframework.cache.CacheManager;
@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public final class XliffTranslationMessageSource implements MessageSource {
 
-    private final CatalogWrapper catalogWrapper;
+    private final CatalogHandler catalogHandler;
 
     private XliffTranslationMessageSource(Builder builder) {
         ResourcesLoader resourcesLoader = ResourcesLoader
@@ -32,7 +32,7 @@ public final class XliffTranslationMessageSource implements MessageSource {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(resourcesLoader);
         xliffCatalogBuilder.setTranslationUnitIdentifiersOrdering(builder.translationUnitIdentifiers);
 
-        this.catalogWrapper = new CatalogWrapper(
+        this.catalogHandler = new CatalogHandler(
                 new Catalog(builder.defaultLocale, builder.defaultDomain),
                 new CatalogCache(builder.defaultLocale, builder.defaultDomain, builder.cacheManager),
                 xliffCatalogBuilder
@@ -94,7 +94,7 @@ public final class XliffTranslationMessageSource implements MessageSource {
     }
 
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-        CatalogWrapper.Translation translation = this.internalMessage(code, locale);
+        CatalogHandler.Translation translation = this.internalMessage(code, locale);
         if (translation.exists()) {
             return this.format(translation.toString(), args);
         }
@@ -106,7 +106,7 @@ public final class XliffTranslationMessageSource implements MessageSource {
         String[] codes = resolvable.getCodes();
         if (codes != null) {
             for (String code : codes) {
-                CatalogWrapper.Translation translation = internalMessage(code, locale);
+                CatalogHandler.Translation translation = internalMessage(code, locale);
                 if (translation.exists()) {
                     return this.format(translation.toString(), resolvable.getArguments());
                 }
@@ -123,23 +123,23 @@ public final class XliffTranslationMessageSource implements MessageSource {
     }
 
     public void initCache() {
-        this.catalogWrapper.initCache();
+        this.catalogHandler.initCache();
     }
 
-    private CatalogWrapper.Translation internalMessage(String code, Locale locale) throws NoSuchMessageException {
+    private CatalogHandler.Translation internalMessage(String code, Locale locale) throws NoSuchMessageException {
         return this.findInCatalog(locale, code);
     }
 
     private String internalMessageWithDefaultMessage(String code, @Nullable String defaultMessage, Locale locale) {
-        CatalogWrapper.Translation translation = this.findInCatalog(locale, code);
+        CatalogHandler.Translation translation = this.findInCatalog(locale, code);
         if (translation.exists()) {
             return translation.toString();
         }
         return defaultMessage;
     }
 
-    private CatalogWrapper.Translation findInCatalog(Locale locale, String code) {
-        return this.catalogWrapper.get(locale, code);
+    private CatalogHandler.Translation findInCatalog(Locale locale, String code) {
+        return this.catalogHandler.get(locale, code);
     }
 
     private String format(@Nullable String message, @Nullable Object[] args) {

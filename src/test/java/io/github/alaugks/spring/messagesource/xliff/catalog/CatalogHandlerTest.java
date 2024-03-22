@@ -8,15 +8,15 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class CatalogWrapperTest {
+class CatalogHandlerTest {
 
     private Locale locale;
-    private CatalogWrapper catalogWrapper;
+    private CatalogHandler catalogHandler;
 
     @BeforeEach
     void beforeEach() {
         this.locale = Locale.forLanguageTag("en");
-        this.catalogWrapper = TestUtilities.getCacheWrapperWithCachedTestCatalog(
+        this.catalogHandler = TestUtilities.getCacheWrapperWithCachedTestCatalog(
                 this.locale,
                 "messages"
         );
@@ -24,31 +24,31 @@ class CatalogWrapperTest {
 
     @Test
     void test_get() {
-        assertEquals("Hello EN (messages)", this.catalogWrapper.get(this.locale, "hello_language").toString());
+        assertEquals("Hello EN (messages)", this.catalogHandler.get(this.locale, "hello_language").toString());
         // again
-        assertEquals("Hello EN (messages)", this.catalogWrapper.get(this.locale, "messages.hello_language").toString());
+        assertEquals("Hello EN (messages)", this.catalogHandler.get(this.locale, "messages.hello_language").toString());
         // again
-        assertEquals("Hello EN (messages)", this.catalogWrapper.get(this.locale, "hello_language").toString());
+        assertEquals("Hello EN (messages)", this.catalogHandler.get(this.locale, "hello_language").toString());
         // again
-        assertEquals("Hello EN (messages)", this.catalogWrapper.get(this.locale, "messages.hello_language").toString());
+        assertEquals("Hello EN (messages)", this.catalogHandler.get(this.locale, "messages.hello_language").toString());
     }
 
     @Test
     void test_get_notExists() {
         for (int i = 0; i < 3; i++) {
-            assertEquals("not-exists-id", this.catalogWrapper.get(this.locale, "not-exists-id").toString());
+            assertEquals("not-exists-id", this.catalogHandler.get(this.locale, "not-exists-id").toString());
         }
     }
 
 //    @Test
 //    void test_put() {
-//        this.catalogWrapper.setDefaultDomain("foo");
+//        this.catalogHandler.setDefaultDomain("foo");
 //
-//        this.catalogWrapper.put(this.locale, "foo", "code", "foo_value");
-//        assertEquals("foo_value", this.catalogWrapper.get(this.locale, "code").toString());
+//        this.catalogHandler.put(this.locale, "foo", "code", "foo_value");
+//        assertEquals("foo_value", this.catalogHandler.get(this.locale, "code").toString());
 //
-//        this.catalogWrapper.put(this.locale, "bar", "code", "bar_value");
-//        assertEquals("bar_value", this.catalogWrapper.get(this.locale, "bar.code").toString());
+//        this.catalogHandler.put(this.locale, "bar", "code", "bar_value");
+//        assertEquals("bar_value", this.catalogHandler.get(this.locale, "bar.code").toString());
 //    }
 
 //    @Test
@@ -59,14 +59,14 @@ class CatalogWrapperTest {
 //
 //        XliffCatalogBuilder mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 //
-//        CatalogWrapper catalogWrapper = new CatalogWrapper(
+//        CatalogHandler catalogHandler = new CatalogHandler(
 //                resourcesLoader,
 //                mockedXliffCatalogBuilder,
 //                catalog,
 //                new CatalogCache(TestUtilities.getMockedCacheManager())
 //        );
 //
-//        CatalogWrapper mockedCatalogWrapper = Mockito.spy(catalogWrapper);
+//        CatalogHandler mockedCatalogWrapper = Mockito.spy(catalogHandler);
 //        mockedCatalogWrapper.initCache();
 //        mockedCatalogWrapper.get(this.locale, "messages.hello_language"); // From Cache
 //        mockedCatalogWrapper.get(this.locale, "roadrunner"); // From Cache
@@ -88,17 +88,17 @@ class CatalogWrapperTest {
 //        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
 //        XliffCatalogBuilder mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 //
-//        CatalogWrapper catalogWrapper = new CatalogWrapper(
+//        CatalogHandler catalogHandler = new CatalogHandler(
 //                resourcesLoader,
 //                mockedXliffCatalogBuilder,
 //                catalog,
 //                new CatalogCache(TestUtilities.getMockedCacheManager())
 //        );
 //
-//        catalogWrapper.get(this.locale, "messages.hello_language"); // From Files + Init Cache
-//        catalogWrapper.get(this.locale, "messages.hello_language"); // From Cache
-//        catalogWrapper.get(this.locale, "roadrunner"); // From Cache
-//        catalogWrapper.get(this.locale, "messages.hello_language"); // From Cache
+//        catalogHandler.get(this.locale, "messages.hello_language"); // From Files + Init Cache
+//        catalogHandler.get(this.locale, "messages.hello_language"); // From Cache
+//        catalogHandler.get(this.locale, "roadrunner"); // From Cache
+//        catalogHandler.get(this.locale, "messages.hello_language"); // From Cache
 //
 //        verify(mockedXliffCatalogBuilder, times(1)).createCatalog(resourcesLoader, catalog);
 //    }
@@ -110,14 +110,14 @@ class CatalogWrapperTest {
 //        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
 //        XliffCatalogBuilder mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 //
-//        CatalogWrapper catalogWrapper = new CatalogWrapper(
+//        CatalogHandler catalogHandler = new CatalogHandler(
 //                resourcesLoader,
 //                mockedXliffCatalogBuilder,
 //                catalog,
 //                new CatalogCache(TestUtilities.getMockedCacheManager())
 //        );
 //
-//        catalogWrapper.get(this.locale, "messages.hello_language");
+//        catalogHandler.get(this.locale, "messages.hello_language");
 //
 //        verify(mockedXliffCatalogBuilder, times(1)).createCatalog(resourcesLoader, catalog);
 //    }
@@ -129,14 +129,14 @@ class CatalogWrapperTest {
 //        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
 //        XliffCatalogBuilder mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 //
-//        CatalogWrapper catalogWrapper = new CatalogWrapper(
+//        CatalogHandler catalogHandler = new CatalogHandler(
 //                resourcesLoader,
 //                mockedXliffCatalogBuilder,
 //                catalog,
 //                new CatalogCache(TestUtilities.getMockedCacheManager())
 //        );
 //
-//        CatalogWrapper mockedCatalogWrapper = Mockito.spy(catalogWrapper);
+//        CatalogHandler mockedCatalogWrapper = Mockito.spy(catalogHandler);
 //        mockedCatalogWrapper.initCache();
 //
 //        // First: put

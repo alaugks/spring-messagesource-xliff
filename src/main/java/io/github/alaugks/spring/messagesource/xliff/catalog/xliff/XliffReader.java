@@ -13,6 +13,12 @@ final class XliffReader {
     }
 
     public XliffInterface getReader(String version) {
+
+        this.supportedVersions = Set.of(
+                new Xliff12(),
+                new Xliff2()
+        );
+        
         for (XliffInterface xliffClass : this.supportedVersions) {
             if (xliffClass.support(version)) {
                 return xliffClass;

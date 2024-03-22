@@ -2,7 +2,7 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogWrapper;
+import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import org.springframework.cache.Cache;
@@ -34,14 +34,14 @@ public class TestUtilities {
         );
     }
 
-    public static CatalogWrapper getCacheWrapperWithCachedTestCatalog(Locale locale, String domain) {
-        CatalogWrapper catalogWrapper = new CatalogWrapper(
+    public static CatalogHandler getCacheWrapperWithCachedTestCatalog(Locale locale, String domain) {
+        CatalogHandler catalogHandler = new CatalogHandler(
                 TestUtilities.getTestCatalog(),
                 new CatalogCache(Locale.forLanguageTag("en"), "messages", getMockedCacheManager()),
                 new XliffCatalogBuilder(getResourcesLoader())
         );
-        catalogWrapper.initCache();
-        return catalogWrapper;
+        catalogHandler.initCache();
+        return catalogHandler;
     }
 
     public static CacheManager getMockedCacheManager() {

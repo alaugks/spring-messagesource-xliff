@@ -5,11 +5,11 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogUtilities;
 import java.util.Locale;
 import java.util.Map;
 
-public class CatalogIOAdapter implements CatalogAdapterInterface {
+public class CatalogFileAdapter implements CatalogAdapterInterface {
 
     private final Map<String, Map<String, String>> items;
 
-    public CatalogIOAdapter(Map<String, Map<String, String>> items) {
+    public CatalogFileAdapter(Map<String, Map<String, String>> items) {
         this.items = items;
     }
 
