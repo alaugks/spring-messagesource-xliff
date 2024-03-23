@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -23,54 +23,39 @@ import org.xml.sax.SAXException;
 
 class XliffReaderTest {
 
+    @Test
+    void test_getElementValue_getCharacterDataFromElement_TextNode() throws ParserConfigurationException, IOException, SAXException {
+        Map<Object, Object> transUnits = new HashMap<>();
+
+        Document document = TestUtilities.getDocument("fixtures/xliff-value-test.xliff");
+        var xliffDocument = new XliffDocument(document);
+        xliffDocument.getTransUnits("segment", List.of("id")).forEach(
+                transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
+        );
+
+        assertEquals("value", transUnits.get("element"));
+        assertEquals("value", transUnits.get("element-newline"));
+        assertEquals("value", transUnits.get("element-with-cdata"));
+        assertEquals("value", transUnits.get("element-with-cdata-newline"));
+    }
+
+
     @ParameterizedTest(name = "{index} => elementName={0}, translationUnitIdentifiers={1}, expected={2}")
     @MethodSource("getCodeProvider")
     void test_getCode(
-            String elementName,
+            String expected,
             ArrayList<String> translationUnitIdentifiers,
-            String expected
-    ) {
-        NodeList nodeList = DomMethods.getTranslationUnits(getDocument(), elementName);
-        Element node = (Element) nodeList.item(0);
-        assertEquals(expected, DomMethods.getCode(node, translationUnitIdentifiers));
-    }
+            String code
+    ) throws ParserConfigurationException, IOException, SAXException {
+        Map<Object, Object> transUnits = new HashMap<>();
+        Document document = TestUtilities.getDocument("fixtures/xliff-code-test.xliff");
 
-    @Test
-    void test_getElementValue_getCharacterDataFromElement_TextNode() {
-        String value;
-        value = DomMethods.getElementValue(getRootElement(), "element");
-        assertEquals("value", value);
-        value = DomMethods.getElementValue(getRootElement(), "element-newline");
-        assertEquals("value", value);
-        value = DomMethods.getElementValue(getRootElement(), "element-with-cdata");
-        assertEquals("value", value);
-        value = DomMethods.getElementValue(getRootElement(), "element-with-cdata-newline");
-        assertEquals("value", value);
-    }
+        var xliffDocument = new XliffDocument(document);
+        xliffDocument.getTransUnits("segment", translationUnitIdentifiers).forEach(
+                transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
+        );
 
-    @Test
-    void test_getElementValue_getCharacterDataFromElement_Node() {
-        String value = DomMethods.getElementValue(getRootElement(), "dummy");
-        assertNull(value);
-    }
-
-    private static Document getDocument() {
-        try {
-            InputStream fileStream = XliffReaderTest
-                    .class
-                    .getClassLoader()
-                    .getResourceAsStream("fixtures/xliff-parser-utility-test.xliff");
-
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            return builder.parse(fileStream);
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            return null;
-        }
-    }
-
-    private static Element getRootElement() {
-        return Objects.requireNonNull(getDocument()).getDocumentElement();
+        assertEquals(expected, transUnits.get(code));
     }
 
     private static Stream<Arguments> getCodeProvider() {
@@ -94,21 +79,6 @@ class XliffReaderTest {
                     "trans-unit-b",
                     new ArrayList<>(Arrays.asList("id", "resname")),
                     "id-b"
-            ),
-            Arguments.of(
-                    "trans-unit-c",
-                    new ArrayList<>(Arrays.asList("id", "resname")),
-                    null
-            ),
-            Arguments.of(
-                    "trans-unit-c",
-                    new ArrayList<>(),
-                    null
-            ),
-            Arguments.of(
-                    "trans-unit-c",
-                    null,
-                    null
             )
         );
     }

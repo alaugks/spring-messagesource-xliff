@@ -1,32 +1,24 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
-import javax.xml.parsers.ParserConfigurationException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class XliffVersion12Test {
 
-    private Document document;
-
-    @BeforeEach
-    void beforeEach() throws ParserConfigurationException, IOException, SAXException {
-        String filePath = "fixtures/xliff12.xliff";
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
-        this.document = TestUtilities.getDocument(inputStream);
-    }
-
     @Test
-    void test_readXliffFile() {
+    void test_readXliffFile() throws ParserConfigurationException, IOException, SAXException {
+        var document = new XliffDocument(TestUtilities.getDocument("fixtures/xliff12.xliff"));
         XliffVersion12 version = new XliffVersion12();
         CatalogInterface catalog = new Catalog(Locale.forLanguageTag("en"), "domain");
         Locale locale = Locale.forLanguageTag("en");

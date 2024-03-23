@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
-final class XliffVersion12 extends XliffVersionAbstract implements XliffInterface {
+// https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers
+final class XliffVersion12 implements XliffInterface {
     private List<String> translationUnitIdentifiers = new ArrayList<>(Arrays.asList("resname", "id"));
 
     @Override
@@ -22,8 +21,9 @@ final class XliffVersion12 extends XliffVersionAbstract implements XliffInterfac
     }
 
     @Override
-    public void read(CatalogInterface catalog, Document document, String domain, Locale locale) {
-        NodeList translationUnits = DomMethods.getTranslationUnits(document, "trans-unit");
-        this.readItems(catalog, domain, locale, translationUnits, this.translationUnitIdentifiers);
+    public void read(CatalogInterface catalog, XliffDocument dom, String domain, Locale locale) {
+        dom.getTransUnits("trans-unit", this.translationUnitIdentifiers).forEach(
+                transUnit -> catalog.put(locale, domain, transUnit.getCode(), transUnit.getTargetValue())
+        );
     }
 }

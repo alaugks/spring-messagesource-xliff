@@ -90,22 +90,20 @@ public final class XliffCatalog {
             }
 
             Element root = document.getDocumentElement();
+            XliffDocument dom = new XliffDocument(root);
 
-            // Simple test: Filter if root element not <xliff>
-            if (!root.getNodeName().equals("xliff")) {
+            if (!dom.isXliffDocument()) {
                 continue;
             }
 
-            String version = DomMethods.getAttributeValue(
-                    root.getAttributes().getNamedItem("version")
-            );
+            String version = dom.getXliffVersion();
 
             XliffInterface xliffInterface = this.getReader(version);
             if (xliffInterface != null) {
                 if (this.translationUnitIdentifiers != null) {
                     xliffInterface.setTranslationUnitIdentifiersOrdering(this.translationUnitIdentifiers);
                 }
-                xliffInterface.read(this.catalog, document, translationFile.getDomain(), translationFile.getLocale());
+                xliffInterface.read(this.catalog, dom, translationFile.getDomain(), translationFile.getLocale());
             } else {
                 throw new XliffMessageSourceVersionSupportException(String.format("XLIFF version \"%s\" not supported.", version));
             }

@@ -4,10 +4,10 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
-final class XliffVersion2 extends XliffVersionAbstract implements XliffInterface {
+// https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment
+// https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment
+final class XliffVersion2 implements XliffInterface {
     private List<String> translationUnitIdentifiers = new ArrayList<>(List.of("id"));
 
     @Override
@@ -21,8 +21,9 @@ final class XliffVersion2 extends XliffVersionAbstract implements XliffInterface
     }
 
     @Override
-    public void read(CatalogInterface catalog, Document document, String domain, Locale locale) {
-        NodeList translationUnits = DomMethods.getTranslationUnits(document, "segment");
-        this.readItems(catalog, domain, locale, translationUnits, this.translationUnitIdentifiers);
+    public void read(CatalogInterface catalog, XliffDocument dom, String domain, Locale locale) {
+        dom.getTransUnits("segment", this.translationUnitIdentifiers).forEach(
+                transUnit -> catalog.put(locale, domain, transUnit.getCode(), transUnit.getTargetValue())
+        );
     }
 }
