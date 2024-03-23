@@ -24,6 +24,7 @@ class XliffCatalogTest {
         XliffCatalog xliffCatalog = XliffCatalog
                 .builder(resourcesLoader)
                 .build();
+
         CatalogInterface catalog = xliffCatalog.createCatalog(new Catalog(Locale.forLanguageTag("en"), "messages"));
         assertEquals("Hello EN (messages)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_language"));
     }
@@ -66,9 +67,7 @@ class XliffCatalogTest {
                 .build();
 
         Throwable exception = assertThrows(
-            Throwable.class, () -> {
-                xliffCatalog.createCatalog(catalog);
-            }
+            Throwable.class, () -> xliffCatalog.createCatalog(catalog)
         );
         //assertTrue(exception.getMessage().indexOf("body") > 0);
         //assertEquals("The element type \"body\" must be terminated by the matching end-tag \"</body>\".", exception.getMessage());
@@ -76,27 +75,27 @@ class XliffCatalogTest {
 
     @Test
     void test_supportedVersions() {
-        var xliffCatalogBuilder = XliffCatalog
+        var xliffCatalog = XliffCatalog
                 .builder(
                         ResourcesLoader
                                 .builder()
                                 .build()
                 ).build();
 
-        assertInstanceOf(XliffVersion12.class, xliffCatalogBuilder.getReader("1.2"));
-        assertInstanceOf(XliffVersion2.class, xliffCatalogBuilder.getReader("2.0"));
-        assertInstanceOf(XliffVersion2.class, xliffCatalogBuilder.getReader("2.1"));
+        assertInstanceOf(XliffVersion12.class, xliffCatalog.getReader("1.2"));
+        assertInstanceOf(XliffVersion2.class, xliffCatalog.getReader("2.0"));
+        assertInstanceOf(XliffVersion2.class, xliffCatalog.getReader("2.1"));
     }
 
     @Test
     void test_versionNotSupported() {
-        var xliffCatalogBuilder = XliffCatalog
+        var xliffCatalog = XliffCatalog
                 .builder(
                         ResourcesLoader
                                 .builder()
                                 .build()
                 )
                 .build();
-        assertNull(xliffCatalogBuilder.getReader("1.0"));
+        assertNull(xliffCatalog.getReader("1.0"));
     }
 }

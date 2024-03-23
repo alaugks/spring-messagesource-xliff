@@ -15,13 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class XliffVersion21Test {
     @Test
     void test_readXliffFile() throws ParserConfigurationException, IOException, SAXException {
-        var document = new XliffDocument(TestUtilities.getDocument("fixtures/xliff20.xliff"));
+        var document = new XliffDocument(TestUtilities.getDocument("fixtures/xliff21.xliff"));
         XliffVersion2 version = new XliffVersion2();
         CatalogInterface catalog = new Catalog(Locale.forLanguageTag("en"), "domain");
         Locale locale = Locale.forLanguageTag("en");
         version.read(catalog, document, "domain", locale);
 
-        assertEquals("Hallo, Welt!", catalog.get(locale, "domain.code-1"));
-        //assertEquals("Dies ist ein weiterer Satz.", catalog.get(locale, "code-2"));
+        assertEquals("Hallo, Welt! (2.1)", catalog.get(locale, "domain.code-1"));
     }
 }

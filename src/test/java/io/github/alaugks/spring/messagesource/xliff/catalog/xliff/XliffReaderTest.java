@@ -21,8 +21,7 @@ class XliffReaderTest {
     void test_getElementValue_getCharacterDataFromElement_TextNode() throws ParserConfigurationException, IOException, SAXException {
         Map<Object, Object> transUnits = new HashMap<>();
 
-        Document document = TestUtilities.getDocument("fixtures/xliff-value-test.xliff");
-        var xliffDocument = new XliffDocument(document);
+        var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff-value-test.xliff"));
         xliffDocument.getTransUnits("segment", List.of("id")).forEach(
                 transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
         );
@@ -42,9 +41,8 @@ class XliffReaderTest {
             String code
     ) throws ParserConfigurationException, IOException, SAXException {
         Map<Object, Object> transUnits = new HashMap<>();
-        Document document = TestUtilities.getDocument("fixtures/xliff-code-test.xliff");
 
-        var xliffDocument = new XliffDocument(document);
+        var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff-code-test.xliff"));
         xliffDocument.getTransUnits("segment", translationUnitIdentifiers).forEach(
                 transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
         );

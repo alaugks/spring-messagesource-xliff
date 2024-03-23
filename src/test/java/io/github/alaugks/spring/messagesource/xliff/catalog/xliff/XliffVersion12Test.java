@@ -22,7 +22,7 @@ class XliffVersion12Test {
         Locale locale = Locale.forLanguageTag("en");
         version.read(catalog, document, "domain", locale);
 
-        assertEquals("Hallo, Welt!", catalog.get(locale, "domain.code-1"));
-        assertEquals("Dies ist ein weiterer Satz.", catalog.get(locale, "domain.code-2"));
+        assertEquals("Hallo, Welt! (1.2)", catalog.get(locale, "domain.code-1"));
+        assertEquals("Dies ist ein weiterer Satz. (1.2)", catalog.get(locale, "domain.code-2"));
     }
 }
