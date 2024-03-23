@@ -1,17 +1,13 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 public final class ResourcesLoader {
 

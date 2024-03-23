@@ -4,16 +4,17 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 public final class XliffCatalog {
 

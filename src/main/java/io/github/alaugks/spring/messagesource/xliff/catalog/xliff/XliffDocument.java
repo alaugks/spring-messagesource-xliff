@@ -1,8 +1,11 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
-import java.util.*;
-
+import org.w3c.dom.CharacterData;
 import org.w3c.dom.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public final class XliffDocument {
 

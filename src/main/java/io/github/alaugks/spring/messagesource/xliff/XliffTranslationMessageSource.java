@@ -5,15 +5,16 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalog;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Locale;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.lang.Nullable;
+
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Locale;
 
 public final class XliffTranslationMessageSource implements MessageSource {
 

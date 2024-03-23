@@ -1,9 +1,10 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogUtilities;
+import org.springframework.cache.interceptor.KeyGenerator;
+
 import java.lang.reflect.Method;
 import java.util.Locale;
-import org.springframework.cache.interceptor.KeyGenerator;
 
 public final class XliffCacheableKeyGenerator implements KeyGenerator {
 

@@ -1,6 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
