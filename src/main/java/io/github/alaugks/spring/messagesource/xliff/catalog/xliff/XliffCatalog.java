@@ -102,7 +102,7 @@ public final class XliffCatalog {
             XliffInterface xliffInterface = this.getReader(version);
             if (xliffInterface != null) {
                 if (this.translationUnitIdentifiers != null) {
-                    xliffInterface.setTranslationUnitIdentifiersOrdering(this.translationUnitIdentifiers);
+                    xliffInterface.setUnitIdentifiersOrdering(this.translationUnitIdentifiers);
                 }
                 xliffInterface.read(this.catalog, dom, translationFile.getDomain(), translationFile.getLocale());
             } else {

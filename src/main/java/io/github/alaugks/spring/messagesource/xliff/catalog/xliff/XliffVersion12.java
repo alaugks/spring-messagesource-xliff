@@ -17,8 +17,8 @@ final class XliffVersion12 implements XliffInterface {
     }
 
     @Override
-    public void setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
-        this.translationUnitIdentifiers = translationUnitIdentifiers;
+    public void setUnitIdentifiersOrdering(List<String> unitIdentifiers) {
+        this.translationUnitIdentifiers = unitIdentifiers;
     }
 
     @Override

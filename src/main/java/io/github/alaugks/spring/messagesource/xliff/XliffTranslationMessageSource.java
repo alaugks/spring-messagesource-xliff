@@ -38,6 +38,22 @@ public final class XliffTranslationMessageSource implements MessageSource {
         );
     }
 
+    /**
+     * @deprecated Use the Builder.
+     * Example:
+     *
+     *  XliffTranslationMessageSource messageSource = XliffTranslationMessageSource
+     *      .builder(cacheManager)
+     *      .setBasenamePattern("translations/*")
+     *      .setDefaultLocale(Locale.forLanguageTag("en"))
+     *      .build();
+     *
+     */
+    @Deprecated(since = "1.3")
+    public XliffTranslationMessageSource(CacheManager cacheManager) {
+        this.catalogHandler = null;
+    }
+
     public static Builder builder(CacheManager cacheManager) {
         return new Builder(cacheManager);
     }
@@ -74,6 +90,10 @@ public final class XliffTranslationMessageSource implements MessageSource {
             return this;
         }
 
+        /**
+         * @deprecated Will be replaced with another method.
+         */
+        @Deprecated(since = "1.3")
         public Builder setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
             this.translationUnitIdentifiers = translationUnitIdentifiers;
             return this;
@@ -105,7 +125,7 @@ public final class XliffTranslationMessageSource implements MessageSource {
         String[] codes = resolvable.getCodes();
         if (codes != null) {
             for (String code : codes) {
-                CatalogHandler.Translation translation = internalMessage(code, locale);
+                CatalogHandler.Translation translation = this.internalMessage(code, locale);
                 if (translation.exists()) {
                     return this.format(translation.toString(), resolvable.getArguments());
                 }
