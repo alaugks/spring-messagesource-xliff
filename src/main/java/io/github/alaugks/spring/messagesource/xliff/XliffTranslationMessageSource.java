@@ -3,7 +3,7 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalog;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffReader;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
@@ -32,7 +32,7 @@ public final class XliffTranslationMessageSource implements MessageSource {
         this.catalogHandler = new CatalogHandler(
                 new Catalog(builder.defaultLocale, builder.defaultDomain),
                 new CatalogCache(builder.defaultLocale, builder.defaultDomain, builder.cacheManager),
-                XliffCatalog.builder(resourcesLoader)
+                XliffReader.builder(resourcesLoader)
                     .setTranslationUnitIdentifiersOrdering(builder.translationUnitIdentifiers)
                     .build()
         );

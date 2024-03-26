@@ -8,7 +8,7 @@ import java.util.Locale;
 
 // https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment
 // https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment
-final class XliffVersion2 implements XliffInterface {
+final class XliffVersion2 implements XliffVersionInterface {
     private List<String> translationUnitIdentifiers = new ArrayList<>(List.of("id"));
 
     @Override

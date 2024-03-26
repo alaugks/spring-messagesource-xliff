@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 
 // https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers
-final class XliffVersion12 implements XliffInterface {
+final class XliffVersion12 implements XliffVersionInterface {
     private List<String> translationUnitIdentifiers = new ArrayList<>(Arrays.asList("resname", "id"));
 
     @Override

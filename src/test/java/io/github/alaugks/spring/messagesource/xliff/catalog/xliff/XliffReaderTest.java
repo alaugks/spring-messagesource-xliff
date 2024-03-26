@@ -1,77 +1,101 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
-import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
+import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
+import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class XliffReaderTest {
 
     @Test
-    void test_getElementValue_getCharacterDataFromElement_TextNode() throws ParserConfigurationException, IOException, SAXException {
-        Map<Object, Object> transUnits = new HashMap<>();
+    void test_createCatalog() {
+        ResourcesLoader resourcesLoader = ResourcesLoader
+                .builder()
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setBasenamePattern("translations/*")
+                .build();
 
-        var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff-value-test.xliff"));
-        xliffDocument.getTransUnits("segment", List.of("id")).forEach(
-                transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
-        );
+        XliffReader xliffReader = XliffReader
+                .builder(resourcesLoader)
+                .build();
 
-        assertEquals("value", transUnits.get("element"));
-        assertEquals("value", transUnits.get("element-newline"));
-        assertEquals("value", transUnits.get("element-with-cdata"));
-        assertEquals("value", transUnits.get("element-with-cdata-newline"));
+        CatalogInterface catalog = xliffReader.createCatalog(new Catalog(Locale.forLanguageTag("en"), "messages"));
+        assertEquals("Hello EN (messages)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_language"));
     }
 
+    @Test
+    void test_createCatalog_versionNotSupported() {
+        Catalog catalog = new Catalog(Locale.forLanguageTag("en"), "messages");
+        ResourcesLoader resourcesLoader = ResourcesLoader
+                .builder()
+                .setDefaultLocale(Locale.forLanguageTag("en-GB"))
+                .setBasenamePattern("fixtures/*")
+                .build();
 
-    @ParameterizedTest(name = "{index} => elementName={0}, translationUnitIdentifiers={1}, expected={2}")
-    @MethodSource("getCodeProvider")
-    void test_getCode(
-            String expected,
-            ArrayList<String> translationUnitIdentifiers,
-            String code
-    ) throws ParserConfigurationException, IOException, SAXException {
-        Map<Object, Object> transUnits = new HashMap<>();
+        XliffReader xliffReader = XliffReader
+                .builder(resourcesLoader)
+                .build();
 
-        var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff-code-test.xliff"));
-        xliffDocument.getTransUnits("segment", translationUnitIdentifiers).forEach(
-                transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
+        XliffMessageSourceVersionSupportException exception = assertThrows(
+                XliffMessageSourceVersionSupportException.class, () -> {
+                xliffReader.createCatalog(catalog);
+            }
         );
-
-        assertEquals(expected, transUnits.get(code));
+        assertEquals("XLIFF version \"1.0\" not supported.", exception.getMessage());
     }
 
-    private static Stream<Arguments> getCodeProvider() {
-        return Stream.of(
-            Arguments.of(
-                    "trans-unit-a",
-                    new ArrayList<>(Arrays.asList("resname", "id")),
-                    "resname-a"
-            ),
-            Arguments.of(
-                    "trans-unit-a",
-                    new ArrayList<>(Arrays.asList("id", "resname")),
-                    "id-a"
-            ),
-            Arguments.of(
-                    "trans-unit-b",
-                    new ArrayList<>(Arrays.asList("resname", "id")),
-                    "id-b"
-            ),
-            Arguments.of(
-                    "trans-unit-b",
-                    new ArrayList<>(Arrays.asList("id", "resname")),
-                    "id-b"
-            )
+    @Test
+    @Disabled("Todo: Handling [Fatal Error] :9:7: The element type \"body\" must be terminated by the matching end-tag \"</body>\".")
+    void test_createCatalog_parseError() {
+        // ErrorHandler errorHandler = new SimpleSaxErrorHandler(new NoOpLog());
+        var catalog = new Catalog(Locale.forLanguageTag("en"), "messages");
+
+        ResourcesLoader resourcesLoader = ResourcesLoader
+                .builder()
+                .setDefaultLocale(Locale.forLanguageTag("en"))
+                .setBasenamePattern("translations_broken/*")
+                .build();
+
+        XliffReader xliffReader = XliffReader
+                .builder(resourcesLoader)
+                .build();
+
+        Throwable exception = assertThrows(
+            Throwable.class, () -> xliffReader.createCatalog(catalog)
         );
+        //assertTrue(exception.getMessage().indexOf("body") > 0);
+        //assertEquals("The element type \"body\" must be terminated by the matching end-tag \"</body>\".", exception.getMessage());
+    }
+
+    @Test
+    void test_supportedVersions() {
+        var xliffCatalog = XliffReader
+                .builder(
+                        ResourcesLoader
+                                .builder()
+                                .build()
+                ).build();
+
+        assertInstanceOf(XliffVersion12.class, xliffCatalog.getReader("1.2"));
+        assertInstanceOf(XliffVersion2.class, xliffCatalog.getReader("2.0"));
+        assertInstanceOf(XliffVersion2.class, xliffCatalog.getReader("2.1"));
+    }
+
+    @Test
+    void test_versionNotSupported() {
+        var xliffCatalog = XliffReader
+                .builder(
+                        ResourcesLoader
+                                .builder()
+                                .build()
+                )
+                .build();
+        assertNull(xliffCatalog.getReader("1.0"));
     }
 }

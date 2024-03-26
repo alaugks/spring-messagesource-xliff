@@ -1,7 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalog;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffReader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
@@ -14,11 +14,11 @@ class CatalogReaderTest {
     void test_catalog() {
             Catalog catalog = new Catalog(Locale.forLanguageTag("en"), "messages");
 
-            XliffCatalog xliffCatalog = XliffCatalog
+            XliffReader xliffReader = XliffReader
                 .builder(TestUtilities.getResourcesLoader())
                 .build();
 
-            CatalogReader catalogReader = new CatalogReader(catalog, xliffCatalog);
+            CatalogReader catalogReader = new CatalogReader(catalog, xliffReader);
             catalog = catalogReader.loadCatalog();
             assertEquals(3, catalog.getAll().size());
     }

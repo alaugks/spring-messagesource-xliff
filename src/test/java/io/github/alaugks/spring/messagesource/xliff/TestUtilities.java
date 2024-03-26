@@ -3,7 +3,7 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalog;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffReader;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TestUtilities {
     public static Catalog getTestCatalog() {
-        return XliffCatalog
+        return XliffReader
                 .builder(getResourcesLoader())
                 .build()
                 .createCatalog(
@@ -36,7 +36,7 @@ public class TestUtilities {
         CatalogHandler catalogHandler = new CatalogHandler(
                 TestUtilities.getTestCatalog(),
                 new CatalogCache(Locale.forLanguageTag("en"), "messages", getMockedCacheManager()),
-                XliffCatalog
+                XliffReader
                         .builder(getResourcesLoader())
                         .build()
         );

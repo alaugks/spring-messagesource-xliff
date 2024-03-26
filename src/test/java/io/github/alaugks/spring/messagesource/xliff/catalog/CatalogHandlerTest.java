@@ -53,11 +53,11 @@ class CatalogHandlerTest {
 
 //    @Test
 //    void test_getTargetValue_fromCache() {
-//        XliffCatalog xliffCatalogBuilder = new XliffCatalog();
+//        XliffReader xliffCatalogBuilder = new XliffReader();
 //        CatalogInterface catalog = TestUtilities.getTestCatalog();
 //        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
 //
-//        XliffCatalog mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
+//        XliffReader mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 //
 //        CatalogHandler catalogHandler = new CatalogHandler(
 //                resourcesLoader,
@@ -83,10 +83,10 @@ class CatalogHandlerTest {
 
 //    @Test
 //    void test_getTargetValue_fromCatalog_fromCache() {
-//        XliffCatalog xliffCatalogBuilder = new XliffCatalog();
+//        XliffReader xliffCatalogBuilder = new XliffReader();
 //        CatalogInterface catalog = TestUtilities.getTestCatalog();
 //        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
-//        XliffCatalog mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
+//        XliffReader mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 //
 //        CatalogHandler catalogHandler = new CatalogHandler(
 //                resourcesLoader,
@@ -105,10 +105,10 @@ class CatalogHandlerTest {
 
 //    @Test
 //    void test_getTargetValue_fromCatalog_cacheNotInit() {
-//        XliffCatalog xliffCatalogBuilder = new XliffCatalog();
+//        XliffReader xliffCatalogBuilder = new XliffReader();
 //        CatalogInterface catalog = TestUtilities.getTestCatalog();
 //        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
-//        XliffCatalog mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
+//        XliffReader mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 //
 //        CatalogHandler catalogHandler = new CatalogHandler(
 //                resourcesLoader,
@@ -124,10 +124,10 @@ class CatalogHandlerTest {
 
 //    @Test
 //    void test_fillCacheWithCodeBecauseCodeNotExists() {
-//        XliffCatalog xliffCatalogBuilder = new XliffCatalog();
+//        XliffReader xliffCatalogBuilder = new XliffReader();
 //        CatalogInterface catalog = TestUtilities.getTestCatalog();
 //        ResourcesLoader resourcesLoader = TestUtilities.getResourcesLoader();
-//        XliffCatalog mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
+//        XliffReader mockedXliffCatalogBuilder = Mockito.spy(xliffCatalogBuilder);
 //
 //        CatalogHandler catalogHandler = new CatalogHandler(
 //                resourcesLoader,

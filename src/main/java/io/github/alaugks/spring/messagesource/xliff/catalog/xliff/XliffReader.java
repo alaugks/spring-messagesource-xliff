@@ -16,17 +16,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public final class XliffCatalog {
+public final class XliffReader {
 
     private final ResourcesLoader resourceLoader;
     private Catalog catalog;
     private final List<String> translationUnitIdentifiers;
-    Set<XliffInterface> supportedVersions = Set.of(
+    Set<XliffVersionInterface> supportedVersions = Set.of(
             new XliffVersion12(),
             new XliffVersion2()
     );
 
-    public XliffCatalog(Builder builder) {
+    public XliffReader(Builder builder) {
         this.resourceLoader = builder.resourceLoader;
         this.translationUnitIdentifiers = builder.translationUnitIdentifiers;
     }
@@ -51,8 +51,8 @@ public final class XliffCatalog {
             return this;
         }
 
-        public XliffCatalog build() {
-            return new XliffCatalog(this);
+        public XliffReader build() {
+            return new XliffReader(this);
         }
 
     }
@@ -67,8 +67,8 @@ public final class XliffCatalog {
         }
     }
 
-    public XliffInterface getReader(String version) {
-        for (XliffInterface xliffClass : this.supportedVersions) {
+    public XliffVersionInterface getReader(String version) {
+        for (XliffVersionInterface xliffClass : this.supportedVersions) {
             if (xliffClass.support(version)) {
                 return xliffClass;
             }
@@ -99,14 +99,16 @@ public final class XliffCatalog {
 
             String version = dom.getXliffVersion();
 
-            XliffInterface xliffInterface = this.getReader(version);
-            if (xliffInterface != null) {
+            XliffVersionInterface xliffVersion = this.getReader(version);
+            if (xliffVersion != null) {
                 if (this.translationUnitIdentifiers != null) {
-                    xliffInterface.setUnitIdentifiersOrdering(this.translationUnitIdentifiers);
+                    xliffVersion.setUnitIdentifiersOrdering(this.translationUnitIdentifiers);
                 }
-                xliffInterface.read(this.catalog, dom, translationFile.getDomain(), translationFile.getLocale());
+                xliffVersion.read(this.catalog, dom, translationFile.getDomain(), translationFile.getLocale());
             } else {
-                throw new XliffMessageSourceVersionSupportException(String.format("XLIFF version \"%s\" not supported.", version));
+                throw new XliffMessageSourceVersionSupportException(
+                        String.format("XLIFF version \"%s\" not supported.", version)
+                );
             }
         }
     }
