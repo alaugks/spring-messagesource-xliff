@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("java:S5778")
 class CatalogCacheTest {
     private CatalogCache catalogCache;
     private Locale locale;
