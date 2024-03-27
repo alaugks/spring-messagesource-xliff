@@ -10,10 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class CatalogCache extends CatalogAbstractHandler {
     public static final String CACHE_NAME = "messagesource.xliff.catalog.CACHE";
@@ -27,6 +25,26 @@ public final class CatalogCache extends CatalogAbstractHandler {
         this.defaultLocale = defaultLocal;
         this.domain = domain;
         this.loadCache(cacheManager);
+    }
+
+    @Override
+    public Map<String, Map<String, String>> getAll() {
+        try {
+            Map<String, Map<String, String>> result = new HashMap<>();
+            Map<Object, Object> items = new HashMap<>((ConcurrentHashMap<?, ?>) this.cache.getNativeCache());
+            items.forEach((code, value) -> {
+                String[] split = code.toString().split("\\|");
+                if (result.containsKey(split[0])) {
+                    result.get(split[0]).put(split[1], value.toString());
+                    return;
+                }
+                result.put(split[0], new HashMap<>());
+                result.get(split[0]).put(split[1], value.toString());
+            });
+            return result;
+        } catch (Exception e) {
+            return super.getAll();
+        }
     }
 
     @Override

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.CacheManager;
 
-import java.util.HashMap;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,13 +16,38 @@ class CatalogCacheTest {
 
     @BeforeEach
     void beforeEach() {
-        this.catalogCache = new CatalogCache(Locale.forLanguageTag("en"), "messages", TestUtilities.getMockedCacheManager());
+        this.catalogCache = new CatalogCache(
+                Locale.forLanguageTag("en"),
+                "messages",
+                TestUtilities.getMockedCacheManager()
+        );
         this.locale = Locale.forLanguageTag("en");
     }
 
     @Test
     void test_getAll() {
-        assertInstanceOf(HashMap.class, this.catalogCache.getAll());
+        var en = Locale.forLanguageTag("en");
+        var de = Locale.forLanguageTag("de");
+
+        this.catalogCache.put(en, "messages", "m_en_1", "targetValue_m_en_1");
+        this.catalogCache.put(en, "messages", "m_en_2", "targetValue_m_en_2");
+        this.catalogCache.put(en, "domain", "d_en_1", "targetValue_d_en_1");
+        this.catalogCache.put(de, "messages", "m_de_1", "targetValue_m_de_1");
+        this.catalogCache.put(de, "messages", "m_de_2", "targetValue_m_de_2");
+        this.catalogCache.put(de, "domain", "d_de_1", "targetValue_d_de_1");
+
+        var all = this.catalogCache.getAll();
+        var transEn = all.get(en.toString());
+        var transDe = all.get(de.toString());
+
+        assertAll(
+                () -> assertEquals("targetValue_m_en_1", transEn.get("messages.m_en_1")),
+                () -> assertEquals("targetValue_m_en_2", transEn.get("messages.m_en_2")),
+                () -> assertEquals("targetValue_d_en_1", transEn.get("domain.d_en_1")),
+                () -> assertEquals("targetValue_m_de_1", transDe.get("messages.m_de_1")),
+                () -> assertEquals("targetValue_m_de_2", transDe.get("messages.m_de_2")),
+                () -> assertEquals("targetValue_d_de_1", transDe.get("domain.d_de_1"))
+        );
     }
 
     @Test
