@@ -2,13 +2,13 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import java.util.Locale;
 
-public class CatalogUtilities {
+public final class CatalogUtilities {
 
     private CatalogUtilities() {
         throw new IllegalStateException("CatalogUtilities class");
     }
 
-    public static String localeToKey(Locale locale) {
+    public static String localeToLocaleKey(Locale locale) {
         return buildLocale(locale).toString().trim().toLowerCase().replace("_", "-");
     }
 
@@ -34,6 +34,12 @@ public class CatalogUtilities {
                 localeBuilder.setRegion(region);
             }
         }
+        return localeBuilder.build();
+    }
+
+    public static Locale buildLocaleWithoutRegion(Locale locale) {
+        Locale.Builder localeBuilder = new Locale.Builder();
+        localeBuilder.setLanguage(locale.getLanguage());
         return localeBuilder.build();
     }
 }

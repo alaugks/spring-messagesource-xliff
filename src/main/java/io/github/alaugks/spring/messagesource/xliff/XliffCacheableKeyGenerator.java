@@ -11,7 +11,7 @@ public final class XliffCacheableKeyGenerator implements KeyGenerator {
     public static final String GENERATOR_NAME = "messagesource.xliff.KEY_GENERATOR";
 
     public static String createCode(Locale locale, String code) {
-        return CatalogUtilities.localeToKey(locale) + "|" + code;
+        return CatalogUtilities.localeToLocaleKey(locale) + "|" + code;
     }
 
     public Object generate(Object target, Method method, Object... params) {

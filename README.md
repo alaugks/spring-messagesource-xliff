@@ -19,13 +19,13 @@ This package provides a **MessageSource** for using translations from XLIFF file
 <a name="a1"></a>
 ## 1. Versions
 
-
-| Version | Description                                                                               |
-|:--------|:------------------------------------------------------------------------------------------|
-| 1.1.2   | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
-| 1.1.1   | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
-| 1.1.0   | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
-| 1.0.0   | First public version                                                                      |
+| Version        | Description                                                                               |
+|:---------------|:------------------------------------------------------------------------------------------|
+| 1.2.0-SNAPSHOT |                                                                                           |
+| 1.1.2          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
+| 1.1.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
+| 1.1.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
+| 1.0.0          | First public version                                                                      |
 
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.2)
@@ -39,7 +39,7 @@ This package provides a **MessageSource** for using translations from XLIFF file
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>1.1.2</version>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -55,6 +55,7 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface. An instance of the [CacheManager](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider) is required for caching the translations.
 
 ### XliffTranslationMessageSource
+
 
 `setBasenamePattern(String basename)` or `setBasenamesPattern(Iterable<String> basenames)` (***required***)
 
@@ -85,10 +86,11 @@ public class MessageConfig {
     
     @Bean("messageSource")
     public MessageSource messageSource(CacheManager cacheManager) {
-        XliffTranslationMessageSource messageSource =  new XliffTranslationMessageSource(cacheManager);
-        messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
-        messageSource.setBasenamePattern("translations/*");
-        return messageSource;
+        return XliffTranslationMessageSource
+            .builder(cacheManager)
+            .setBasenamePattern("translations/*")
+            .setDefaultLocale(Locale.forLanguageTag("en"))
+            .build();
     }
     
 }
@@ -96,7 +98,8 @@ public class MessageConfig {
 
 
 <a name="a4"></a>
-## 4. Minimal CacheManager Configuration
+
+## 4. CacheManager Configuration
 
 You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required.
 
@@ -104,7 +107,7 @@ The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The speci
 
 [ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html) is the default cache in Spring Boot and Spring.
 
-### CacheConfig
+### 4.1 CacheManager with ConcurrentMapCacheManager
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
@@ -132,11 +135,9 @@ public class CacheConfig {
 
 
 <a name="a5"></a>
-## 5. CacheManager with Supported Cache Providers
 
+### 4.2 CacheManager with Supported Cache Providers
 [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/3.1.1/reference/html/io.html#io.caching.provider) can also be used. The following example using [Caffeine](https://github.com/ben-manes/caffeine):
-
-### CacheConfig with Caffeine
 
 The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. No ExpireDate should be set for the XLIFF translations cache.
 
@@ -215,11 +216,18 @@ public class AppStartupRunner implements ApplicationRunner {
 * In the XLIFF files, the `<target/>` is retrieved in a `<trans-unit/>` (XLIFF 1.2) or `<segment/>` (XLIFF 2.*).
   * **XLIFF 1.2**:
     * If the attribute `resname` does not exist, the attribute `id` is used to determine the identifier.
-    * Documentation identifier: [XLIFF 1.2](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers)
-  * XLIFF 2.*:
-    * The attribute `id` is optional by standard in XLIFF 2.*. However, this package requires the `id` on a translation unit.
-    * Documentation identifier: [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment) and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
-* For performance reasons, there is no validation of XLIFF files with an XMLSchema. If there is any corrupt XML in an XLIFF file, the SAX parser will throw a [Fatal Error].
+    * Documentation
+      identifier: [XLIFF 1.2](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers)
+  * **XLIFF 2.&ast;**:
+    * The attribute `id` is optional by standard in XLIFF 2.*. However, this package requires the `id` on a translation
+      unit.
+    * Documentation
+      identifier: [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment)
+      and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
+* For performance reasons, there is no validation of XLIFF files with an XMLSchema. SAX parser errors are handled by
+  an [ErrorHandler](https://docs.oracle.com/en/java/javase/17/docs/api/java.xml/org/xml/sax/ErrorHandler.html) and can
+  be caught with
+  the [XliffMessageSourceSAXParse-Exceptions](https://github.com/alaugks/spring-messagesource-xliff/tree/main/src/main/java/io/github/alaugks/spring/messagesource/xliff/exception).
 
 ### Structure of the Translation Filename
 

@@ -15,20 +15,20 @@ class CatalogUtilitiesTest {
 
     @Test
     void test_normalizeLocale() {
-        assertEquals("en", CatalogUtilities.localeToKey(Locale.forLanguageTag("en")));
-        assertEquals("en", CatalogUtilities.localeToKey(Locale.forLanguageTag("EN")));
-        assertEquals("en-gb", CatalogUtilities.localeToKey(Locale.forLanguageTag("en-gb")));
-        assertEquals("en-gb", CatalogUtilities.localeToKey(Locale.forLanguageTag("en-GB")));
-        assertEquals("en-gb", CatalogUtilities.localeToKey(Locale.forLanguageTag("EN-GB")));
+        assertEquals("en", CatalogUtilities.localeToLocaleKey(Locale.forLanguageTag("en")));
+        assertEquals("en", CatalogUtilities.localeToLocaleKey(Locale.forLanguageTag("EN")));
+        assertEquals("en-gb", CatalogUtilities.localeToLocaleKey(Locale.forLanguageTag("en-gb")));
+        assertEquals("en-gb", CatalogUtilities.localeToLocaleKey(Locale.forLanguageTag("en-GB")));
+        assertEquals("en-gb", CatalogUtilities.localeToLocaleKey(Locale.forLanguageTag("EN-GB")));
 
         Locale localeVariant1 = new Locale.Builder().setLanguage("de").setRegion("DE").setVariant("Cologne").build();
-        assertEquals("de-de", CatalogUtilities.localeToKey(localeVariant1));
+        assertEquals("de-de", CatalogUtilities.localeToLocaleKey(localeVariant1));
 
         Locale localeVariant2 = Locale.forLanguageTag("de-Germany");
-        assertEquals("de", CatalogUtilities.localeToKey(localeVariant2));
+        assertEquals("de", CatalogUtilities.localeToLocaleKey(localeVariant2));
 
         Locale localeVariant3 = Locale.forLanguageTag("hy-Latn-IT-arevela");
-        assertEquals("hy-it", CatalogUtilities.localeToKey(localeVariant3));
+        assertEquals("hy-it", CatalogUtilities.localeToLocaleKey(localeVariant3));
     }
 
     @Test
@@ -61,4 +61,12 @@ class CatalogUtilitiesTest {
         assertEquals("en_GB", CatalogUtilities.buildLocale("en", "GB").toString());
         assertEquals("en_GB", CatalogUtilities.buildLocale("EN", "GB").toString());
     }
+
+    @Test
+    void test_buildLocaleWithLanguage() {
+        assertEquals("en", CatalogUtilities.buildLocaleWithoutRegion(Locale.forLanguageTag("en")).toString());
+        assertEquals("en", CatalogUtilities.buildLocaleWithoutRegion(Locale.forLanguageTag("en-UK")).toString());
+        assertEquals("", CatalogUtilities.buildLocaleWithoutRegion(Locale.forLanguageTag("en_UK")).toString());
+    }
+
 }

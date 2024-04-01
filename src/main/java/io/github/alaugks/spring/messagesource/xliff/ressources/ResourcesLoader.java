@@ -4,48 +4,73 @@ import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSource
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public final class ResourcesLoader implements ResourcesLoaderInterface {
+public final class ResourcesLoader {
 
-    private final Set<String> basenameSet = new LinkedHashSet<>();
-    private Locale defaultLocale;
+    private final Locale defaultLocale;
+    private final Set<String> basenameSet;
     private final List<String> fileExtensions = List.of("xlf", "xliff");
 
-    @Override
-    public ResourcesLoader setBasenamePattern(String basename) {
-        this.setBasenamesPattern(List.of(basename));
-        return this;
+    private ResourcesLoader(ResourcesLoader.Builder builder) {
+        this.defaultLocale = builder.defaultLocale;
+        this.basenameSet = builder.basenameSet;
     }
 
-    @Override
-    public ResourcesLoader setBasenamesPattern(Iterable<String> basenames) {
-        this.basenameSet.clear();
-        this.addBasenames(basenames);
-        return this;
+    public static ResourcesLoader.Builder builder() {
+        return new ResourcesLoader.Builder();
     }
 
-    @Override
-    public ResourcesLoader setDefaultLocale(Locale locale) {
-        this.defaultLocale = locale;
-        return this;
+    public static final class Builder {
+        Locale defaultLocale;
+        String defaultDomain;
+        private final Set<String> basenameSet = new LinkedHashSet<>();
+
+        public ResourcesLoader.Builder defaultLocale(Locale locale) {
+            this.defaultLocale = locale;
+            return this;
+        }
+
+        public ResourcesLoader.Builder defaultDomain(String defaultDomain) {
+            this.defaultDomain = defaultDomain;
+            return this;
+        }
+
+        public ResourcesLoader.Builder basenamePattern(String basename) {
+            if (basename != null) {
+                this.basenamesPattern(List.of(basename));
+            }
+            return this;
+        }
+
+        public ResourcesLoader.Builder basenamesPattern(Iterable<String> basenames) {
+            if (basenames != null) {
+                this.basenameSet.clear();
+                this.addBasenames(basenames);
+            }
+            return this;
+        }
+
+        private void addBasenames(Iterable<String> basenames) {
+            for (String basename : basenames) {
+                Assert.hasText(basename, "Basename must not be empty");
+                this.basenameSet.add(basename.trim());
+            }
+        }
+
+        public ResourcesLoader build() {
+            return new ResourcesLoader(this);
+        }
+
     }
 
-    @Override
-    public Locale getDefaultLocale() {
-        return defaultLocale;
-    }
-
-    @Override
-    public ArrayList<Dto> getResourcesInputStream() throws IOException {
+    public List<Dto> getTranslationFiles() throws IOException {
         if (this.defaultLocale == null || this.defaultLocale.toString().isEmpty()) {
             throw new XliffMessageSourceRuntimeException("Default language is not set or empty.");
         }
-
         ArrayList<Dto> translationFiles = new ArrayList<>();
         PathMatchingResourcePatternResolver resourceLoader = new PathMatchingResourcePatternResolver();
         for (String basename : getBasenameSet()) {
@@ -110,15 +135,6 @@ public final class ResourcesLoader implements ResourcesLoaderInterface {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1)).orElse(null);
-    }
-
-    private void addBasenames(Iterable<String> basenames) {
-        if (!ObjectUtils.isEmpty(basenames)) {
-            for (String basename : basenames) {
-                Assert.hasText(basename, "Basename must not be empty");
-                this.basenameSet.add(basename.trim());
-            }
-        }
     }
 
     private Set<String> getBasenameSet() {

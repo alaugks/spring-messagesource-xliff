@@ -1,15 +1,14 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public interface CatalogInterface {
-    // HashMap<"language+region", HashMap<"code", "targetValue">>
-    HashMap<String, HashMap<String, String>> getAll();
+    CatalogInterface setNextHandler(CatalogInterface handler);
 
+    // HashMap<"language+region", HashMap<"code", "value">>
+    Map<String, Map<String, String>> getAll();
     String get(Locale locale, String code);
 
-    void put(Locale locale, String domain, String code, String targetValue);
-
-    boolean has(Locale locale, String code);
+    void put(Locale locale, String domain, String code, String value);
 }

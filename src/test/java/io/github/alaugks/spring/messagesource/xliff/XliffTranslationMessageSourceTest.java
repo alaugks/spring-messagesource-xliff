@@ -1,17 +1,33 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 
 import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-abstract class XliffMatchingResourcePatternResolverAbstract {
+class XliffTranslationMessageSourceTest {
 
     protected static XliffTranslationMessageSource messageSource;
+
+    @BeforeAll
+    static void beforeAll() {
+        messageSource = XliffTranslationMessageSource
+                .builder(TestUtilities.getMockedCacheManager())
+                .basenamePattern("translations/*")
+                .defaultLocale(Locale.forLanguageTag("en"))
+                .build();
+        messageSource.initCache();
+    }
 
     @Test
     void test_message_withDefaultMessage_messageExists() {
@@ -150,4 +166,39 @@ abstract class XliffMatchingResourcePatternResolverAbstract {
 
         assertEquals(defaultMessage, message);
     }
+
+    @ParameterizedTest()
+    @MethodSource("dataProvider_fallback")
+    void test_fallback(String code, Objects[] args, Locale locale, Object expected) {
+        String message = messageSource.getMessage(
+                code,
+                args,
+                locale
+        );
+        assertEquals(expected, message);
+    }
+
+    private static Stream<Arguments> dataProvider_fallback() {
+        return Stream.of(
+                Arguments.of(
+                        "hello_language",
+                        null,
+                        Locale.forLanguageTag("jp"),
+                        "Hello EN (messages)"
+                ),
+                Arguments.of(
+                        "hello_language",
+                        null,
+                        Locale.forLanguageTag("en-GB"),
+                        "Hello EN (messages)"
+                ),
+                Arguments.of(
+                        "hello_language",
+                        null,
+                        Locale.forLanguageTag("en-US"),
+                        "Hello EN_US (messages)"
+                )
+        );
+    }
+
 }

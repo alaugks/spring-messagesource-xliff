@@ -20,7 +20,7 @@ class XliffCacheableKeyGeneratorTest {
     }
 
     @Test
-    void test_createKey_code_en() {
+    void test_createKey_code_lang() {
         XliffCacheableKeyGenerator generator = new XliffCacheableKeyGenerator();
 
         Locale locale = Locale.forLanguageTag("en");
@@ -32,7 +32,7 @@ class XliffCacheableKeyGeneratorTest {
     }
 
     @Test
-    void test_createKey_code_enUk() {
+    void test_createKey_code_lang_region() {
         XliffCacheableKeyGenerator generator = new XliffCacheableKeyGenerator();
 
         Locale locale = Locale.forLanguageTag("en-GB");
