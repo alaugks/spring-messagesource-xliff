@@ -66,7 +66,7 @@ This package provides a **MessageSource** for using translations from XLIFF file
 
 **Gradle**
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.1.2'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.2.0-SNAPSHOT'
 ```
 
 
