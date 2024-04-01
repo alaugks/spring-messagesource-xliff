@@ -18,14 +18,36 @@ This package provides a **MessageSource** for using translations from XLIFF file
 <a name="a1"></a>
 ## 1. Versions
 
-| Version        | Description                                                                               |
-|:---------------|:------------------------------------------------------------------------------------------|
-| 1.2.0-SNAPSHOT |                                                                                           |
-| 1.1.2          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
-| 1.1.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
-| 1.1.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
-| 1.0.0          | First public version                                                                      |
-
+<table>
+  <thead>
+    <tr>
+      <th>Version</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1.2.0-SNAPSHOT</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>1.1.2</td>
+      <td><a href="https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2">Release notes</a></td>
+    </tr>
+    <tr>
+      <td>1.1.1</td>
+      <td><a href="https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1">Release notes</a></td>
+    </tr>
+    <tr>
+      <td>1.1.0</td>
+      <td><a href="https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0">Release notes</a></td>
+    </tr>
+    <tr>
+      <td>1.0.0</td>
+      <td>First public version</td>
+    </tr>
+  </tbody>
+</table>
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.2)
 
