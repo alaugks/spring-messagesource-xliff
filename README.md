@@ -8,13 +8,12 @@ This package provides a **MessageSource** for using translations from XLIFF file
 2. [Dependency](#a2)
 3. [MessageSource Configuration](#a3)
 4. [Minimal CacheManager Configuration](#a4)
-5. [CacheManager with Supported Cache Providers](#a4)
-6. [Cache warming with an ApplicationRunner (recommended)](#a6)
-7. [XLIFF Translation Files](#a7)
-8. [Using the MessageSource](#a8)
-9. [Full Example](#a9)
-10. [Support](#a10)
-11. [More Information](#a11)
+5. [Cache warming with an ApplicationRunner (recommended)](#a5)
+6. [XLIFF Translation Files](#a6)
+7. [Using the MessageSource](#a7)
+8. [Full Example](#a8)
+9. [Support](#a9)
+10. [More Information](#a10)
 
 <a name="a1"></a>
 ## 1. Versions
@@ -67,7 +66,8 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 * Defines the default language.
 
 `setDefaultDomain(String defaultDomain)`
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a7).
+
+* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a6).
 
 > Please note the [Minimal CacheManager Configuration](#a4).
 
@@ -103,11 +103,13 @@ public class MessageConfig {
 
 You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required.
 
-The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The specific cache identifier is stored in the constant.
-
-[ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html) is the default cache in Spring Boot and Spring.
+The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The specific cache identifier is stored in the
+constant. No ExpireDate should be set for the XLIFF translations cache.
 
 ### 4.1 CacheManager with ConcurrentMapCacheManager
+
+[ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html)
+is the default cache in Spring Boot and Spring.
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
@@ -133,50 +135,9 @@ public class CacheConfig {
 }    
 ```
 
-
 <a name="a5"></a>
 
-### 4.2 CacheManager with Supported Cache Providers
-[Supported Cache Providers](https://docs.spring.io/spring-boot/docs/3.1.1/reference/html/io.html#io.caching.provider) can also be used. The following example using [Caffeine](https://github.com/ben-manes/caffeine):
-
-The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. No ExpireDate should be set for the XLIFF translations cache.
-
-```java
-import com.github.benmanes.caffeine.cache.Caffeine;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.Collection;
-import java.util.List;
-
-@Configuration
-@EnableCaching
-class CacheConfig {
-    
-    @Bean
-    public Caffeine<Object, Object> caffeineConfig() {
-        return Caffeine.newBuilder();
-    }
-
-    @Bean
-    public CacheManager cacheManager(Caffeine<Object, Object> caffeine) {
-        Collection<String> cacheNames = List.of(CatalogCache.CACHE_NAME);
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-        caffeineCacheManager.setCaffeine(caffeine);
-        caffeineCacheManager.setCacheNames(cacheNames);
-        return caffeineCacheManager;
-    }
-    
-}
-```
-
-
-<a name="a6"></a>
-## 6. Cache warming with an ApplicationRunner (recommended)
+## 5. Cache warming with an ApplicationRunner (recommended)
 
 In the following example, the cache of translations is warmed up after the application starts.
 
@@ -188,7 +149,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AppStartupRunner implements ApplicationRunner {
+public class WarmUpXliffTranslationsCache implements ApplicationRunner {
 
   private final MessageSource messageSource;
 
@@ -206,9 +167,9 @@ public class AppStartupRunner implements ApplicationRunner {
 }
 ```
 
+<a name="a6"></a>
 
-<a name="a7"></a>
-## 7. XLIFF Translation Files
+## 6. XLIFF Translation Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
@@ -439,15 +400,19 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 > **Example of a fallback. With locale `en-US` it tries to select the translation with id `headline` in messages_en-US. The id `headline` does not exist, so it tries to select the translation with locale `en` in messages.
 
 
-<a name="a8"></a>
-## 8. Using the MessageSource
+<a name="a7"></a>
 
-With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](#a8.1), as [Service (Dependency Injection)](#a8.2) and [Custom Validation Messages](#a8.3). Also in packages and implementations that use the MessageSource.
+## 7. Using the MessageSource
 
-<a name="a8.1"></a>
+With the implementation and use of the MessageSource interface, the translations are also available
+in [Thymeleaf](#a7.1), as [Service (Dependency Injection)](#a7.2) and [Custom Validation Messages](#a7.3). Also in
+packages and implementations that use the MessageSource.
+
+<a name="a7.1"></a>
 ### Thymeleaf
 
-With the configured MessageSource, the translations are available in Thymeleaf. See the example in the [Full Example](#a9).
+With the configured MessageSource, the translations are available in Thymeleaf. See the example in
+the [Full Example](#a8).
 
 ```html
 <!-- "Headline" -->
@@ -476,10 +441,10 @@ With the configured MessageSource, the translations are available in Thymeleaf. 
 
 ```
 
-<a name="a8.2"></a>
+<a name="a7.2"></a>
 ### Service (Dependency Injection)
 
-The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a9).
+The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a8).
 
 ```java
 @Controller
@@ -528,30 +493,29 @@ public class HomeController {
 }
 ```
 
-<a name="a8.3"></a>
+<a name="a7.3"></a>
 ### Custom Validation Messages
 
 The article [Custom Validation MessageSource in Spring Boot](https://www.baeldung.com/spring-custom-validation-message-source) describes how to use custom validation messages.
 
+<a name="a8"></a>
 
-
-<a name="a9"></a>
-## 9. Full Example
+## 8. Full Example
 
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
 
 Repository: https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot<br>
 Website: https://spring-boot-xliff-example.alaugks.dev
 
+<a name="a9"></a>
 
-<a name="a10"></a>
-## 10. Support
+## 9. Support
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
 
+<a name="a10"></a>
 
-<a name="a11"></a>
-## 11. More Information
+## 10. More Information
 
 ### MessageSource, Internationalization and Thymeleaf
 * [Guide to Internationalization in Spring Boot](https://www.baeldung.com/spring-boot-internationalization)
