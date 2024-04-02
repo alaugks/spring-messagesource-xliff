@@ -68,15 +68,12 @@ public class XliffTranslationMessageSource implements MessageSource {
      * <p>
      * Example:
      * {@code
-     * XliffTranslationMessageSource messageSource = XliffTranslationMessageSource
-     * .builder(cacheManager)
-     * .basenamePattern("translations/*")
-     * .defaultLocale(Locale.forLanguageTag("en"))
-     * .build();
+     *      XliffTranslationMessageSource messageSource = XliffTranslationMessageSource
+     *          .builder(cacheManager)
+     *          .basenamePattern("translations/*")
+     *          .defaultLocale(Locale.forLanguageTag("en"))
+     *          .build();
      * }
-     * <p>
-     * Example with configuration class:
-     * {@code
      */
     @Deprecated(since = "1.2.1")
     public XliffTranslationMessageSource(CacheManager cacheManager) {

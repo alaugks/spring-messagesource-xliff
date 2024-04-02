@@ -88,7 +88,9 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <version>3.6.3</version>
                         <configuration>
-                            <doclint>all,-missing</doclint>
+                            <additionalOptions>
+                                <additionalOption>-Xdoclint:none</additionalOption>
+                            </additionalOptions>
                         </configuration>
                         <executions>
                             <execution>
@@ -181,7 +183,9 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <version>3.6.3</version>
                         <configuration>
-                            <doclint>all,-missing</doclint>
+                            <additionalOptions>
+                                <additionalOption>-Xdoclint:none</additionalOption>
+                            </additionalOptions>
                         </configuration>
                         <executions>
                             <execution>
