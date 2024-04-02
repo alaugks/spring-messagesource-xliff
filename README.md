@@ -164,18 +164,18 @@ public class CacheConfig {
 In the following example, the cache of translations is warmed up after the application starts.
 
 ```java
-import io.github.alaugks.spring.messagesource.xliff.XliffMessageSourcePatternResolver;
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class WarmUpXliffTranslationsCache implements ApplicationRunner {
+public class CacheWarmUpMessageSource implements ApplicationRunner {
 
   private final MessageSource messageSource;
 
-  public AppStartupRunner(MessageSource messageSource) {
+  public CacheWarmUpMessageSource(MessageSource messageSource) {
     this.messageSource = messageSource;
   }
 
@@ -430,6 +430,11 @@ With the implementation and use of the MessageSource interface, the translations
 in [Thymeleaf](#a7.1), as [Service (Dependency Injection)](#a7.2) and [Custom Validation Messages](#a7.3). Also in
 packages and implementations that use the MessageSource.
 
+
+> Translations in the default domain can be selected using the ```id``` or ```domain.id```. Translations in other
+> domains can only be selected using the ```otherdomain.id```. See the examples below.
+
+
 <a name="a7.1"></a>
 ### Thymeleaf
 
@@ -469,50 +474,53 @@ the [Full Example](#a8).
 The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a8).
 
 ```java
-@Controller
-public class HomeController {
+// Autowire MessageSourceInterface
+private MessageSource messageSource;
 
-    private final MessageSource messageSource;
-
-    public HomeController(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-    
-    @GetMapping(value = "/translations", name = "home_translations")
-    public String translations(Model model, Locale locale) {
-        LinkedHashMap<String, String> translations = new LinkedHashMap<>();
-
-        // "Headline"
-        translations.put("headline", this.messageSource.getMessage("headline", null, locale));
-        
-        // "Headline"
-        translations.put("messages.headline", this.messageSource.getMessage("messages.headline", null, locale));
-        
-        // "Postcode"
-        translations.put("postcode", this.messageSource.getMessage("postcode", null, locale));
-        
-        // "Postcode"
-        translations.put("messages.postcode", this.messageSource.getMessage("messages.postcode", null, locale));
-        
-        // "Payment"
-        translations.put("payment.headline", this.messageSource.getMessage("payment.headline", null, locale));
-        
-        // "Expiry date"
-        translations.put("payment.expiry-date", this.messageSource.getMessage("payment.expiry-date", null, locale));
-
-        // "Your email john.doe@example.com has been registered."
-        Object[] args = {"john.doe@example.com"};
-        translations.put("email-notice", this.messageSource.getMessage("email-notice", args, locale));
-        translations.put("messages.email-notice", this.messageSource.getMessage("email-notice", args, locale));
-
-        // "This is a default message."
-        String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
-        translations.put("not-exists-id", this.messageSource.getMessage("not-exists-id", null, defaultMessage, locale));
-
-        model.addAttribute("translations", translations);
-        return "home/translations";
-    }
+public HomeController(MessageSource messageSource) {
+  this.messageSource = messageSource;
 }
+
+// "Headline"
+this.messageSource.
+
+getMessage("headline",null,locale);
+this.messageSource.
+
+getMessage("messages.headline",null,locale);
+
+// "Postcode"
+this.messageSource.
+
+getMessage("postcode",null,locale);
+this.messageSource.
+
+getMessage("messages.postcode",null,locale);
+
+// "Payment"
+this.messageSource.
+
+getMessage("payment.headline",null,locale);
+
+// "Expiry date"
+this.messageSource.
+
+getMessage("payment.expiry-date",null,locale);
+
+// "Your email john.doe@example.com has been registered."
+Object[] args = {"john.doe@example.com"};
+this.messageSource.
+
+getMessage("email-notice",args, locale);
+this.messageSource.
+
+getMessage("messages.email-notice",args, locale);
+
+// "This is a default message."
+String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
+this.messageSource.
+
+getMessage("not-exists-id",null,defaultMessage, locale);
 ```
 
 <a name="a7.3"></a>
