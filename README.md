@@ -125,7 +125,8 @@ public class MessageConfig {
 
 You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required.
 
-The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The specific cache identifier is stored in the
+The CacheName must be set with the constant `XliffTranslationMessageSource.CACHE_NAME`. The specific cache identifier is
+stored in the
 constant. No ExpireDate should be set for the XLIFF translations cache.
 
 ### 4.1 CacheManager with ConcurrentMapCacheManager
@@ -150,7 +151,7 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-        cacheManager.setCacheNames(List.of(CatalogCache.CACHE_NAME));
+      cacheManager.setCacheNames(List.of(XliffTranslationMessageSource.CACHE_NAME));
         return cacheManager;
     }
     
@@ -581,7 +582,7 @@ class CacheableXliffTranslationMessageSource extends XliffTranslationMessageSour
 
     @Nullable
     @Cacheable(
-            value = CatalogCache.CACHE_NAME,
+            value = XliffTranslationMessageSource.CACHE_NAME,
             keyGenerator = XliffCacheableKeyGenerator.GENERATOR_NAME,
             condition = "#args.length == 0" // Do not cache with replaced args
     )
@@ -592,7 +593,7 @@ class CacheableXliffTranslationMessageSource extends XliffTranslationMessageSour
 
     @Nullable
     @Cacheable(
-            value = CatalogCache.CACHE_NAME,
+            value = XliffTranslationMessageSource.CACHE_NAME,
             keyGenerator = XliffCacheableKeyGenerator.GENERATOR_NAME,
             condition = "#args.length == 0" // Do not cache with replaced args
     )
@@ -602,7 +603,7 @@ class CacheableXliffTranslationMessageSource extends XliffTranslationMessageSour
     }
 
     @Cacheable(
-            value = CatalogCache.CACHE_NAME,
+            value = XliffTranslationMessageSource.CACHE_NAME,
             keyGenerator = XliffCacheableKeyGenerator.GENERATOR_NAME,
             condition = "#resolvable.getArguments().length == 0" // Do not cache with replaced args
     )

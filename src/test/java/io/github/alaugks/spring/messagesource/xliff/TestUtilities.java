@@ -2,7 +2,6 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -32,7 +31,7 @@ public class TestUtilities {
     }
 
     public static CacheManager getMockedCacheManager() {
-        return getMockedCacheManager(CatalogCache.CACHE_NAME);
+        return getMockedCacheManager(XliffTranslationMessageSource.CACHE_NAME);
     }
 
     public static CacheManager getMockedCacheManager(String cacheName) {

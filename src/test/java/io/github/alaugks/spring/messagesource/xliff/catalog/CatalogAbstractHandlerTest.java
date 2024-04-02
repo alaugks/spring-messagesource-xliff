@@ -2,6 +2,7 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -23,7 +24,7 @@ class CatalogAbstractHandlerTest {
         this.domain = "messages";
         this.locale = Locale.forLanguageTag("en");
         this.cacheManager = new ConcurrentMapCacheManager();
-        this.cacheManager.setCacheNames(List.of(CatalogCache.CACHE_NAME));
+        this.cacheManager.setCacheNames(List.of(XliffTranslationMessageSource.CACHE_NAME));
     }
 
     @Test
@@ -45,7 +46,7 @@ class CatalogAbstractHandlerTest {
         assertEquals("value_from_cache", catalogCache.get(locale, "key"));
 
         // Remove items from CatalogCache
-        var cache = this.cacheManager.getCache(CatalogCache.CACHE_NAME);
+        var cache = this.cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
         cache.evict(XliffCacheableKeyGenerator.createCode(this.locale, this.domain + ".key"));
 
         // Now hit Catalog (Chain of Responsibility: CatalogCache -> Catalog)
@@ -70,7 +71,7 @@ class CatalogAbstractHandlerTest {
         catalog.put(this.locale, this.domain, "key", "value");
 
         // Get Cache
-        var cache = this.cacheManager.getCache(CatalogCache.CACHE_NAME);
+        var cache = this.cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
         var cacheAsArray = TestUtilities.cacheToArray(cache);
 
         // Key must not exist
@@ -80,7 +81,7 @@ class CatalogAbstractHandlerTest {
         catalogCache.initCache();
 
         // Get Cache
-        cache = this.cacheManager.getCache(CatalogCache.CACHE_NAME);
+        cache = this.cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
         cacheAsArray = TestUtilities.cacheToArray(cache);
 
         // Key must exist

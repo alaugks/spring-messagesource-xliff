@@ -17,6 +17,8 @@ import java.util.Locale;
 @SuppressWarnings({"java:S1123", "java:S1874", "java:S1133"})
 public class XliffTranslationMessageSource implements MessageSource {
 
+    public static final String CACHE_NAME = "io.github.alaugks.spring.messagesource.xliff.cache";
+
     private CatalogHandler catalogHandler = null;
 
     @Deprecated(since = "1.2.1")

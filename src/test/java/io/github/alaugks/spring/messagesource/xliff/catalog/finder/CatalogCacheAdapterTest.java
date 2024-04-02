@@ -1,6 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.finder;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.CacheManager;
@@ -21,7 +22,7 @@ class CatalogCacheAdapterTest {
         catalog.put(Locale.forLanguageTag("en"), "domain", "key_2", "value_en_2");
         catalog.put(Locale.forLanguageTag("en"), "domain", "key_1", "value_en_3");
 
-        var adapter = new CatalogCacheAdapter(cacheManager.getCache(CatalogCache.CACHE_NAME));
+        var adapter = new CatalogCacheAdapter(cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME));
 
         assertEquals("value_en_1", adapter.find(Locale.forLanguageTag("en"), "domain.key_1"));
         assertNull(adapter.find(Locale.forLanguageTag("en"), "domain.not_exists"));

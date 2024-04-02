@@ -94,7 +94,7 @@ class CatalogCacheTest {
             }
         );
         assertEquals(
-                "Cache with name [messagesource.xliff.catalog.CACHE] not available.",
+                "Cache with name [io.github.alaugks.spring.messagesource.xliff.cache] not available.",
                 exception.getMessage()
         );
     }

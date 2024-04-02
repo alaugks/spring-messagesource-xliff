@@ -1,6 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogCacheAdapter;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceCacheNotExistsException;
@@ -14,7 +15,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class CatalogCache extends CatalogAbstractHandler {
-    public static final String CACHE_NAME = "messagesource.xliff.catalog.CACHE";
+    /**
+     * @deprecated Replace with io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource.CACHE_NAME
+     */
+    @Deprecated
+    public static final String CACHE_NAME = XliffTranslationMessageSource.CACHE_NAME;
 
     private Cache cache;
     private final Locale defaultLocale;
@@ -92,12 +97,15 @@ public final class CatalogCache extends CatalogAbstractHandler {
     private void loadCache(CacheManager cacheManager) {
         if (cacheManager != null) {
             Collection<String> caches = cacheManager.getCacheNames();
-            if (caches.contains(CACHE_NAME)) {
-                this.cache = cacheManager.getCache(CACHE_NAME);
+            if (caches.contains(XliffTranslationMessageSource.CACHE_NAME)) {
+                this.cache = cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
                 return;
             }
             throw new XliffMessageSourceCacheNotExistsException(
-                    String.format("Cache with name [%s] not available.", CACHE_NAME)
+                    String.format(
+                            "Cache with name [%s] not available.",
+                            XliffTranslationMessageSource.CACHE_NAME
+                    )
             );
         }
         throw new XliffMessageSourceCacheNotExistsException(

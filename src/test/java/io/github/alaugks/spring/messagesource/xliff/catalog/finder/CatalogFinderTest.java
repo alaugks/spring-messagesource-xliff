@@ -1,6 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.finder;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.CacheManager;
@@ -21,7 +22,7 @@ class CatalogFinderTest {
         catalog.put(Locale.forLanguageTag("en"), "domain", "m_key_1", "value_en_1");
 
         var finder = new CatalogFinder(
-                new CatalogCacheAdapter(cacheManager.getCache(CatalogCache.CACHE_NAME)),
+                new CatalogCacheAdapter(cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME)),
                 Locale.forLanguageTag("en"),
                 "domain"
         );
@@ -47,7 +48,7 @@ class CatalogFinderTest {
         catalog.put(Locale.forLanguageTag("de-CH"), "domain", "d_key_1", "d_value_de_ch_1");
 
         var finder = new CatalogFinder(
-                new CatalogCacheAdapter(cacheManager.getCache(CatalogCache.CACHE_NAME)),
+                new CatalogCacheAdapter(cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME)),
                 Locale.forLanguageTag("en"),
                 "messages"
         );
@@ -124,7 +125,7 @@ class CatalogFinderTest {
         catalog.put(Locale.forLanguageTag("de-CH"), "domain", "d_key_1", "d_value_de_ch_1");
 
         var finder = new CatalogFinder(
-                new CatalogCacheAdapter(cacheManager.getCache(CatalogCache.CACHE_NAME)),
+                new CatalogCacheAdapter(cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME)),
                 Locale.forLanguageTag("en-GB"),
                 "messages"
         );
