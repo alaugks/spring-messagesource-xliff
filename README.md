@@ -27,7 +27,7 @@ This package provides a **MessageSource** for using translations from XLIFF file
   </thead>
   <tbody>
     <tr>
-      <td>1.2.0-SNAPSHOT</td>
+      <td>2.0.0-SNAPSHOT</td>
       <td></td>
     </tr>
     <tr>
@@ -60,13 +60,13 @@ This package provides a **MessageSource** for using translations from XLIFF file
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
 **Gradle**
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.2.0-SNAPSHOT'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0-SNAPSHOT'
 ```
 
 
