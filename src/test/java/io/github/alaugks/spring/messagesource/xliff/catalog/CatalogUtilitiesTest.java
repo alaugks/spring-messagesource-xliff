@@ -69,4 +69,21 @@ class CatalogUtilitiesTest {
         assertEquals("", CatalogUtilities.buildLocaleWithoutRegion(Locale.forLanguageTag("en_UK")).toString());
     }
 
+
+    @Test
+    void test_createCode_code_lang() {
+        Locale locale = Locale.forLanguageTag("en");
+        String code = "my-code";
+
+        assertEquals("en|my-code", CatalogUtilities.createCode(locale, code));
+    }
+
+    @Test
+    void test_createCode_code_lang_region() {
+        Locale locale = Locale.forLanguageTag("en-GB");
+        String code = "my-code";
+
+        assertEquals("en-gb|my-code", CatalogUtilities.createCode(locale, code));
+    }
+
 }

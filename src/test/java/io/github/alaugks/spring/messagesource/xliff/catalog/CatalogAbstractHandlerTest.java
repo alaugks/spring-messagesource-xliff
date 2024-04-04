@@ -1,7 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
-import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
 import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ class CatalogAbstractHandlerTest {
 
         // Remove items from CatalogCache
         var cache = this.cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
-        cache.evict(XliffCacheableKeyGenerator.createCode(this.locale, this.domain + ".key"));
+        cache.evict(CatalogUtilities.createCode(this.locale, this.domain + ".key"));
 
         // Now hit Catalog (Chain of Responsibility: CatalogCache -> Catalog)
         assertEquals("value_from_file", catalogCache.get(this.locale, "key"));
@@ -56,7 +55,7 @@ class CatalogAbstractHandlerTest {
     @Test
     void test_initCache() {
         // Create CacheKey
-        var key = XliffCacheableKeyGenerator.createCode(this.locale, this.domain + ".key");
+        var key = CatalogUtilities.createCode(this.locale, this.domain + ".key");
 
         // Init CatalogCache
         var catalogCache = new CatalogCache(this.locale, this.domain, this.cacheManager);

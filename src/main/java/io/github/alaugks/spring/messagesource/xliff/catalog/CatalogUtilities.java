@@ -42,4 +42,8 @@ public final class CatalogUtilities {
         localeBuilder.setLanguage(locale.getLanguage());
         return localeBuilder.build();
     }
+
+    public static String createCode(Locale locale, String code) {
+        return localeToLocaleKey(locale) + "|" + code;
+    }
 }

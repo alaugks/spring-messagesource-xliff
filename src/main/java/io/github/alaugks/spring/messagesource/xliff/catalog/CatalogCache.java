@@ -1,6 +1,5 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
 import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogCacheAdapter;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
@@ -78,7 +77,7 @@ public final class CatalogCache extends CatalogAbstractHandler {
     public void put(Locale locale, String code, String value) {
         if (!locale.toString().isEmpty()) {
             this.cache.putIfAbsent(
-                    XliffCacheableKeyGenerator.createCode(locale, code),
+                    CatalogUtilities.createCode(locale, code),
                     value
             );
         }

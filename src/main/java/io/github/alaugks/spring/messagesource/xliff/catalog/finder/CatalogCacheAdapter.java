@@ -1,6 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.finder;
 
-import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
+import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogUtilities;
 import org.springframework.cache.Cache;
 
 import java.util.Locale;
@@ -16,7 +16,7 @@ public class CatalogCacheAdapter implements CatalogAdapterInterface {
     @Override
     public String find(Locale locale, String code) {
         Cache.ValueWrapper valueWrapper = this.cache.get(
-                XliffCacheableKeyGenerator.createCode(locale, code)
+                CatalogUtilities.createCode(locale, code)
         );
 
         if (valueWrapper != null) {
