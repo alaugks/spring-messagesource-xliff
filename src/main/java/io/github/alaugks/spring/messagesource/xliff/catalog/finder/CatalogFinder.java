@@ -29,57 +29,40 @@ public final class CatalogFinder {
         Locale localeLang = CatalogUtilities.buildLocaleWithoutRegion(locale);
         Locale defaultLocaleLangRegion = CatalogUtilities.buildLocale(this.defaultLocale);
         Locale defaultLocaleLang = CatalogUtilities.buildLocaleWithoutRegion(this.defaultLocale);
-        String domainCode = CatalogUtilities.concatCode(this.domain, code);
 
-        // CodeLocaleRegion
-        value = this.adapter.find(localeLangRegion, code);
+        // Code+LocaleRegion / DomainCode+LanguageRegion
+        value = this.fromCatalogSubStep(localeLangRegion, code);
         if (value != null) {
             return value;
         }
 
-        // CodeLanguage
-        value = this.adapter.find(localeLang, code);
+        // Code+Language / DomainCode+Language
+        value = this.fromCatalogSubStep(localeLang, code);
         if (value != null) {
             return value;
         }
 
-        // CodeDefaultLanguageRegion
-        value = this.adapter.find(defaultLocaleLangRegion, code);
+        // Code+DefaultLanguageRegion / DomainCode+DefaultLanguageRegion
+        value = this.fromCatalogSubStep(defaultLocaleLangRegion, code);
         if (value != null) {
             return value;
         }
 
-        // CodeDefaultLanguage
-        value = this.adapter.find(defaultLocaleLang, code);
-        if (value != null) {
-            return value; // Not reached by tests.
-        }
-
-        // DomainCodeLanguageRegion
-        value = this.adapter.find(localeLangRegion, domainCode);
+        // Code+DefaultLanguage / DomainCode+DefaultLanguage
+        value = this.fromCatalogSubStep(defaultLocaleLang, code);
         if (value != null) {
             return value;
-        }
-
-        // DomainCodeLanguage
-        value = this.adapter.find(localeLang, domainCode);
-        if (value != null) {
-            return value;
-        }
-
-        // DomainCodeDefaultLanguageRegion
-        value = this.adapter.find(defaultLocaleLangRegion, domainCode);
-        if (value != null) {
-            return value;
-        }
-
-        // DomainCodeDefaultLanguage
-        value = this.adapter.find(defaultLocaleLang, domainCode);
-        if (value != null) {
-            return value; // Not reached by tests.
         }
 
         return null;
     }
 
+    private String fromCatalogSubStep(Locale locale, String code) {
+        String value = this.adapter.find(locale, code);
+        if (value != null) {
+            return value;
+        }
+        // Check with domain as prefix
+        return this.adapter.find(locale, CatalogUtilities.concatCode(this.domain, code));
+    }
 }
