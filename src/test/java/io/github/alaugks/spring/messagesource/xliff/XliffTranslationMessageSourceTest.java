@@ -41,11 +41,18 @@ class XliffTranslationMessageSourceTest {
     @Test
     @Order(100)
     void test_getMessage_Args_and_Default_messageExists() {
-        assertEquals("Hello EN (messages)", messageSource.getMessage(
-            "hello_language",
+        assertEquals("Hello World (messages / en)", messageSource.getMessage(
+            "hello_world",
             null,
             "My default message",
             Locale.forLanguageTag("en")
+        ));
+
+        assertEquals("Hallo Welt (messages / de)", messageSource.getMessage(
+            "hello_world",
+            null,
+            "Meine Standardtext",
+            Locale.forLanguageTag("de")
         ));
     }
 
@@ -57,6 +64,13 @@ class XliffTranslationMessageSourceTest {
             null,
             "My default message",
             Locale.forLanguageTag("en")
+        ));
+
+        assertEquals("Meine Standardtext", messageSource.getMessage(
+            "not_exists",
+            null,
+            "Meine Standardtext",
+            Locale.forLanguageTag("de")
         ));
     }
 
@@ -70,6 +84,13 @@ class XliffTranslationMessageSourceTest {
             "My default message",
             Locale.forLanguageTag("en")
         ));
+
+        assertEquals("Road Runner und Wile E. Coyote", messageSource.getMessage(
+            "roadrunner",
+            args,
+            "My default message",
+            Locale.forLanguageTag("de")
+        ));
     }
 
     @Test
@@ -82,6 +103,13 @@ class XliffTranslationMessageSourceTest {
             "{0} and {1} as default",
             Locale.forLanguageTag("en")
         ));
+
+        assertEquals("Road Runner and Wile E. Coyote as default", messageSource.getMessage(
+            "not_exists",
+            args,
+            "{0} and {1} as default",
+            Locale.forLanguageTag("de")
+        ));
     }
 
     @Test
@@ -93,15 +121,28 @@ class XliffTranslationMessageSourceTest {
             null,
             Locale.forLanguageTag("en")
         ));
+
+        assertNull(messageSource.getMessage(
+            "not_exists",
+            null,
+            null,
+            Locale.forLanguageTag("de")
+        ));
     }
 
     @Test
     @Order(200)
     void test_getMessage_Args_messageExists() {
-        assertEquals("Hello EN (messages)", messageSource.getMessage(
-            "hello_language",
+        assertEquals("Hello World (messages / en)", messageSource.getMessage(
+            "hello_world",
             null,
             Locale.forLanguageTag("en")
+        ));
+
+        assertEquals("Hallo Welt (messages / de)", messageSource.getMessage(
+            "hello_world",
+            null,
+            Locale.forLanguageTag("de")
         ));
     }
 
@@ -109,13 +150,18 @@ class XliffTranslationMessageSourceTest {
     @Order(200)
     void test_getMessage_Args_messageExists_messageWithArgs() {
         Object[] args = {"Road Runner", "Wile E. Coyote"};
-        String message = messageSource.getMessage(
-                "roadrunner",
-                args,
-                Locale.forLanguageTag("en")
-        );
 
-        assertEquals("Road Runner and Wile E. Coyote", message);
+        assertEquals("Road Runner and Wile E. Coyote", messageSource.getMessage(
+            "roadrunner",
+            args,
+            Locale.forLanguageTag("en")
+        ));
+
+        assertEquals("Road Runner und Wile E. Coyote", messageSource.getMessage(
+            "roadrunner",
+            args,
+            Locale.forLanguageTag("de")
+        ));
     }
 
     @Order(200)
@@ -145,14 +191,21 @@ class XliffTranslationMessageSourceTest {
     void test_getMessage_Resolvable_messageExists_messageWithArgs() {
         String[] codes = {"roadrunner"};
         Object[] args = {"Road Runner", "Wile E. Coyote"};
-        DefaultMessageSourceResolvable resolvable = new DefaultMessageSourceResolvable(
-                codes,
-                args
-        );
 
         assertEquals("Road Runner and Wile E. Coyote", messageSource.getMessage(
-            resolvable,
+            new DefaultMessageSourceResolvable(
+                codes,
+                args
+            ),
             Locale.forLanguageTag("en")
+        ));
+
+        assertEquals("Road Runner und Wile E. Coyote", messageSource.getMessage(
+            new DefaultMessageSourceResolvable(
+                codes,
+                args
+            ),
+            Locale.forLanguageTag("de")
         ));
     }
 
@@ -160,16 +213,23 @@ class XliffTranslationMessageSourceTest {
     @Order(300)
     void test_getMessage_Resolvable_messageNotExists_withDefaultMessage() {
         String[] codes = {"not_exists"};
-        String defaultMessage = "This is a default message.";
-        DefaultMessageSourceResolvable resolvable = new DefaultMessageSourceResolvable(
+
+        assertEquals("This is a default message.", messageSource.getMessage(
+            new DefaultMessageSourceResolvable(
                 codes,
                 null,
-                defaultMessage
-        );
-
-        assertEquals(defaultMessage, messageSource.getMessage(
-            resolvable,
+                "This is a default message."
+            ),
             Locale.forLanguageTag("en")
+        ));
+
+        assertEquals("Das ist ein Standardtext.", messageSource.getMessage(
+            new DefaultMessageSourceResolvable(
+                codes,
+                null,
+                "Das ist ein Standardtext."
+            ),
+            Locale.forLanguageTag("de")
         ));
     }
 
@@ -191,22 +251,22 @@ class XliffTranslationMessageSourceTest {
     private static Stream<Arguments> dataProvider_fallback() {
         return Stream.of(
                 Arguments.of(
-                        "hello_language",
+                    "hello_world",
                         null,
                         Locale.forLanguageTag("jp"),
-                        "Hello EN (messages)"
+                    "Hello World (messages / en)"
                 ),
                 Arguments.of(
-                        "hello_language",
+                    "hello_world",
                         null,
                         Locale.forLanguageTag("en-GB"),
-                        "Hello EN (messages)"
+                    "Hello World (messages / en)"
                 ),
                 Arguments.of(
-                        "hello_language",
+                    "hello_world",
                         null,
                         Locale.forLanguageTag("en-US"),
-                        "Hello EN_US (messages)"
+                    "Hello World (messages / en_US)"
                 )
         );
     }

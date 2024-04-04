@@ -1,12 +1,11 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CatalogHandlerTest {
 
@@ -41,8 +40,9 @@ class CatalogHandlerTest {
 
     @Test
     void test_get() {
-        assertEquals("Hello EN (messages)", this.catalogHandler.get(this.locale, "hello_language").toString());
-        assertEquals("Hello EN (messages)", this.catalogHandler.get(this.locale, "messages.hello_language").toString());
+        assertEquals("Hello World (messages / en)", this.catalogHandler.get(this.locale, "hello_world").toString());
+        assertEquals("Hello World (messages / en)",
+            this.catalogHandler.get(this.locale, "messages.hello_world").toString());
     }
 
     @Test

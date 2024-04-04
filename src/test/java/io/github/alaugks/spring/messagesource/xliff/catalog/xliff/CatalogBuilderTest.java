@@ -1,5 +1,10 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
@@ -7,11 +12,8 @@ import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSource
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseFatalErrorException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import org.junit.jupiter.api.Test;
-
 import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class CatalogBuilderTest {
 
@@ -28,7 +30,7 @@ class CatalogBuilderTest {
                 .build();
 
         CatalogInterface catalog = catalogBuilder.createCatalog(new Catalog(Locale.forLanguageTag("en"), "messages"));
-        assertEquals("Hello EN (messages)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_language"));
+        assertEquals("Hello World (messages / en)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_world"));
     }
 
     @Test

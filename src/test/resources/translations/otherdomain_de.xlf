@@ -6,13 +6,13 @@
           source-language="en"
           target-language="de">
         <body>
-            <trans-unit id="hello_language" resname="hello_language">
+          <trans-unit id="hello_world" resname="hello_world">
                 <source>
 
-                    Hello EN (otherdomain)
+                  Hello World (otherdomain / en)
                 </source>
                 <target>
-                    Hallo DE (otherdomain)
+                  Hallo Welt (otherdomain / de)
                 </target>
             </trans-unit>
         </body>

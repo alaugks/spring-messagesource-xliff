@@ -50,8 +50,8 @@ class XliffTranslationMessageSourceCasesTest {
                 .defaultDomain("otherdomain")
                 .build();
 
-        assertEquals("Other Hello EN (otherdomain)", messageSource.getMessage(
-            "hello_language",
+        assertEquals("Hello World (otherdomain / en)", messageSource.getMessage(
+            "hello_world",
             null,
             Locale.forLanguageTag("en-US")
         ));
@@ -71,20 +71,20 @@ class XliffTranslationMessageSourceCasesTest {
                 .build();
 
         assertEquals(
-            "value_messages_en",
-            messageSource.getMessage("messages.hello_language", null, Locale.forLanguageTag("en"))
+            "Hello World (messages / en)",
+            messageSource.getMessage("messages.hello_world", null, Locale.forLanguageTag("en"))
         );
         assertEquals(
-            "value_otherdomain_en",
-            messageSource.getMessage("otherdomain.hello_language", null, Locale.forLanguageTag("en"))
+            "Hello World (otherdomain / en)",
+            messageSource.getMessage("otherdomain.hello_world", null, Locale.forLanguageTag("en"))
         );
         assertEquals(
-            "value_messages_de",
-            messageSource.getMessage("messages.hello_language", null, Locale.forLanguageTag("de"))
+            "Hallo Welt (messages / de)",
+            messageSource.getMessage("messages.hello_world", null, Locale.forLanguageTag("de"))
         );
         assertEquals(
-            "value_otherdomain_de",
-            messageSource.getMessage("otherdomain.hello_language", null, Locale.forLanguageTag("de"))
+            "Hallo Welt (otherdomain / de)",
+            messageSource.getMessage("otherdomain.hello_world", null, Locale.forLanguageTag("de"))
         );
     }
 

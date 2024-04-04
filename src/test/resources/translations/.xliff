@@ -7,12 +7,12 @@
           target-language="en">
         <body>
             <trans-unit id="1"
-                        resname="hello_language">
+              resname="hello_world">
                 <source>
-                    Hello EN (messages)
+                    Hello World (messages / en)
                 </source>
                 <target>
-                    Hello EN (messages)
+                    Hello World (messages / en)
                 </target>
             </trans-unit>
             <trans-unit id="2"

@@ -6,13 +6,13 @@
           source-language="en"
           target-language="de">
         <body>
-            <trans-unit id="hello_language" resname="hello_language">
+          <trans-unit id="hello_world" resname="hello_world">
                 <source>
 
-                    Hello EN (messages)
+                  Hello World (messages / en)
                 </source>
                 <target>
-                    Hallo DE (messages)
+                  Hallo Welt (messages / de)
                 </target>
             </trans-unit>
             <trans-unit id="roadrunner">
