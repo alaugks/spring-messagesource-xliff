@@ -1,19 +1,18 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class XliffTranslationMessageSourceCasesTest {
 
@@ -51,12 +50,11 @@ class XliffTranslationMessageSourceCasesTest {
                 .defaultDomain("otherdomain")
                 .build();
 
-        String message = messageSource.getMessage(
-                "hello_language",
-                null,
-                Locale.forLanguageTag("en-US")
-        );
-        assertEquals("Other Hello EN (otherdomain)", message);
+        assertEquals("Other Hello EN (otherdomain)", messageSource.getMessage(
+            "hello_language",
+            null,
+            Locale.forLanguageTag("en-US")
+        ));
     }
 
     @Test
@@ -72,10 +70,22 @@ class XliffTranslationMessageSourceCasesTest {
                 .defaultLocale(Locale.forLanguageTag("en"))
                 .build();
 
-        assertEquals("value_messages_en", messageSource.getMessage("messages.hello_language", null, Locale.forLanguageTag("en")));
-        assertEquals("value_otherdomain_en", messageSource.getMessage("otherdomain.hello_language", null, Locale.forLanguageTag("en")));
-        assertEquals("value_messages_de", messageSource.getMessage("messages.hello_language", null, Locale.forLanguageTag("de")));
-        assertEquals("value_otherdomain_de", messageSource.getMessage("otherdomain.hello_language", null, Locale.forLanguageTag("de")));
+        assertEquals(
+            "value_messages_en",
+            messageSource.getMessage("messages.hello_language", null, Locale.forLanguageTag("en"))
+        );
+        assertEquals(
+            "value_otherdomain_en",
+            messageSource.getMessage("otherdomain.hello_language", null, Locale.forLanguageTag("en"))
+        );
+        assertEquals(
+            "value_messages_de",
+            messageSource.getMessage("messages.hello_language", null, Locale.forLanguageTag("de"))
+        );
+        assertEquals(
+            "value_otherdomain_de",
+            messageSource.getMessage("otherdomain.hello_language", null, Locale.forLanguageTag("de"))
+        );
     }
 
     @ParameterizedTest(name = "{index} => translationUnitIdentifiers={0}, code={1}, expected={2}, value={3}")
