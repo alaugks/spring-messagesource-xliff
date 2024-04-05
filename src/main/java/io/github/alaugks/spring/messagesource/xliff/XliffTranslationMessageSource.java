@@ -2,17 +2,17 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Locale;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.lang.Nullable;
-
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Locale;
 
 public class XliffTranslationMessageSource implements MessageSource {
 
@@ -31,7 +31,7 @@ public class XliffTranslationMessageSource implements MessageSource {
 
         this.catalogHandler = new CatalogHandler(
                 CatalogBuilder.builder(resourcesLoader)
-                        .translationUnitIdentifiersOrdering(builder.translationUnitIdentifiers)
+                        .transUnitIdentifier(builder.transUnitIdentifier)
                         .build(),
                 builder.defaultLocale,
                 builder.defaultDomain,
@@ -49,7 +49,7 @@ public class XliffTranslationMessageSource implements MessageSource {
         private String basename;
         private Iterable<String> basenames;
         private String defaultDomain = "messages";
-        private List<String> translationUnitIdentifiers;
+        private List<XliffIdentifierInterface> transUnitIdentifier;
 
         private Builder(CacheManager cacheManager) {
             this.cacheManager = cacheManager;
@@ -75,12 +75,8 @@ public class XliffTranslationMessageSource implements MessageSource {
             return this;
         }
 
-        /**
-         * @deprecated Will be replaced with another method.
-         */
-        @Deprecated(since = "2.0.1")
-        public Builder translationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
-            this.translationUnitIdentifiers = translationUnitIdentifiers;
+        public Builder setTransUnitIdentifier(List<XliffIdentifierInterface> transUnitIdentifier) {
+            this.transUnitIdentifier = transUnitIdentifier;
             return this;
         }
 

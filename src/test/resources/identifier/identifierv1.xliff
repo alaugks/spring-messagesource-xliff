@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="global"
+          datatype="plaintext"
+          source-language="en"
+          target-language="en">
+        <body>
+            <trans-unit id="code-id-a" resname="code-resname-a">
+                <source>Source A</source>
+                <target>Target A</target>
+            </trans-unit>
+            <trans-unit id="code-id-b">
+                <source>Source B</source>
+                <target>Target B</target>
+            </trans-unit>
+            <trans-unit resname="code-resname-c">
+                <source>Source C</source>
+                <target>Target C</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

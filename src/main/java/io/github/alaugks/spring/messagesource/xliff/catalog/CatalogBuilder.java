@@ -1,6 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffDocument;
+import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffVersion12;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffVersion2;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffVersionInterface;
@@ -19,21 +20,20 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 public final class CatalogBuilder {
 
     private final ResourcesLoader resourceLoader;
     private Catalog catalog;
-    private final List<String> translationUnitIdentifiers;
-    Set<XliffVersionInterface> supportedVersions = Set.of(
+    private final List<XliffIdentifierInterface> transUnitIdentifier;
+    List<XliffVersionInterface> supportedVersions = List.of(
             new XliffVersion12(),
             new XliffVersion2()
     );
 
     public CatalogBuilder(Builder builder) {
         this.resourceLoader = builder.resourceLoader;
-        this.translationUnitIdentifiers = builder.translationUnitIdentifiers;
+        this.transUnitIdentifier = builder.transUnitIdentifier;
     }
 
     public static Builder builder(ResourcesLoader resourceLoader) {
@@ -43,15 +43,15 @@ public final class CatalogBuilder {
     public static final class Builder {
 
         private final ResourcesLoader resourceLoader;
-        private List<String> translationUnitIdentifiers;
+        private List<XliffIdentifierInterface> transUnitIdentifier;
 
         private Builder(ResourcesLoader resourceLoader) {
             this.resourceLoader = resourceLoader;
         }
 
-        public Builder translationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
+        public Builder transUnitIdentifier(List<XliffIdentifierInterface> translationUnitIdentifiers) {
             if (translationUnitIdentifiers != null) {
-                this.translationUnitIdentifiers = translationUnitIdentifiers;
+                this.transUnitIdentifier = translationUnitIdentifiers;
             }
             return this;
         }
@@ -73,12 +73,11 @@ public final class CatalogBuilder {
     }
 
     public XliffVersionInterface getReader(String version) {
-        for (XliffVersionInterface xliffClass : this.supportedVersions) {
-            if (xliffClass.support(version)) {
-                return xliffClass;
-            }
-        }
-        return null;
+        return this.supportedVersions
+            .stream()
+            .filter(o -> o.support(version))
+            .findFirst()
+            .orElse(null);
     }
 
     private void readFile(List<ResourcesLoader.Dto> translationFiles) throws ParserConfigurationException, IOException {
@@ -106,10 +105,9 @@ public final class CatalogBuilder {
             String xliffVersion = xliffDocument.getXliffVersion();
 
             XliffVersionInterface xliffReader = this.getReader(xliffVersion);
+
             if (xliffReader != null) {
-                if (this.translationUnitIdentifiers != null) {
-                    xliffReader.setUnitIdentifiersOrdering(this.translationUnitIdentifiers);
-                }
+                xliffReader.setTransUnitIdentifier(this.transUnitIdentifier);
                 xliffReader.read(this.catalog, xliffDocument, translationFile.getDomain(), translationFile.getLocale());
             } else {
                 throw new XliffMessageSourceVersionSupportException(

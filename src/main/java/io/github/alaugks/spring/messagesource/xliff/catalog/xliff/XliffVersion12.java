@@ -2,14 +2,16 @@ package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-// https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers
 public final class XliffVersion12 implements XliffVersionInterface {
-    private List<String> translationUnitIdentifiers = new ArrayList<>(Arrays.asList("resname", "id"));
+
+    private XliffIdentifierInterface transUnitIdentifier;
+
+    public XliffVersion12() {
+        this.transUnitIdentifier = new Xliff12XliffIdentifier();
+    }
 
     @Override
     public boolean support(String version) {
@@ -17,14 +19,21 @@ public final class XliffVersion12 implements XliffVersionInterface {
     }
 
     @Override
-    public void setUnitIdentifiersOrdering(List<String> unitIdentifiers) {
-        this.translationUnitIdentifiers = unitIdentifiers;
+    public void setTransUnitIdentifier(List<XliffIdentifierInterface> unitIdentifiers) {
+        if (unitIdentifiers != null) {
+            this.transUnitIdentifier = unitIdentifiers
+                .stream()
+                .filter(u -> u.getClass() == Xliff12XliffIdentifier.class)
+                .findFirst()
+                .orElse(this.transUnitIdentifier);
+        }
     }
 
     @Override
     public void read(CatalogInterface catalog, XliffDocument document, String domain, Locale locale) {
-        document.getTransUnits("trans-unit", this.translationUnitIdentifiers).forEach(
+        document.getTransUnits("trans-unit", this.transUnitIdentifier.getList()).forEach(
                 transUnit -> catalog.put(locale, domain, transUnit.getCode(), transUnit.getTargetValue())
         );
     }
+
 }

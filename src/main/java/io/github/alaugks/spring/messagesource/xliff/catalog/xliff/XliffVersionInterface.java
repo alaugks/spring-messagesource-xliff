@@ -8,7 +8,7 @@ import java.util.Locale;
 public interface XliffVersionInterface {
     boolean support(String version);
 
-    void setUnitIdentifiersOrdering(List<String> unitIdentifiers);
+    void setTransUnitIdentifier(List<XliffIdentifierInterface> unitIdentifiers);
 
     void read(CatalogInterface catalog, XliffDocument document, String domain, Locale locale);
 }
