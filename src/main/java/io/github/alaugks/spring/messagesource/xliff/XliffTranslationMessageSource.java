@@ -5,6 +5,9 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogWrapper;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoaderInterface;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Locale;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -12,16 +15,17 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.lang.Nullable;
 
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Locale;
-
+@SuppressWarnings("java:S1133")
 public class XliffTranslationMessageSource implements MessageSource {
 
     private final CatalogWrapper catalogWrapper;
     private final ResourcesLoaderInterface resourcesLoader = new ResourcesLoader();
     private final XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
 
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
     public XliffTranslationMessageSource(CacheManager cacheManager) {
         this.catalogWrapper = new CatalogWrapper(
                 cacheManager,
@@ -31,26 +35,46 @@ public class XliffTranslationMessageSource implements MessageSource {
         );
     }
 
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
     public XliffTranslationMessageSource setDefaultLocale(Locale locale) {
         this.resourcesLoader.setDefaultLocale(locale);
         return this;
     }
 
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
     public XliffTranslationMessageSource setBasenamePattern(String basename) {
         this.resourcesLoader.setBasenamePattern(basename);
         return this;
     }
 
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
     public XliffTranslationMessageSource setBasenamesPattern(Iterable<String> basenames) {
         this.resourcesLoader.setBasenamesPattern(basenames);
         return this;
     }
 
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
     public XliffTranslationMessageSource setDefaultDomain(String defaultDomain) {
         this.catalogWrapper.setDefaultDomain(defaultDomain);
         return this;
     }
 
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
     public XliffTranslationMessageSource setTranslationUnitIdentifiersOrdering(List<String> translationUnitIdentifiers) {
         this.xliffCatalogBuilder.setTranslationUnitIdentifiersOrdering(translationUnitIdentifiers);
         return this;

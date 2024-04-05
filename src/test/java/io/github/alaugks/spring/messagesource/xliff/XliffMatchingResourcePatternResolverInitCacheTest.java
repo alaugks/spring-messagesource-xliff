@@ -1,9 +1,9 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeAll;
 
-import java.util.Locale;
-
+@SuppressWarnings({"java:S2187"})
 class XliffMatchingResourcePatternResolverInitCacheTest extends XliffMatchingResourcePatternResolverAbstract {
 
     @BeforeAll

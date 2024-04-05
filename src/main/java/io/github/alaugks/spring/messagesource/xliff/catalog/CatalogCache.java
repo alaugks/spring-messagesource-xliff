@@ -3,17 +3,22 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 import io.github.alaugks.spring.messagesource.xliff.XliffCacheableKeyGenerator;
 import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceCacheNotExistsException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Objects;
-
+@SuppressWarnings({"java:S5738", "java:S1874", "java:S1133"})
 public final class CatalogCache implements CatalogInterface {
+
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
     public static final String CACHE_NAME = "messagesource.xliff.catalog.CACHE";
 
     private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());
