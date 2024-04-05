@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 
 import java.util.Locale;
 
+@SuppressWarnings({"java:S2187"})
 class XliffMatchingResourcePatternResolverTest extends XliffMatchingResourcePatternResolverAbstract {
 
     @BeforeAll

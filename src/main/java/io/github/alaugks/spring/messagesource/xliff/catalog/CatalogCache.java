@@ -13,7 +13,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
+@SuppressWarnings({"java:S5738", "java:S1874", "java:S1133"})
 public final class CatalogCache implements CatalogInterface {
+
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
     public static final String CACHE_NAME = "messagesource.xliff.catalog.CACHE";
 
     private static final Logger logger = LogManager.getLogger(XliffTranslationMessageSource.class.toString());
