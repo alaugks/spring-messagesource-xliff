@@ -4,21 +4,15 @@ import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSourc
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogCacheAdapter;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceCacheNotExistsException;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 
 public final class CatalogCache extends CatalogAbstractHandler {
-    /**
-     * @deprecated Replace with io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource.CACHE_NAME
-     */
-    @Deprecated
-    public static final String CACHE_NAME = XliffTranslationMessageSource.CACHE_NAME;
 
     private Cache cache;
     private final Locale defaultLocale;
