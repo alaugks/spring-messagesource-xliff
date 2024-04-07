@@ -1,35 +1,31 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
-import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-
-import java.util.List;
-import java.util.Locale;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import java.util.Locale;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.cache.Cache;
 
 class CatalogAbstractHandlerTest {
 
     private String domain;
     private Locale locale;
-    private ConcurrentMapCacheManager cacheManager;
+    private Cache cache;
 
     @BeforeEach
     void beforeEach() {
         this.domain = "messages";
         this.locale = Locale.forLanguageTag("en");
-        this.cacheManager = new ConcurrentMapCacheManager();
-        this.cacheManager.setCacheNames(List.of(XliffTranslationMessageSource.CACHE_NAME));
+        this.cache = TestUtilities.getCache();
     }
 
     @Test
     void test_get() {
         // Init CatalogCache
-        var catalogCache = new CatalogCache(this.locale, this.domain, this.cacheManager);
+        var catalogCache = new CatalogCache(this.locale, this.domain, this.cache);
 
         // Init Catalog
         var catalog = new Catalog(this.locale, this.domain);
@@ -45,7 +41,6 @@ class CatalogAbstractHandlerTest {
         assertEquals("value_from_cache", catalogCache.get(locale, "key"));
 
         // Remove items from CatalogCache
-        var cache = this.cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
         cache.evict(CatalogUtilities.createCode(this.locale, this.domain + ".key"));
 
         // Now hit Catalog (Chain of Responsibility: CatalogCache -> Catalog)
@@ -58,7 +53,7 @@ class CatalogAbstractHandlerTest {
         var key = CatalogUtilities.createCode(this.locale, this.domain + ".key");
 
         // Init CatalogCache
-        var catalogCache = new CatalogCache(this.locale, this.domain, this.cacheManager);
+        var catalogCache = new CatalogCache(this.locale, this.domain, this.cache);
 
         // Init Catalog
         var catalog = new Catalog(this.locale, this.domain);
@@ -69,9 +64,8 @@ class CatalogAbstractHandlerTest {
         // Add item in CatalogCache and Catalog with the same Key
         catalog.put(this.locale, this.domain, "key", "value");
 
-        // Get Cache
-        var cache = this.cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
-        var cacheAsArray = TestUtilities.cacheToArray(cache);
+        // Get Cache;
+        var cacheAsArray = TestUtilities.cacheToArray(this.cache);
 
         // Key must not exist
         assertNull(cacheAsArray.get("key"));
@@ -80,8 +74,7 @@ class CatalogAbstractHandlerTest {
         catalogCache.initCache();
 
         // Get Cache
-        cache = this.cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
-        cacheAsArray = TestUtilities.cacheToArray(cache);
+        cacheAsArray = TestUtilities.cacheToArray(this.cache);
 
         // Key must exist
         assertEquals(

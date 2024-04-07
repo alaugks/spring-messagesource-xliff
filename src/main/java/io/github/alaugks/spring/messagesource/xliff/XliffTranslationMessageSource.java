@@ -7,7 +7,7 @@ import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
-import org.springframework.cache.CacheManager;
+import org.springframework.cache.Cache;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -15,8 +15,6 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.lang.Nullable;
 
 public class XliffTranslationMessageSource implements MessageSource {
-
-    public static final String CACHE_NAME = "io.github.alaugks.spring.messagesource.xliff.cache";
 
     private final CatalogHandler catalogHandler;
 
@@ -33,26 +31,26 @@ public class XliffTranslationMessageSource implements MessageSource {
                 CatalogBuilder.builder(resourcesLoader)
                         .transUnitIdentifier(builder.transUnitIdentifier)
                         .build(),
-                builder.defaultLocale,
-                builder.defaultDomain,
-                builder.cacheManager
+            builder.cache, builder.defaultLocale,
+            builder.defaultDomain
         );
     }
 
-    public static Builder builder(CacheManager cacheManager) {
+    public static Builder builder(Cache cacheManager) {
         return new Builder(cacheManager);
     }
 
     public static final class Builder {
-        private final CacheManager cacheManager;
+
+        private final Cache cache;
         private Locale defaultLocale;
         private String basename;
         private Iterable<String> basenames;
         private String defaultDomain = "messages";
         private List<XliffIdentifierInterface> transUnitIdentifier;
 
-        private Builder(CacheManager cacheManager) {
-            this.cacheManager = cacheManager;
+        private Builder(Cache cache) {
+            this.cache = cache;
         }
 
         public Builder defaultLocale(Locale locale) {

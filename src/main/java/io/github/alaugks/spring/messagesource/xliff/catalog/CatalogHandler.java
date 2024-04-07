@@ -1,21 +1,20 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import org.springframework.cache.CacheManager;
-
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import org.springframework.cache.Cache;
 
 public final class CatalogHandler {
     private final CatalogCache catalogCache;
 
     public CatalogHandler(
             CatalogBuilder catalogBuilder,
+        Cache cache,
             Locale defaultLocale,
-            String defaultDomain,
-            CacheManager cacheManager
+        String defaultDomain
     ) {
-        this.catalogCache = new CatalogCache(defaultLocale, defaultDomain, cacheManager);
+        this.catalogCache = new CatalogCache(defaultLocale, defaultDomain, cache);
         this.catalogCache.setNextHandler(
                 catalogBuilder.createCatalog(new Catalog(defaultLocale, defaultDomain))
         );

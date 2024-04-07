@@ -19,9 +19,8 @@ class CatalogHandlerTest {
                 CatalogBuilder
                         .builder(TestUtilities.getResourcesLoader())
                         .build(),
-                Locale.forLanguageTag("en"),
-                "messages",
-                TestUtilities.getMockedCacheManager()
+            TestUtilities.getCache(), Locale.forLanguageTag("en"),
+            "messages"
         );
     }
 

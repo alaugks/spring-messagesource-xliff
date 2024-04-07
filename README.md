@@ -34,6 +34,7 @@ This package provides a **MessageSource** for using translations from XLIFF file
 ## 2. Dependency
 
 **Maven**
+
 ```xml
 <dependency>
     <groupId>io.github.alaugks</groupId>
@@ -43,6 +44,7 @@ This package provides a **MessageSource** for using translations from XLIFF file
 ```
 
 **Gradle**
+
 ```text
 implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0-SNAPSHOT'
 ```
@@ -53,8 +55,48 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 
 The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface. An instance of the [CacheManager](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider) is required for caching the translations.
 
-### XliffTranslationMessageSource
+<a name="a3.1"></a>
 
+## 3.1 CacheManager Configuration
+
+You may already have an existing CacheManager configuration. If not, the following minimum
+CacheManager configuration is required. All
+supported [Cache Provider](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider)
+can be used.
+
+No ExpireDate should be set for the XLIFF translations cache.
+
+### CacheManager with ConcurrentMapCacheManager
+
+[ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html)
+is the default cache in Spring Boot and Spring.
+
+```java
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+
+@Configuration
+@EnableCaching
+public class CacheConfig {
+
+  public static final String XLIFF_CACHE_NAME = "my-xliff-cache-key-name";
+
+  @Bean
+  public CacheManager cacheManager() {
+    ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
+    cacheManager.setCacheNames(List.of(XLIFF_CACHE_NAME));
+    return cacheManager;
+  }
+
+}    
+```
+
+## 3.2 XliffTranslationMessageSource Configuration
 
 `setBasenamePattern(String basename)` or `setBasenamesPattern(Iterable<String> basenames)` (***required***)
 
@@ -69,72 +111,34 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 
 * Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a6).
 
-> Please note the [Minimal CacheManager Configuration](#a4).
+### MessageSource Configuration
 
 ```java
-import de.alaugks.spring.XliffTranslationMessageSource;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Locale;
 
 @Configuration
-public class MessageConfig {
-    
-    @Bean("messageSource")
-    public MessageSource messageSource(CacheManager cacheManager) {
-        return XliffTranslationMessageSource
-            .builder(cacheManager)
-            .setBasenamePattern("translations/*")
-            .setDefaultLocale(Locale.forLanguageTag("en"))
+public class MessageConfig implements WebMvcConfigurer {
+
+  @Bean()
+  public MessageSource messageSource(CacheManager cacheManager) {
+    return XliffTranslationMessageSource
+            .builder(cacheManager.getCache(CacheConfig.XLIFF_CACHE_NAME))
+            .defaultLocale(Locale.forLanguageTag("en"))
+            .basenamePattern("translations/*")
             .build();
-    }
-    
+  }
 }
 ```
 
 
-<a name="a4"></a>
 
-## 4. CacheManager Configuration
-
-You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required.
-
-The CacheName must be set with the constant `XliffTranslationMessageSource.CACHE_NAME`. The specific cache identifier is
-stored in the
-constant. No ExpireDate should be set for the XLIFF translations cache.
-
-### 4.1 CacheManager with ConcurrentMapCacheManager
-
-[ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html)
-is the default cache in Spring Boot and Spring.
-
-```java
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
-
-@Configuration
-@EnableCaching
-public class CacheConfig {
-    
-    @Bean
-    public CacheManager cacheManager() {
-        ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-      cacheManager.setCacheNames(List.of(XliffTranslationMessageSource.CACHE_NAME));
-        return cacheManager;
-    }
-    
-}    
-```
 
 <a name="a5"></a>
 
@@ -409,9 +413,9 @@ With the implementation and use of the MessageSource interface, the translations
 in [Thymeleaf](#a7.1), as [Service (Dependency Injection)](#a7.2) and [Custom Validation Messages](#a7.3). Also in
 packages and implementations that use the MessageSource.
 
-
-> Translations in the default domain can be selected using the ```id``` or ```domain.id```. Translations in other
-> domains can only be selected using the ```otherdomain.id```. See the examples below.
+Translations in the default domain can be selected using the ```id``` or ```domain.id```.
+Translations in other domains can only be selected using the ```otherdomain.id```. See the examples
+below.
 
 
 <a name="a7.1"></a>
@@ -456,7 +460,7 @@ The MessageSource can be set via Autowire to access the translations. See the ex
 // Autowire MessageSourceInterface
 private MessageSource messageSource;
 
-public HomeController(MessageSource messageSource) {
+public MyClass(MessageSource messageSource) {
   this.messageSource = messageSource;
 }
 

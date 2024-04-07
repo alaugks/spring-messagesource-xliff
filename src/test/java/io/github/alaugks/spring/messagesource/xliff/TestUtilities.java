@@ -3,15 +3,6 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -19,8 +10,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class TestUtilities {
+
+    public static final String CATALOG_CACHE = "test-cache";
+
     public static Catalog getTestCatalog() {
         return CatalogBuilder
                 .builder(getResourcesLoader())
@@ -30,8 +32,12 @@ public class TestUtilities {
                 );
     }
 
+    public static Cache getCache() {
+        return getMockedCacheManager(CATALOG_CACHE).getCache(CATALOG_CACHE);
+    }
+
     public static CacheManager getMockedCacheManager() {
-        return getMockedCacheManager(XliffTranslationMessageSource.CACHE_NAME);
+        return getMockedCacheManager(CATALOG_CACHE);
     }
 
     public static CacheManager getMockedCacheManager(String cacheName) {

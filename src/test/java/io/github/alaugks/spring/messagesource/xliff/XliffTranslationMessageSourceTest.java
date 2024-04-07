@@ -31,7 +31,7 @@ class XliffTranslationMessageSourceTest {
     @BeforeAll
     static void beforeAll() {
         messageSource = XliffTranslationMessageSource
-                .builder(TestUtilities.getMockedCacheManager())
+            .builder(TestUtilities.getCache())
                 .basenamePattern("translations/*")
                 .defaultLocale(Locale.forLanguageTag("en"))
                 .build();

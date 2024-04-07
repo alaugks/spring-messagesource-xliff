@@ -1,28 +1,26 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.finder;
 
-import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
-import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
-import org.junit.jupiter.api.Test;
-import org.springframework.cache.CacheManager;
-
-import java.util.Locale;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
+import java.util.Locale;
+import org.junit.jupiter.api.Test;
+import org.springframework.cache.Cache;
 
 @SuppressWarnings("java:S5961")
 class CatalogFinderTest {
 
     @Test
     void test_emptyLocale() {
-        CacheManager cacheManager = TestUtilities.getMockedCacheManager();
-        CatalogCache catalog = new CatalogCache(Locale.forLanguageTag("en"), "messages", cacheManager);
+        Cache cache = TestUtilities.getCache();
+        CatalogCache catalog = new CatalogCache(Locale.forLanguageTag("en"), "messages", cache);
 
         catalog.put(Locale.forLanguageTag("en"), "domain", "m_key_1", "value_en_1");
 
         var finder = new CatalogFinder(
-                new CatalogCacheAdapter(cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME)),
+            new CatalogCacheAdapter(cache),
                 Locale.forLanguageTag("en"),
                 "domain"
         );
@@ -32,8 +30,8 @@ class CatalogFinderTest {
 
     @Test
     void test_find_defaultLanguage() {
-        CacheManager cacheManager = TestUtilities.getMockedCacheManager();
-        CatalogCache catalog = new CatalogCache(Locale.forLanguageTag("en"), "messages", cacheManager);
+        Cache cache = TestUtilities.getCache();
+        CatalogCache catalog = new CatalogCache(Locale.forLanguageTag("en"), "messages", cache);
 
         // messages
         catalog.put(Locale.forLanguageTag("en"), "messages", "m_key_1", "m_value_en_1");
@@ -48,7 +46,7 @@ class CatalogFinderTest {
         catalog.put(Locale.forLanguageTag("de-CH"), "domain", "d_key_1", "d_value_de_ch_1");
 
         var finder = new CatalogFinder(
-                new CatalogCacheAdapter(cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME)),
+            new CatalogCacheAdapter(cache),
                 Locale.forLanguageTag("en"),
                 "messages"
         );
@@ -109,8 +107,8 @@ class CatalogFinderTest {
 
     @Test
     void test_find_defaultLanguageRegion() {
-        CacheManager cacheManager = TestUtilities.getMockedCacheManager();
-        CatalogCache catalog = new CatalogCache(Locale.forLanguageTag("en-GB"), "messages", cacheManager);
+        Cache cache = TestUtilities.getCache();
+        CatalogCache catalog = new CatalogCache(Locale.forLanguageTag("en-GB"), "messages", cache);
 
         // messages
         catalog.put(Locale.forLanguageTag("en-GB"), "messages", "m_key_1", "m_value_en_1");
@@ -125,7 +123,7 @@ class CatalogFinderTest {
         catalog.put(Locale.forLanguageTag("de-CH"), "domain", "d_key_1", "d_value_de_ch_1");
 
         var finder = new CatalogFinder(
-                new CatalogCacheAdapter(cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME)),
+            new CatalogCacheAdapter(cache),
                 Locale.forLanguageTag("en-GB"),
                 "messages"
         );

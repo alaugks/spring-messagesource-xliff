@@ -21,7 +21,7 @@ class XliffTranslationMessageSourceCasesTest {
     @Test
     void test_withRegion_setDefaultLocale_notSet() {
         var builder = XliffTranslationMessageSource
-                .builder(TestUtilities.getMockedCacheManager())
+            .builder(TestUtilities.getCache())
                 .basenamePattern("translations/*");
 
         XliffMessageSourceRuntimeException exception = assertThrows(
@@ -33,7 +33,7 @@ class XliffTranslationMessageSourceCasesTest {
     @Test
     void test_withRegion_setDefaultLocale_empty() {
         var builder = XliffTranslationMessageSource
-                .builder(TestUtilities.getMockedCacheManager())
+            .builder(TestUtilities.getCache())
                 .basenamePattern("translations/*")
                 .defaultLocale(Locale.forLanguageTag(""));
 
@@ -46,7 +46,7 @@ class XliffTranslationMessageSourceCasesTest {
     @Test
     void test_setDefaultDomain() {
         var messageSource = XliffTranslationMessageSource
-                .builder(TestUtilities.getMockedCacheManager())
+            .builder(TestUtilities.getCache())
                 .basenamePattern("translations/*")
                 .defaultLocale(Locale.forLanguageTag("en"))
                 .defaultDomain("otherdomain")
@@ -62,7 +62,7 @@ class XliffTranslationMessageSourceCasesTest {
     @Test
     void test_setBasenamesPattern() {
         var messageSource = XliffTranslationMessageSource
-                .builder(TestUtilities.getMockedCacheManager())
+            .builder(TestUtilities.getCache())
                 .basenamesPattern(
                         List.of(
                                 "translations_en/*",
@@ -94,7 +94,7 @@ class XliffTranslationMessageSourceCasesTest {
     @MethodSource("dataProvider_setTranslationUnitIdentifiersOrdering")
     void test_setTranslationUnitIdentifiersOrdering(List<XliffIdentifierInterface> translationUnitIdentifiers, String code, String expected) {
         var messageSource = XliffTranslationMessageSource
-                .builder(TestUtilities.getMockedCacheManager())
+            .builder(TestUtilities.getCache())
                 .basenamePattern("identifier/*")
                 .defaultLocale(Locale.forLanguageTag("en"))
                 .setTransUnitIdentifier(translationUnitIdentifiers)

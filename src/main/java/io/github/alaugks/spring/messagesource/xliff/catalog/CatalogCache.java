@@ -1,27 +1,23 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogCacheAdapter;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
-import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceCacheNotExistsException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 
 public final class CatalogCache extends CatalogAbstractHandler {
 
-    private Cache cache;
+    private final Cache cache;
     private final Locale defaultLocale;
     private final String domain;
 
-    public CatalogCache(Locale defaultLocal, String domain, CacheManager cacheManager) {
+    public CatalogCache(Locale defaultLocal, String domain, Cache cache) {
         this.defaultLocale = defaultLocal;
         this.domain = domain;
-        this.loadCache(cacheManager);
+        this.cache = cache;
     }
 
     @Override
@@ -87,22 +83,4 @@ public final class CatalogCache extends CatalogAbstractHandler {
         ));
     }
 
-    private void loadCache(CacheManager cacheManager) {
-        if (cacheManager != null) {
-            Collection<String> caches = cacheManager.getCacheNames();
-            if (caches.contains(XliffTranslationMessageSource.CACHE_NAME)) {
-                this.cache = cacheManager.getCache(XliffTranslationMessageSource.CACHE_NAME);
-                return;
-            }
-            throw new XliffMessageSourceCacheNotExistsException(
-                    String.format(
-                            "Cache with name [%s] not available.",
-                            XliffTranslationMessageSource.CACHE_NAME
-                    )
-            );
-        }
-        throw new XliffMessageSourceCacheNotExistsException(
-                "org.springframework.cache.CacheManager not available."
-        );
-    }
 }

@@ -1,14 +1,13 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
-import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceCacheNotExistsException;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.cache.CacheManager;
-
-import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("java:S5778")
 class CatalogCacheTest {
@@ -20,7 +19,7 @@ class CatalogCacheTest {
         this.catalogCache = new CatalogCache(
                 Locale.forLanguageTag("en"),
                 "messages",
-                TestUtilities.getMockedCacheManager()
+            TestUtilities.getCache()
         );
         this.locale = Locale.forLanguageTag("en");
     }
@@ -82,30 +81,5 @@ class CatalogCacheTest {
         this.catalogCache.put(this.locale, "domain", "code", "value_2");
         this.catalogCache.put(this.locale, "domain", "code", "value_3");
         assertEquals("value_1", this.catalogCache.get(this.locale, "domain.code"));
-    }
-
-    @Test
-    void test_exception_cacheNameNotExists() {
-        CacheManager cacheManager = TestUtilities.getMockedCacheManager("CACHE_NAME_NOT_EXISTS");
-
-        XliffMessageSourceCacheNotExistsException exception = assertThrows(
-            XliffMessageSourceCacheNotExistsException.class, () -> {
-                    new CatalogCache(Locale.forLanguageTag("en"), "messages", cacheManager);
-            }
-        );
-        assertEquals(
-                "Cache with name [io.github.alaugks.spring.messagesource.xliff.cache] not available.",
-                exception.getMessage()
-        );
-    }
-
-    @Test
-    void test_exception() {
-        XliffMessageSourceCacheNotExistsException exception = assertThrows(
-            XliffMessageSourceCacheNotExistsException.class, () -> {
-                    new CatalogCache(Locale.forLanguageTag("en"), "messages", null);
-            }
-        );
-        assertEquals("org.springframework.cache.CacheManager not available.", exception.getMessage());
     }
 }
