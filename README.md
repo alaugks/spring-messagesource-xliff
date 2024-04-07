@@ -7,13 +7,14 @@ This package provides a **MessageSource** for using translations from XLIFF file
 1. [Version](#a1)
 2. [Dependency](#a2)
 3. [MessageSource Configuration](#a3)
-4. [Minimal CacheManager Configuration](#a4)
-5. [Cache warming with an ApplicationRunner (recommended)](#a5)
-6. [XLIFF Translation Files](#a6)
-7. [Using the MessageSource](#a7)
-8. [Full Example](#a8)
-9. [Support](#a9)
-10. [More Information](#a10)
+   * 3.1. [CacheManager Configuration](#3.1)
+   * 3.2. [XliffTranslationMessageSource Configuration](#3.2)
+4. [Cache warming with an ApplicationRunner (recommended)](#a4)
+5. [XLIFF Translation Files](#a5)
+6. [Using the MessageSource](#a7)
+7. [Full Example](#a8)
+8. [Support](#a8)
+9. [More Information](#a9)
 
 <a name="a1"></a>
 ## 1. Versions
@@ -60,10 +61,7 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 ## 3.1 CacheManager Configuration
 
 You may already have an existing CacheManager configuration. If not, the following minimum
-CacheManager configuration is required. All
-supported [Cache Provider](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider)
-can be used.
-
+CacheManager configuration is required. All supported [Cache Provider](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider) can be used.
 No ExpireDate should be set for the XLIFF translations cache.
 
 ### CacheManager with ConcurrentMapCacheManager
@@ -96,6 +94,10 @@ public class CacheConfig {
 }    
 ```
 
+### CacheManager with supported Cache Provider Caffeine
+
+You can see an example using Caffeine [here](https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
+
 ## 3.2 XliffTranslationMessageSource Configuration
 
 `setBasenamePattern(String basename)` or `setBasenamesPattern(Iterable<String> basenames)` (***required***)
@@ -109,7 +111,7 @@ public class CacheConfig {
 
 `setDefaultDomain(String defaultDomain)`
 
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a6).
+* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a5).
 
 ### MessageSource Configuration
 
@@ -137,12 +139,9 @@ public class MessageConfig implements WebMvcConfigurer {
 }
 ```
 
+<a name="a4"></a>
 
-
-
-<a name="a5"></a>
-
-## 5. Cache warming with an ApplicationRunner (recommended)
+## 4. Cache warming with an ApplicationRunner (recommended)
 
 In the following example, the cache of translations is warmed up after the application starts.
 
@@ -172,9 +171,9 @@ public class CacheWarmUpMessageSource implements ApplicationRunner {
 }
 ```
 
-<a name="a6"></a>
+<a name="a5"></a>
 
-## 6. XLIFF Translation Files
+## 5. XLIFF Translation Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
@@ -400,29 +399,31 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 | payment.headline                | Payment                             | Zahlung                            | Payment                               |
 | payment.expiry_date             | Expiry date                         | Ablaufdatum                        | Expiration date                       |
 
+> [!NOTE]
 > *Default domain is `messages`.
 >
 > **Example of a fallback. With locale `en-US` it tries to select the translation with id `headline` in messages_en-US. The id `headline` does not exist, so it tries to select the translation with locale `en` in messages.
 
 
-<a name="a7"></a>
+<a name="a6"></a>
 
-## 7. Using the MessageSource
+## 6. Using the MessageSource
 
 With the implementation and use of the MessageSource interface, the translations are also available
-in [Thymeleaf](#a7.1), as [Service (Dependency Injection)](#a7.2) and [Custom Validation Messages](#a7.3). Also in
+in [Thymeleaf](#a6.1), as [Service (Dependency Injection)](#a6.2) and [Custom Validation Messages](#a6.3). Also in
 packages and implementations that use the MessageSource.
 
-Translations in the default domain can be selected using the ```id``` or ```domain.id```.
+> [!NOTE]
+> Translations in the default domain can be selected using the ```id``` or ```domain.id```.
 Translations in other domains can only be selected using the ```otherdomain.id```. See the examples
 below.
 
 
-<a name="a7.1"></a>
+<a name="a6.1"></a>
 ### Thymeleaf
 
 With the configured MessageSource, the translations are available in Thymeleaf. See the example in
-the [Full Example](#a8).
+the [Full Example](#a7).
 
 ```html
 <!-- "Headline" -->
@@ -451,10 +452,10 @@ the [Full Example](#a8).
 
 ```
 
-<a name="a7.2"></a>
+<a name="a6.2"></a>
 ### Service (Dependency Injection)
 
-The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a8).
+The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a7).
 
 ```java
 // Autowire MessageSourceInterface
@@ -506,29 +507,29 @@ this.messageSource.
 getMessage("not-exists-id",null,defaultMessage, locale);
 ```
 
-<a name="a7.3"></a>
+<a name="a6.3"></a>
 ### Custom Validation Messages
 
 The article [Custom Validation MessageSource in Spring Boot](https://www.baeldung.com/spring-custom-validation-message-source) describes how to use custom validation messages.
 
-<a name="a8"></a>
+<a name="a7"></a>
 
-## 8. Full Example
+## 7. Full Example
 
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
 
 Repository: https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot<br>
 Website: https://spring-boot-xliff-example.alaugks.dev
 
-<a name="a9"></a>
+<a name="a8"></a>
 
-## 9. Support
+## 8. Support
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
 
-<a name="a10"></a>
+<a name="a9"></a>
 
-## 10. More Information
+## 9. More Information
 
 ### MessageSource, Internationalization and Thymeleaf
 * [Guide to Internationalization in Spring Boot](https://www.baeldung.com/spring-boot-internationalization)
