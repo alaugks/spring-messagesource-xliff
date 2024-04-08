@@ -1,7 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -20,13 +19,7 @@ public final class XliffVersion2 implements XliffVersionInterface {
 
     @Override
     public void setTransUnitIdentifier(List<XliffIdentifierInterface> unitIdentifiers) {
-        if (unitIdentifiers != null) {
-            this.transUnitIdentifier = unitIdentifiers
-                .stream()
-                .filter(u -> u.getClass() == Xliff2XliffIdentifier.class)
-                .findFirst()
-                .orElse(this.transUnitIdentifier);
-        }
+        this.transUnitIdentifier = this.transUnitIdentifier.getEqualsClass(unitIdentifiers);
     }
 
     @Override
