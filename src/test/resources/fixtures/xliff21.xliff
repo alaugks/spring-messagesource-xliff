@@ -6,8 +6,8 @@
     <file datatype="plaintext" srcLang="en" trgLang="de">
         <unit id="1">
             <segment id="code-1">
-                <source>Hello, world! (2.1)</source>
-                <target>Hallo, Welt! (2.1)</target>
+              <source>Hello World (Xliff Version 2.1)</source>
+              <target>Hello World (Xliff Version 2.1)</target>
             </segment>
         </unit>
     </file>

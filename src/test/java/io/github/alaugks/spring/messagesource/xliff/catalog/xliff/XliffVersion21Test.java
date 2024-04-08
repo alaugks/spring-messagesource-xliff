@@ -1,16 +1,15 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Locale;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import javax.xml.parsers.ParserConfigurationException;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 class XliffVersion21Test {
     @Test
@@ -21,6 +20,6 @@ class XliffVersion21Test {
         Locale locale = Locale.forLanguageTag("en");
         version.read(catalog, document, "domain", locale);
 
-        assertEquals("Hallo, Welt! (2.1)", catalog.get(locale, "domain.code-1"));
+        assertEquals("Hello World (Xliff Version 2.1)", catalog.get(locale, "domain.code-1"));
     }
 }
