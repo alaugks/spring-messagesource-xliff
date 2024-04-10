@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> Version 2.0.0-SNAPSHOT is work in progress.
+
 # XLIFF Translation Support for Spring Boot and Spring
 
 This package provides a **MessageSource** for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
