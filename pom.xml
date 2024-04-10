@@ -39,7 +39,7 @@
     </parent>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <junit.version>5.9.3</junit.version>
     </properties>
 

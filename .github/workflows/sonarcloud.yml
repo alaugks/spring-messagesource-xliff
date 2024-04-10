@@ -54,4 +54,4 @@ jobs:
             -Dsonar.exclusions=${{ vars.SONAR_EXCLUSIONS }} \
             -Dsonar.java.binaries=${{ vars.SONAR_JAVA_BINARIES }} \
             -Dsonar.coverage.exclusions=${{ vars.SONAR_COVERAGE_EXCLUSIONS }} \
-            -Dsonar.java.source=${{ vars.SONAR_JAVA_SOURCE }}
+            -Dsonar.java.source=17
