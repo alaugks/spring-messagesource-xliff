@@ -10,8 +10,6 @@ import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-;
-
 public final class ResourcesLoader {
 
     private final Locale defaultLocale;
