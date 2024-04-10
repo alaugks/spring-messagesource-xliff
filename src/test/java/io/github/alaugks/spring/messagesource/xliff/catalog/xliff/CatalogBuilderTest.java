@@ -21,14 +21,14 @@ class CatalogBuilderTest {
     @Test
     void test_createCatalog() {
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en"))
             .basenamesPattern(TestUtilities.listToSet("translations/*"))
-                .build();
+            .build();
 
         CatalogBuilder catalogBuilder = CatalogBuilder
-                .builder(resourcesLoader)
-                .build();
+            .builder(resourcesLoader)
+            .build();
 
         CatalogInterface catalog = catalogBuilder.createCatalog(new Catalog(Locale.forLanguageTag("en"), "messages"));
         assertEquals("Hello World (messages / en)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_world"));
@@ -38,19 +38,19 @@ class CatalogBuilderTest {
     void test_createCatalog_versionNotSupported() {
         Catalog catalog = new Catalog(Locale.forLanguageTag("en"), "messages");
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en-GB"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en-GB"))
             .basenamesPattern(TestUtilities.listToSet("fixtures/*"))
-                .build();
+            .build();
 
         CatalogBuilder catalogBuilder = CatalogBuilder
-                .builder(resourcesLoader)
-                .build();
+            .builder(resourcesLoader)
+            .build();
 
         XliffMessageSourceVersionSupportException exception = assertThrows(
-                XliffMessageSourceVersionSupportException.class, () -> {
-                    catalogBuilder.createCatalog(catalog);
-                }
+            XliffMessageSourceVersionSupportException.class, () -> {
+                catalogBuilder.createCatalog(catalog);
+            }
         );
         assertEquals("XLIFF version \"1.0\" not supported.", exception.getMessage());
     }
@@ -60,32 +60,32 @@ class CatalogBuilderTest {
         var catalog = new Catalog(Locale.forLanguageTag("en"), "messages");
 
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en"))
             .basenamesPattern(TestUtilities.listToSet("translations_broken/*"))
-                .build();
+            .build();
 
         CatalogBuilder catalogBuilder = CatalogBuilder
-                .builder(resourcesLoader)
-                .build();
+            .builder(resourcesLoader)
+            .build();
 
         assertThrows(
-                XliffMessageSourceSAXParseException.class, () -> catalogBuilder.createCatalog(catalog)
+            XliffMessageSourceSAXParseException.class, () -> catalogBuilder.createCatalog(catalog)
         );
 
         assertThrows(
-                XliffMessageSourceSAXParseFatalErrorException.class, () -> catalogBuilder.createCatalog(catalog)
+            XliffMessageSourceSAXParseFatalErrorException.class, () -> catalogBuilder.createCatalog(catalog)
         );
     }
 
     @Test
     void test_supportedVersions() {
         var xliffCatalog = CatalogBuilder
-                .builder(
-                        ResourcesLoader
-                                .builder()
-                                .build()
-                ).build();
+            .builder(
+                ResourcesLoader
+                    .builder()
+                    .build()
+            ).build();
 
         assertInstanceOf(XliffVersion12.class, xliffCatalog.getReader("1.2"));
         assertInstanceOf(XliffVersion2.class, xliffCatalog.getReader("2.0"));
@@ -95,12 +95,12 @@ class CatalogBuilderTest {
     @Test
     void test_versionNotSupported() {
         var xliffCatalog = CatalogBuilder
-                .builder(
-                        ResourcesLoader
-                                .builder()
-                                .build()
-                )
-                .build();
+            .builder(
+                ResourcesLoader
+                    .builder()
+                    .build()
+            )
+            .build();
         assertNull(xliffCatalog.getReader("1.0"));
     }
 }

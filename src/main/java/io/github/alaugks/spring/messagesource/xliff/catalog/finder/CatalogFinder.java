@@ -1,10 +1,10 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.finder;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogUtilities;
-
 import java.util.Locale;
 
 public final class CatalogFinder {
+
     private final CatalogAdapterInterface adapter;
     private final Locale defaultLocale;
     private final String domain;
@@ -50,11 +50,7 @@ public final class CatalogFinder {
 
         // Code+DefaultLanguage / DomainCode+DefaultLanguage
         value = this.fromCatalogSubStep(defaultLocaleLang, code);
-        if (value != null) {
-            return value;
-        }
-
-        return null;
+        return value;
     }
 
     private String fromCatalogSubStep(Locale locale, String code) {

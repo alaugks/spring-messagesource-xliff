@@ -1,13 +1,13 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogUtilities;
-
 import java.util.IllformedLocaleException;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class ResourcesFileNameParser {
+
     private final String filename;
 
     public ResourcesFileNameParser(String filename) {
@@ -24,15 +24,16 @@ final class ResourcesFileNameParser {
             String language = this.getGroup(matcher, "language");
             String region = this.getGroup(matcher, "region");
             return new Dto(
-                    domain,
-                    language,
-                    region
+                domain,
+                language,
+                region
             );
         }
         return null;
     }
 
     public static class Dto {
+
         private final String domain;
         private final String language;
         private final String region;

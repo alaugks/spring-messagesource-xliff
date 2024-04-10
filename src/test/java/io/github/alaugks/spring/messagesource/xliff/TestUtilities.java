@@ -28,11 +28,11 @@ public class TestUtilities {
 
     public static Catalog getTestCatalog() {
         return CatalogBuilder
-                .builder(getResourcesLoader())
-                .build()
-                .createCatalog(
-                        new Catalog(Locale.forLanguageTag("en"), "messages")
-                );
+            .builder(getResourcesLoader())
+            .build()
+            .createCatalog(
+                new Catalog(Locale.forLanguageTag("en"), "messages")
+            );
     }
 
     public static Cache getCache() {
@@ -47,13 +47,14 @@ public class TestUtilities {
 
     public static ResourcesLoader getResourcesLoader() {
         return ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en"))
             .basenamesPattern(listToSet("translations/*"))
-                .build();
+            .build();
     }
 
-    public static Document getDocument(InputStream inputStream) throws ParserConfigurationException, SAXException, IOException {
+    public static Document getDocument(InputStream inputStream)
+        throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(inputStream);

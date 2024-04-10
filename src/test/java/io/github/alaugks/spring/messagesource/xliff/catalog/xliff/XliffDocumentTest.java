@@ -40,12 +40,13 @@ class XliffDocumentTest {
     }
 
     @Test
-    void test_getElementValue_getCharacterDataFromElement_TextNode() throws ParserConfigurationException, IOException, SAXException {
+    void test_getElementValue_getCharacterDataFromElement_TextNode()
+        throws ParserConfigurationException, IOException, SAXException {
         Map<Object, Object> transUnits = new HashMap<>();
 
         var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff-value-test.xliff"));
         xliffDocument.getTransUnits("segment", List.of("id")).forEach(
-                transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
+            transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
         );
 
         assertEquals("value", transUnits.get("element"));

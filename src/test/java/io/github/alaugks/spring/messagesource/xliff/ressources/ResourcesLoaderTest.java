@@ -14,10 +14,10 @@ class ResourcesLoaderTest {
     @Test
     void test_setBasenamePattern() throws IOException {
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en"))
             .basenamesPattern(TestUtilities.listToSet("translations/*"))
-                .build();
+            .build();
 
         assertEquals(5, resourcesLoader.getTranslationFiles().size());
     }
@@ -25,10 +25,10 @@ class ResourcesLoaderTest {
     @Test
     void test_setBasenamePattern_domainMessages() throws IOException {
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en"))
             .basenamesPattern(TestUtilities.listToSet("translations/messages*"))
-                .build();
+            .build();
 
         assertEquals(3, resourcesLoader.getTranslationFiles().size());
     }
@@ -37,10 +37,10 @@ class ResourcesLoaderTest {
     @Test
     void test_setBasenamePattern_languageDe() throws IOException {
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en"))
             .basenamesPattern(TestUtilities.listToSet("translations/*_de*"))
-                .build();
+            .build();
 
         assertEquals(2, resourcesLoader.getTranslationFiles().size());
     }
@@ -48,10 +48,10 @@ class ResourcesLoaderTest {
     @Test
     void test_setBasenamesPattern() throws IOException {
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en"))
             .basenamesPattern(TestUtilities.listToSet("translations_en/*", "translations_de/*"))
-                .build();
+            .build();
 
         assertEquals(4, resourcesLoader.getTranslationFiles().size());
     }
@@ -59,10 +59,10 @@ class ResourcesLoaderTest {
     @Test
     void test_Dto() throws IOException {
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(Locale.forLanguageTag("en"))
+            .builder()
+            .defaultLocale(Locale.forLanguageTag("en"))
             .basenamesPattern(TestUtilities.listToSet("translations_en_US/*"))
-                .build();
+            .build();
 
         ResourcesLoader.Dto dto = resourcesLoader.getTranslationFiles().get(0);
 

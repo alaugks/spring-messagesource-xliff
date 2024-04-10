@@ -32,9 +32,9 @@ class XliffTranslationMessageSourceTest {
     static void beforeAll() {
         messageSource = XliffTranslationMessageSource
             .builder(TestUtilities.getCache())
-                .basenamePattern("translations/*")
-                .defaultLocale(Locale.forLanguageTag("en"))
-                .build();
+            .basenamePattern("translations/*")
+            .defaultLocale(Locale.forLanguageTag("en"))
+            .build();
         messageSource.initCache();
     }
 
@@ -254,24 +254,24 @@ class XliffTranslationMessageSourceTest {
 
     private static Stream<Arguments> dataProvider_fallback() {
         return Stream.of(
-                Arguments.of(
-                    "hello_world",
-                        null,
-                        Locale.forLanguageTag("jp"),
-                    "Hello World (messages / en)"
-                ),
-                Arguments.of(
-                    "hello_world",
-                        null,
-                        Locale.forLanguageTag("en-GB"),
-                    "Hello World (messages / en)"
-                ),
-                Arguments.of(
-                    "hello_world",
-                        null,
-                        Locale.forLanguageTag("en-US"),
-                    "Hello World (messages / en_US)"
-                )
+            Arguments.of(
+                "hello_world",
+                null,
+                Locale.forLanguageTag("jp"),
+                "Hello World (messages / en)"
+            ),
+            Arguments.of(
+                "hello_world",
+                null,
+                Locale.forLanguageTag("en-GB"),
+                "Hello World (messages / en)"
+            ),
+            Arguments.of(
+                "hello_world",
+                null,
+                Locale.forLanguageTag("en-US"),
+                "Hello World (messages / en_US)"
+            )
         );
     }
 

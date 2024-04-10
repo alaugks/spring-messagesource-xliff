@@ -54,7 +54,7 @@ public final class ResourcesLoader {
             for (Resource resource : resources) {
                 if (this.isFileExtensionSupported(resource)) {
                     Dto dto = this.parseFileName(resource);
-                    if(dto != null) {
+                    if (dto != null) {
                         translationFiles.add(dto);
                     }
                 }
@@ -68,11 +68,11 @@ public final class ResourcesLoader {
         ResourcesFileNameParser.Dto dto = new ResourcesFileNameParser(resource.getFilename()).parse();
         if (dto != null) {
             return new Dto(
-                    dto.getDomain(),
-                    dto.hasLocale()
-                            ? dto.getLocale()
-                            : this.defaultLocale,
-                    resource.getInputStream()
+                dto.getDomain(),
+                dto.hasLocale()
+                    ? dto.getLocale()
+                    : this.defaultLocale,
+                resource.getInputStream()
             );
         }
         return null;
@@ -84,6 +84,7 @@ public final class ResourcesLoader {
     }
 
     public static class Dto {
+
         private final String domain;
         private final Locale locale;
         private final InputStream inputStream;
@@ -109,8 +110,9 @@ public final class ResourcesLoader {
 
     private String getFileExtension(String filename) {
         return Optional.ofNullable(filename)
-                .filter(f -> f.contains("."))
-                .map(f -> f.substring(filename.lastIndexOf(".") + 1)).orElse(null);
+            .filter(f -> f.contains("."))
+            .map(f -> f.substring(filename.lastIndexOf(".") + 1))
+            .orElse(null);
     }
 
     private Set<String> getBasenameSet() {

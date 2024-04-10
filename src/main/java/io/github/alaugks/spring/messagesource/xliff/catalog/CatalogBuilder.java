@@ -10,16 +10,15 @@ import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSource
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseFatalErrorException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
+import java.io.IOException;
+import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 public final class CatalogBuilder {
 
@@ -27,8 +26,8 @@ public final class CatalogBuilder {
     private Catalog catalog;
     private final List<XliffIdentifierInterface> transUnitIdentifier;
     List<XliffVersionInterface> supportedVersions = List.of(
-            new XliffVersion12(),
-            new XliffVersion2()
+        new XliffVersion12(),
+        new XliffVersion2()
     );
 
     public CatalogBuilder(Builder builder) {
@@ -111,7 +110,7 @@ public final class CatalogBuilder {
                 xliffReader.read(this.catalog, xliffDocument, translationFile.getDomain(), translationFile.getLocale());
             } else {
                 throw new XliffMessageSourceVersionSupportException(
-                        String.format("XLIFF version \"%s\" not supported.", xliffVersion)
+                    String.format("XLIFF version \"%s\" not supported.", xliffVersion)
                 );
             }
         }

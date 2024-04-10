@@ -6,17 +6,18 @@ import java.util.Objects;
 import org.springframework.cache.Cache;
 
 public final class CatalogHandler {
+
     private final CatalogCache catalogCache;
 
     public CatalogHandler(
-            CatalogBuilder catalogBuilder,
+        CatalogBuilder catalogBuilder,
         Cache cache,
-            Locale defaultLocale,
+        Locale defaultLocale,
         String defaultDomain
     ) {
         this.catalogCache = new CatalogCache(defaultLocale, defaultDomain, cache);
         this.catalogCache.setNextHandler(
-                catalogBuilder.createCatalog(new Catalog(defaultLocale, defaultDomain))
+            catalogBuilder.createCatalog(new Catalog(defaultLocale, defaultDomain))
         );
     }
 
@@ -43,9 +44,9 @@ public final class CatalogHandler {
 
     void put(Locale locale, String code, String value) {
         this.catalogCache.put(
-                locale,
-                code,
-                value
+            locale,
+            code,
+            value
         );
     }
 
@@ -54,6 +55,7 @@ public final class CatalogHandler {
     }
 
     public static class Translation {
+
         String code;
         String value;
 

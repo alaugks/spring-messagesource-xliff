@@ -11,14 +11,15 @@ import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("java:S5778")
 class CatalogCacheTest {
+
     private CatalogCache catalogCache;
     private Locale locale;
 
     @BeforeEach
     void beforeEach() {
         this.catalogCache = new CatalogCache(
-                Locale.forLanguageTag("en"),
-                "messages",
+            Locale.forLanguageTag("en"),
+            "messages",
             TestUtilities.getCache()
         );
         this.locale = Locale.forLanguageTag("en");
@@ -41,12 +42,12 @@ class CatalogCacheTest {
         var transDe = all.get(de.toString());
 
         assertAll(
-                () -> assertEquals("value_m_en_1", transEn.get("messages.m_en_1")),
-                () -> assertEquals("value_m_en_2", transEn.get("messages.m_en_2")),
-                () -> assertEquals("value_d_en_1", transEn.get("domain.d_en_1")),
-                () -> assertEquals("value_m_de_1", transDe.get("messages.m_de_1")),
-                () -> assertEquals("value_m_de_2", transDe.get("messages.m_de_2")),
-                () -> assertEquals("value_d_de_1", transDe.get("domain.d_de_1"))
+            () -> assertEquals("value_m_en_1", transEn.get("messages.m_en_1")),
+            () -> assertEquals("value_m_en_2", transEn.get("messages.m_en_2")),
+            () -> assertEquals("value_d_en_1", transEn.get("domain.d_en_1")),
+            () -> assertEquals("value_m_de_1", transDe.get("messages.m_de_1")),
+            () -> assertEquals("value_m_de_2", transDe.get("messages.m_de_2")),
+            () -> assertEquals("value_d_de_1", transDe.get("domain.d_de_1"))
         );
     }
 

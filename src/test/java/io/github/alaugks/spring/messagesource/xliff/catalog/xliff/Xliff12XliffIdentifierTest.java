@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class Xliff12XliffIdentifierTest {
+
     @Test
     void test_default() {
         var identifier = new Xliff12XliffIdentifier();

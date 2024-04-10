@@ -25,7 +25,7 @@ public final class XliffVersion2 implements XliffVersionInterface {
     @Override
     public void read(CatalogInterface catalog, XliffDocument document, String domain, Locale locale) {
         document.getTransUnits("segment", this.transUnitIdentifier.getList()).forEach(
-                transUnit -> catalog.put(locale, domain, transUnit.getCode(), transUnit.getTargetValue())
+            transUnit -> catalog.put(locale, domain, transUnit.getCode(), transUnit.getTargetValue())
         );
     }
 

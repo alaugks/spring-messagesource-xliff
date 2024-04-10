@@ -4,6 +4,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
 public class SaxErrorHandler implements ErrorHandler {
+
     @Override
     public void warning(SAXParseException exception) {
         throw new XliffMessageSourceSAXParseWarningException(exception);

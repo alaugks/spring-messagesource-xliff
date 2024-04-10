@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 class XliffVersion20Test {
+
     @Test
     void test_readXliffFile() throws ParserConfigurationException, IOException, SAXException {
         var document = new XliffDocument(TestUtilities.getDocument("fixtures/xliff20.xliff"));

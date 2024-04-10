@@ -2,7 +2,6 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFileAdapter;
 import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -31,9 +30,9 @@ public final class Catalog extends CatalogAbstractHandler {
     @Override
     public String get(Locale locale, String code) {
         CatalogFinder finder = new CatalogFinder(
-                new CatalogFileAdapter(this.getAll()),
-                this.defaultLocale,
-                this.domain
+            new CatalogFileAdapter(this.getAll()),
+            this.defaultLocale,
+            this.domain
         );
 
         String message = finder.find(locale, code);
@@ -49,12 +48,12 @@ public final class Catalog extends CatalogAbstractHandler {
         if (!locale.toString().isEmpty()) {
             String localeKey = CatalogUtilities.localeToLocaleKey(locale);
             this.catalogMap.putIfAbsent(
-                    localeKey,
-                    new HashMap<>()
+                localeKey,
+                new HashMap<>()
             );
             this.catalogMap.get(localeKey).putIfAbsent(
-                    CatalogUtilities.concatCode(domain, code),
-                    value
+                CatalogUtilities.concatCode(domain, code),
+                value
             );
         }
     }

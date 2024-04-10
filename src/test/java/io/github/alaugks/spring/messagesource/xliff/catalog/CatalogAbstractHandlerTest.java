@@ -78,8 +78,8 @@ class CatalogAbstractHandlerTest {
 
         // Key must exist
         assertEquals(
-                "value",
-                cacheAsArray.get(key)
+            "value",
+            cacheAsArray.get(key)
         );
     }
 }

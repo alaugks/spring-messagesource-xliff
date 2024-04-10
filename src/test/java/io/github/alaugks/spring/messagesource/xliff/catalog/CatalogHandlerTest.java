@@ -16,9 +16,9 @@ class CatalogHandlerTest {
     void beforeEach() {
         this.locale = Locale.forLanguageTag("en");
         this.catalogHandler = new CatalogHandler(
-                CatalogBuilder
-                        .builder(TestUtilities.getResourcesLoader())
-                        .build(),
+            CatalogBuilder
+                .builder(TestUtilities.getResourcesLoader())
+                .build(),
             TestUtilities.getCache(), Locale.forLanguageTag("en"),
             "messages"
         );

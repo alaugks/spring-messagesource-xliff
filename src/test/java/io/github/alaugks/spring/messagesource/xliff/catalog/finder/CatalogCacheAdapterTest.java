@@ -11,6 +11,7 @@ import org.springframework.cache.Cache;
 
 
 class CatalogCacheAdapterTest {
+
     @Test
     void test_find() {
         Cache cache = TestUtilities.getCache();

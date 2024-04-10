@@ -1,15 +1,15 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog.finder;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
-import org.junit.jupiter.api.Test;
-
-import java.util.Locale;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
+import java.util.Locale;
+import org.junit.jupiter.api.Test;
+
 
 class CatalogFileAdapterTest {
+
     @Test
     void test_find() {
         Catalog catalog = new Catalog(Locale.forLanguageTag("en"), "messages");

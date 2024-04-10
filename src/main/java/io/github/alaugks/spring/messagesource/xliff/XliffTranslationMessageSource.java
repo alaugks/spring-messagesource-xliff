@@ -25,15 +25,15 @@ public class XliffTranslationMessageSource implements MessageSource {
 
     private XliffTranslationMessageSource(Builder builder) {
         ResourcesLoader resourcesLoader = ResourcesLoader
-                .builder()
-                .defaultLocale(builder.defaultLocale)
-                .basenamesPattern(builder.basenames)
-                .build();
+            .builder()
+            .defaultLocale(builder.defaultLocale)
+            .basenamesPattern(builder.basenames)
+            .build();
 
         this.catalogHandler = new CatalogHandler(
-                CatalogBuilder.builder(resourcesLoader)
-                        .transUnitIdentifier(builder.transUnitIdentifier)
-                        .build(),
+            CatalogBuilder.builder(resourcesLoader)
+                .transUnitIdentifier(builder.transUnitIdentifier)
+                .build(),
             builder.cache, builder.defaultLocale,
             builder.defaultDomain
         );
@@ -99,7 +99,6 @@ public class XliffTranslationMessageSource implements MessageSource {
             // Basenames
             Assert.notEmpty(this.basenames, "Basename(s) is not set");
 
-
             return new XliffTranslationMessageSource(this);
         }
     }
@@ -107,8 +106,8 @@ public class XliffTranslationMessageSource implements MessageSource {
     @Nullable
     public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale) {
         return this.format(
-                this.internalMessageWithDefaultMessage(code, defaultMessage, locale),
-                args
+            this.internalMessageWithDefaultMessage(code, defaultMessage, locale),
+            args
         );
     }
 

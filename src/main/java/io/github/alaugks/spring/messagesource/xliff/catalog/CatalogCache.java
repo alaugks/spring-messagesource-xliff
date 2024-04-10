@@ -28,12 +28,12 @@ public final class CatalogCache extends CatalogAbstractHandler {
             items.forEach((code, value) -> {
                 String[] split = code.toString().split("\\|");
                 result.putIfAbsent(
-                        split[0],
-                        new HashMap<>()
+                    split[0],
+                    new HashMap<>()
                 );
                 result.get(split[0]).putIfAbsent(
-                        split[1],
-                        value.toString()
+                    split[1],
+                    value.toString()
                 );
             });
             return result;
@@ -46,9 +46,9 @@ public final class CatalogCache extends CatalogAbstractHandler {
     public String get(Locale locale, String code) {
 
         CatalogFinder finder = new CatalogFinder(
-                new CatalogCacheAdapter(this.cache),
-                this.defaultLocale,
-                this.domain
+            new CatalogCacheAdapter(this.cache),
+            this.defaultLocale,
+            this.domain
         );
 
         String message = finder.find(locale, code);
@@ -67,19 +67,19 @@ public final class CatalogCache extends CatalogAbstractHandler {
     public void put(Locale locale, String code, String value) {
         if (!locale.toString().isEmpty()) {
             this.cache.putIfAbsent(
-                    CatalogUtilities.createCode(locale, code),
-                    value
+                CatalogUtilities.createCode(locale, code),
+                value
             );
         }
     }
 
     public void initCache() {
         super.getAll().forEach((langCode, catalogDomain) -> catalogDomain.forEach((code, value) ->
-                this.put(
-                        Locale.forLanguageTag(langCode.replace("_", "-")),
-                        code,
-                        value
-                )
+            this.put(
+                Locale.forLanguageTag(langCode.replace("_", "-")),
+                code,
+                value
+            )
         ));
     }
 

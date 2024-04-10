@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 abstract class CatalogAbstractHandler implements CatalogInterface {
+
     protected CatalogInterface nextHandler;
 
     public CatalogInterface setNextHandler(CatalogInterface handler) {

@@ -12,10 +12,10 @@ class XliffTranslationMessageSourceCasesTest {
     void test_setDefaultDomain() {
         var messageSource = XliffTranslationMessageSource
             .builder(TestUtilities.getCache())
-                .basenamePattern("translations/*")
-                .defaultLocale(Locale.forLanguageTag("en"))
-                .defaultDomain("otherdomain")
-                .build();
+            .basenamePattern("translations/*")
+            .defaultLocale(Locale.forLanguageTag("en"))
+            .defaultDomain("otherdomain")
+            .build();
 
         assertEquals("Hello World (otherdomain / en)", messageSource.getMessage(
             "hello_world",
@@ -28,14 +28,14 @@ class XliffTranslationMessageSourceCasesTest {
     void test_setBasenamesPattern() {
         var messageSource = XliffTranslationMessageSource
             .builder(TestUtilities.getCache())
-                .basenamesPattern(
-                        List.of(
-                                "translations_en/*",
-                                "translations_de/*"
-                        )
+            .basenamesPattern(
+                List.of(
+                    "translations_en/*",
+                    "translations_de/*"
                 )
-                .defaultLocale(Locale.forLanguageTag("en"))
-                .build();
+            )
+            .defaultLocale(Locale.forLanguageTag("en"))
+            .build();
 
         assertEquals(
             "Hello World (messages / en)",

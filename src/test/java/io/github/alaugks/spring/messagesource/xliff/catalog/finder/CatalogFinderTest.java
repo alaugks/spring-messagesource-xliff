@@ -21,8 +21,8 @@ class CatalogFinderTest {
 
         var finder = new CatalogFinder(
             new CatalogCacheAdapter(cache),
-                Locale.forLanguageTag("en"),
-                "domain"
+            Locale.forLanguageTag("en"),
+            "domain"
         );
 
         assertNull(finder.find(Locale.forLanguageTag(""), "domain.m_key_1"));
@@ -47,8 +47,8 @@ class CatalogFinderTest {
 
         var finder = new CatalogFinder(
             new CatalogCacheAdapter(cache),
-                Locale.forLanguageTag("en"),
-                "messages"
+            Locale.forLanguageTag("en"),
+            "messages"
         );
 
         // messages
@@ -79,7 +79,6 @@ class CatalogFinderTest {
         // messages Fallback it-CH -> en
         assertEquals("m_value_en_1", finder.find(Locale.forLanguageTag("it-CH"), "messages.m_key_1"));
         assertEquals("m_value_en_1", finder.find(Locale.forLanguageTag("it-CH"), "m_key_1"));
-
 
         // domain
         assertEquals("d_value_en_1", finder.find(Locale.forLanguageTag("en"), "domain.d_key_1"));
@@ -124,8 +123,8 @@ class CatalogFinderTest {
 
         var finder = new CatalogFinder(
             new CatalogCacheAdapter(cache),
-                Locale.forLanguageTag("en-GB"),
-                "messages"
+            Locale.forLanguageTag("en-GB"),
+            "messages"
         );
 
         // messages
@@ -159,7 +158,6 @@ class CatalogFinderTest {
         // messages Fallback it-CH -> en
         assertEquals("m_value_en_1", finder.find(Locale.forLanguageTag("it-CH"), "messages.m_key_1"));
         assertEquals("m_value_en_1", finder.find(Locale.forLanguageTag("it-CH"), "m_key_1"));
-
 
         // domain
         assertEquals("d_value_en_1", finder.find(Locale.forLanguageTag("en"), "domain.d_key_1"));

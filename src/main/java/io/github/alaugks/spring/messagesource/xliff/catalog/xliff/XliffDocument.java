@@ -30,13 +30,13 @@ public final class XliffDocument {
     }
 
     public boolean isXliffDocument() {
-        // Simple test: Filter if root element not <xliff>
+        // Simple test: Filter if root element <xliff>
         return root.getNodeName().equals("xliff");
     }
 
     public String getXliffVersion() {
         return this.getAttributeValue(
-                root.getAttributes().getNamedItem("version")
+            root.getAttributes().getNamedItem("version")
         );
     }
 
@@ -59,10 +59,10 @@ public final class XliffDocument {
             String code = this.getCode(node);
             if (code != null) {
                 transUnits.add(
-                        new TransUnit(
-                                code,
-                                this.getTargetValue(node)
-                        )
+                    new TransUnit(
+                        code,
+                        this.getTargetValue(node)
+                    )
                 );
             }
         }
@@ -71,7 +71,7 @@ public final class XliffDocument {
     }
 
     private String getCode(
-            Element translationUnit
+        Element translationUnit
     ) {
         if (this.translationUnitIdentifiers != null) {
             for (String name : this.translationUnitIdentifiers) {
@@ -91,9 +91,9 @@ public final class XliffDocument {
 
     private String getElementValue(Element translationNodeElement) {
         return this.getCharacterDataFromElement(
-                this.getFirstChild(
-                        translationNodeElement.getElementsByTagName("target")
-                )
+            this.getFirstChild(
+                translationNodeElement.getElementsByTagName("target")
+            )
         );
     }
 
@@ -113,11 +113,12 @@ public final class XliffDocument {
 
     private String getAttributeValue(Node translationNode, String attributeName) {
         return this.getAttributeValue(
-                translationNode.getAttributes().getNamedItem(attributeName)
+            translationNode.getAttributes().getNamedItem(attributeName)
         );
     }
 
     public static class TransUnit {
+
         private final String code;
         private final String value;
 
