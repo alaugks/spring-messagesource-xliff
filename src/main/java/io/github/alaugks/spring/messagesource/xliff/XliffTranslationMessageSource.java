@@ -5,14 +5,19 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.springframework.cache.Cache;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
 public class XliffTranslationMessageSource implements MessageSource {
 
@@ -22,8 +27,6 @@ public class XliffTranslationMessageSource implements MessageSource {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(builder.defaultLocale)
-                .defaultDomain(builder.defaultDomain)
-                .basenamePattern(builder.basename)
                 .basenamesPattern(builder.basenames)
                 .build();
 
@@ -44,8 +47,7 @@ public class XliffTranslationMessageSource implements MessageSource {
 
         private final Cache cache;
         private Locale defaultLocale;
-        private String basename;
-        private Iterable<String> basenames;
+        private final Set<String> basenames = new HashSet<>();
         private String defaultDomain = "messages";
         private List<XliffIdentifierInterface> transUnitIdentifier;
 
@@ -59,12 +61,19 @@ public class XliffTranslationMessageSource implements MessageSource {
         }
 
         public Builder basenamePattern(String basename) {
-            this.basename = basename;
+            this.basenamesPattern(List.of(basename));
             return this;
         }
 
         public Builder basenamesPattern(Iterable<String> basenames) {
-            this.basenames = basenames;
+            if (basenames != null) {
+                Set<String> basenamesSet = StreamSupport.stream(basenames.spliterator(), false)
+                    .collect(Collectors.toSet());
+                for (String basename : basenamesSet) {
+                    Assert.hasText(basename, "Basename must not be empty");
+                    this.basenames.add(basename.trim());
+                }
+            }
             return this;
         }
 
@@ -79,6 +88,18 @@ public class XliffTranslationMessageSource implements MessageSource {
         }
 
         public XliffTranslationMessageSource build() {
+            // Default Domain
+            Assert.notNull(this.defaultDomain, "Default domain is null");
+            Assert.isTrue(!this.defaultDomain.trim().isEmpty(), "Default domain is empty");
+
+            // Default Locale
+            Assert.notNull(this.defaultLocale, "Default locale is null");
+            Assert.isTrue(!this.defaultLocale.toString().trim().isEmpty(), "Default locale is empty");
+
+            // Basenames
+            Assert.notEmpty(this.basenames, "Basename(s) is not set");
+
+
             return new XliffTranslationMessageSource(this);
         }
     }

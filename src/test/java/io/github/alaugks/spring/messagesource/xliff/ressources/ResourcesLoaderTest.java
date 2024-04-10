@@ -1,14 +1,13 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
-import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Locale;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
+import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
+import org.junit.jupiter.api.Test;
 
 class ResourcesLoaderTest {
 
@@ -17,9 +16,7 @@ class ResourcesLoaderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en"))
-                .basenamePattern(
-                        "translations/*"
-                )
+            .basenamesPattern(TestUtilities.listToSet("translations/*"))
                 .build();
 
         assertEquals(5, resourcesLoader.getTranslationFiles().size());
@@ -30,9 +27,7 @@ class ResourcesLoaderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en"))
-                .basenamePattern(
-                        "translations/messages*"
-                )
+            .basenamesPattern(TestUtilities.listToSet("translations/messages*"))
                 .build();
 
         assertEquals(3, resourcesLoader.getTranslationFiles().size());
@@ -44,9 +39,7 @@ class ResourcesLoaderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en"))
-                .basenamePattern(
-                        "translations/*_de*"
-                )
+            .basenamesPattern(TestUtilities.listToSet("translations/*_de*"))
                 .build();
 
         assertEquals(2, resourcesLoader.getTranslationFiles().size());
@@ -57,12 +50,7 @@ class ResourcesLoaderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en"))
-                .basenamesPattern(
-                        List.of(
-                                "translations_en/*",
-                                "translations_de/*"
-                        )
-                )
+            .basenamesPattern(TestUtilities.listToSet("translations_en/*", "translations_de/*"))
                 .build();
 
         assertEquals(4, resourcesLoader.getTranslationFiles().size());
@@ -73,9 +61,7 @@ class ResourcesLoaderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en"))
-                .basenamePattern(
-                        "translations_en_US/*"
-                )
+            .basenamesPattern(TestUtilities.listToSet("translations_en_US/*"))
                 .build();
 
         ResourcesLoader.Dto dto = resourcesLoader.getTranslationFiles().get(0);

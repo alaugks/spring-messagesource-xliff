@@ -5,11 +5,14 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,10 +39,6 @@ public class TestUtilities {
         return getMockedCacheManager(CATALOG_CACHE).getCache(CATALOG_CACHE);
     }
 
-    public static CacheManager getMockedCacheManager() {
-        return getMockedCacheManager(CATALOG_CACHE);
-    }
-
     public static CacheManager getMockedCacheManager(String cacheName) {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
         cacheManager.setCacheNames(List.of(cacheName));
@@ -50,7 +49,7 @@ public class TestUtilities {
         return ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en"))
-                .basenamePattern("translations/*")
+            .basenamesPattern(listToSet("translations/*"))
                 .build();
     }
 
@@ -67,6 +66,10 @@ public class TestUtilities {
     public static Map<Object, Object> cacheToArray(Cache cache) {
         var nativeCache = (ConcurrentHashMap<?, ?>) cache.getNativeCache();
         return new HashMap<>(nativeCache);
+    }
+
+    public static Set<String> listToSet(String... list) {
+        return Arrays.stream(list).collect(Collectors.toSet());
     }
 
 }

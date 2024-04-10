@@ -1,39 +1,12 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class XliffTranslationMessageSourceCasesTest {
-
-    @Test
-    void test_withRegion_setDefaultLocale_notSet() {
-        var builder = XliffTranslationMessageSource
-            .builder(TestUtilities.getCache())
-                .basenamePattern("translations/*");
-
-        XliffMessageSourceRuntimeException exception = assertThrows(
-                XliffMessageSourceRuntimeException.class, builder::build
-        );
-        assertEquals("Default language is not set or empty.", exception.getMessage());
-    }
-
-    @Test
-    void test_withRegion_setDefaultLocale_empty() {
-        var builder = XliffTranslationMessageSource
-            .builder(TestUtilities.getCache())
-                .basenamePattern("translations/*")
-                .defaultLocale(Locale.forLanguageTag(""));
-
-        XliffMessageSourceRuntimeException exception = assertThrows(
-                XliffMessageSourceRuntimeException.class, builder::build
-        );
-        assertEquals("Default language is not set or empty.", exception.getMessage());
-    }
 
     @Test
     void test_setDefaultDomain() {

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
@@ -22,7 +23,7 @@ class CatalogBuilderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en"))
-                .basenamePattern("translations/*")
+            .basenamesPattern(TestUtilities.listToSet("translations/*"))
                 .build();
 
         CatalogBuilder catalogBuilder = CatalogBuilder
@@ -39,7 +40,7 @@ class CatalogBuilderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en-GB"))
-                .basenamePattern("fixtures/*")
+            .basenamesPattern(TestUtilities.listToSet("fixtures/*"))
                 .build();
 
         CatalogBuilder catalogBuilder = CatalogBuilder
@@ -61,7 +62,7 @@ class CatalogBuilderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
                 .builder()
                 .defaultLocale(Locale.forLanguageTag("en"))
-                .basenamePattern("translations_broken/*")
+            .basenamesPattern(TestUtilities.listToSet("translations_broken/*"))
                 .build();
 
         CatalogBuilder catalogBuilder = CatalogBuilder

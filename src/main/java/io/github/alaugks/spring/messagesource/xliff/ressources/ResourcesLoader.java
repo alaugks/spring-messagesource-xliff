@@ -1,23 +1,26 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
-import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.util.Assert;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+;
 
 public final class ResourcesLoader {
 
     private final Locale defaultLocale;
-    private final Set<String> basenameSet;
+    private final Set<String> basenames;
     private final List<String> fileExtensions = List.of("xlf", "xliff");
 
     private ResourcesLoader(ResourcesLoader.Builder builder) {
         this.defaultLocale = builder.defaultLocale;
-        this.basenameSet = builder.basenameSet;
+        this.basenames = builder.basenames;
     }
 
     public static ResourcesLoader.Builder builder() {
@@ -25,40 +28,18 @@ public final class ResourcesLoader {
     }
 
     public static final class Builder {
-        Locale defaultLocale;
-        String defaultDomain;
-        private final Set<String> basenameSet = new LinkedHashSet<>();
+
+        private Locale defaultLocale;
+        private Set<String> basenames;
 
         public ResourcesLoader.Builder defaultLocale(Locale locale) {
             this.defaultLocale = locale;
             return this;
         }
 
-        public ResourcesLoader.Builder defaultDomain(String defaultDomain) {
-            this.defaultDomain = defaultDomain;
+        public ResourcesLoader.Builder basenamesPattern(Set<String> basenames) {
+            this.basenames = basenames;
             return this;
-        }
-
-        public ResourcesLoader.Builder basenamePattern(String basename) {
-            if (basename != null) {
-                this.basenamesPattern(List.of(basename));
-            }
-            return this;
-        }
-
-        public ResourcesLoader.Builder basenamesPattern(Iterable<String> basenames) {
-            if (basenames != null) {
-                this.basenameSet.clear();
-                this.addBasenames(basenames);
-            }
-            return this;
-        }
-
-        private void addBasenames(Iterable<String> basenames) {
-            for (String basename : basenames) {
-                Assert.hasText(basename, "Basename must not be empty");
-                this.basenameSet.add(basename.trim());
-            }
         }
 
         public ResourcesLoader build() {
@@ -68,9 +49,6 @@ public final class ResourcesLoader {
     }
 
     public List<Dto> getTranslationFiles() throws IOException {
-        if (this.defaultLocale == null || this.defaultLocale.toString().isEmpty()) {
-            throw new XliffMessageSourceRuntimeException("Default language is not set or empty.");
-        }
         ArrayList<Dto> translationFiles = new ArrayList<>();
         PathMatchingResourcePatternResolver resourceLoader = new PathMatchingResourcePatternResolver();
         for (String basename : getBasenameSet()) {
@@ -138,6 +116,6 @@ public final class ResourcesLoader {
     }
 
     private Set<String> getBasenameSet() {
-        return this.basenameSet;
+        return this.basenames;
     }
 }
