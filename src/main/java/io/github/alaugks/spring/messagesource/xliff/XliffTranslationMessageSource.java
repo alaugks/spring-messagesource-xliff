@@ -112,9 +112,9 @@ public class XliffTranslationMessageSource implements MessageSource {
     }
 
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-        CatalogHandler.Translation translation = this.internalMessage(code, locale);
-        if (translation.exists()) {
-            return this.format(translation.toString(), args);
+        String translation = this.internalMessage(code, locale);
+        if (translation != null) {
+            return this.format(translation, args);
         }
 
         throw new NoSuchMessageException(code, locale);
@@ -124,9 +124,9 @@ public class XliffTranslationMessageSource implements MessageSource {
         String[] codes = resolvable.getCodes();
         if (codes != null) {
             for (String code : codes) {
-                CatalogHandler.Translation translation = this.internalMessage(code, locale);
-                if (translation.exists()) {
-                    return this.format(translation.toString(), resolvable.getArguments());
+                String translation = this.internalMessage(code, locale);
+                if (translation != null) {
+                    return this.format(translation, resolvable.getArguments());
                 }
             }
         }
@@ -144,19 +144,19 @@ public class XliffTranslationMessageSource implements MessageSource {
         this.catalogHandler.initCache();
     }
 
-    private CatalogHandler.Translation internalMessage(String code, Locale locale) throws NoSuchMessageException {
+    private String internalMessage(String code, Locale locale) throws NoSuchMessageException {
         return this.findInCatalog(locale, code);
     }
 
     private String internalMessageWithDefaultMessage(String code, @Nullable String defaultMessage, Locale locale) {
-        CatalogHandler.Translation translation = this.findInCatalog(locale, code);
-        if (translation.exists()) {
-            return translation.toString();
+        String translation = this.findInCatalog(locale, code);
+        if (translation != null) {
+            return translation;
         }
         return defaultMessage;
     }
 
-    private CatalogHandler.Translation findInCatalog(Locale locale, String code) {
+    private String findInCatalog(Locale locale, String code) {
         return this.catalogHandler.get(locale, code);
     }
 

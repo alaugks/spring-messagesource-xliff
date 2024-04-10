@@ -27,7 +27,7 @@ class CatalogHandlerTest {
     @Test
     void test_put() {
         this.catalogHandler.put(this.locale, "my-test-code", "my-test-value");
-        assertEquals("my-test-value", this.catalogHandler.get(locale, "my-test-code").toString());
+        assertEquals("my-test-value", this.catalogHandler.get(locale, "my-test-code"));
     }
 
     @Test
@@ -39,14 +39,9 @@ class CatalogHandlerTest {
 
     @Test
     void test_get() {
-        assertEquals("Hello World (messages / en)", this.catalogHandler.get(this.locale, "hello_world").toString());
+        assertEquals("Hello World (messages / en)", this.catalogHandler.get(this.locale, "hello_world"));
         assertEquals("Hello World (messages / en)",
-            this.catalogHandler.get(this.locale, "messages.hello_world").toString());
-    }
-
-    @Test
-    void test_get_notExists() {
-        assertEquals("not-exists-id", this.catalogHandler.get(this.locale, "not-exists-id").toString());
+            this.catalogHandler.get(this.locale, "messages.hello_world"));
     }
 
 }

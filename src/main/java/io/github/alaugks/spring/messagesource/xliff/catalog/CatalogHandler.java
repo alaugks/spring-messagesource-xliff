@@ -2,7 +2,6 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import org.springframework.cache.Cache;
 
 public final class CatalogHandler {
@@ -25,21 +24,17 @@ public final class CatalogHandler {
         return this.catalogCache.getAll();
     }
 
-    public Translation get(Locale locale, String code) {
+    public String get(Locale locale, String code) {
         String value = this.catalogCache.get(locale, code);
 
         if (value != null) {
-            return new Translation(code, value);
+            return value;
         }
 
-        // If value not exists then init cache, because it was not in the cache. Cache empty?
+        // If value not exists then init cache, because it was not in the cache.
         this.initCache();
 
-        // If not exists then is the value is the code.
-        // Non-existing code is added to the cache to fetch the non-existing code from
-        // the cache so as not to continue looking in the messagesource files.
-        this.put(locale, code, code);
-        return new Translation(code, code);
+        return null;
     }
 
     void put(Locale locale, String code, String value) {
@@ -52,24 +47,5 @@ public final class CatalogHandler {
 
     public void initCache() {
         this.catalogCache.initCache();
-    }
-
-    public static class Translation {
-
-        String code;
-        String value;
-
-        public Translation(String code, String value) {
-            this.code = code;
-            this.value = value;
-        }
-
-        public boolean exists() {
-            return !Objects.equals(this.code, this.value);
-        }
-
-        public String toString() {
-            return value;
-        }
     }
 }
