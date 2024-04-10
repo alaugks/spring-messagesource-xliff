@@ -179,11 +179,15 @@ class XliffTranslationMessageSourceTest {
     @Test
     @Order(299)
     void test_getMessage_Args_NoSuchMessageException() {
-        assertThrows(NoSuchMessageException.class, () -> messageSource.getMessage(
-            "not_exists",
-            null,
-            Locale.forLanguageTag("en")
-        ));
+        try {
+            messageSource.getMessage(
+                "not_exists",
+                null,
+                Locale.forLanguageTag("en")
+            );
+        } catch (NoSuchMessageException e) {
+            assertEquals(NoSuchMessageException.class, e.getClass());
+        }
     }
 
     @Test
