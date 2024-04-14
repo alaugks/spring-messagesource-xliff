@@ -7,7 +7,6 @@ import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffVersion2;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffVersionInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
-import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseFatalErrorException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.io.IOException;
@@ -91,7 +90,7 @@ public final class CatalogBuilder {
             try {
                 document = documentBuilder.parse(translationFile.getInputStream());
             } catch (SAXException e) {
-                throw new XliffMessageSourceSAXParseFatalErrorException(e);
+                throw new XliffMessageSourceRuntimeException(e);
             }
 
             Element root = document.getDocumentElement();

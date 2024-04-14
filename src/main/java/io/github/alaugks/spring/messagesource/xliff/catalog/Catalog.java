@@ -42,7 +42,7 @@ public final class Catalog extends CatalogAbstractHandler {
 
     @Override
     public void put(Locale locale, String domain, String code, String value) {
-        if (!locale.toString().isBlank() || !code.isBlank()) {
+        if (!locale.toString().isBlank() && !code.isBlank()) {
             String localeKey = CatalogUtilities.localeToLocaleKey(locale);
             this.catalogMap.putIfAbsent(
                 localeKey,

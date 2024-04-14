@@ -65,7 +65,7 @@ public final class CatalogCache extends CatalogAbstractHandler {
     }
 
     public void put(Locale locale, String code, String targetValue) {
-        if (!locale.toString().isBlank() || !code.isBlank()) {
+        if (!locale.toString().isBlank() && !code.isBlank()) {
             this.cache.putIfAbsent(
                 CatalogUtilities.createCode(locale, code),
                 targetValue
