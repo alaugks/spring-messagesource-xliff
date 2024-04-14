@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.1" version="2.1"
+  srcLang="en" trgLang="en">
+  <file id="payment">
+    <unit>
+      <segment id="headline">
+        <source>Payment (en)</source>
+        <target>Payment (es-CR)</target>
+      </segment>
+    </unit>
+  </file>
+</xliff>

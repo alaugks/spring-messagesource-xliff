@@ -37,6 +37,8 @@ public class XliffTranslationMessageSource implements MessageSource {
             builder.cache, builder.defaultLocale,
             builder.defaultDomain
         );
+
+        this.catalogHandler.initCache();
     }
 
     public static Builder builder(Cache cacheManager) {

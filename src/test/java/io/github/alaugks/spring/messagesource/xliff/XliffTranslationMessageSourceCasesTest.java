@@ -4,9 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class XliffTranslationMessageSourceCasesTest {
+
+    XliffTranslationMessageSource messageSourceExample;
+
+    XliffTranslationMessageSourceCasesTest() {
+        this.messageSourceExample = XliffTranslationMessageSource
+            .builder(TestUtilities.getCache())
+            .basenamePattern("translations_example/*")
+            .defaultLocale(Locale.forLanguageTag("en"))
+            .build();
+    }
 
     @Test
     void test_setDefaultDomain() {
@@ -52,6 +66,59 @@ class XliffTranslationMessageSourceCasesTest {
         assertEquals(
             "Hallo Welt (otherdomain / de)",
             messageSource.getMessage("otherdomain.hello_world", null, Locale.forLanguageTag("de"))
+        );
+    }
+
+    @ParameterizedTest()
+    @MethodSource("dataProvider_examples")
+    void test_getMessage_Args_fallback(String code, String locale, Object expected) {
+        String message = this.messageSourceExample.getMessage(
+            code,
+            null,
+            Locale.forLanguageTag(locale)
+        );
+        assertEquals(expected, message);
+    }
+
+    private static Stream<Arguments> dataProvider_examples() {
+        return Stream.of(
+            Arguments.of("headline", "en", "Headline (en)"),
+            Arguments.of("messages.headline", "en", "Headline (en)"),
+            Arguments.of("text", "en", "Text (en)"),
+            Arguments.of("messages.text", "en", "Text (en)"),
+            Arguments.of("notice", "en", "Notice (en)"),
+            Arguments.of("messages.notice", "en", "Notice (en)"),
+
+            Arguments.of("headline", "de", "Headline (de)"),
+            Arguments.of("messages.headline", "de", "Headline (de)"),
+            Arguments.of("text", "de", "Text (de)"),
+            Arguments.of("messages.text", "de", "Text (de)"),
+            Arguments.of("notice", "de", "Notice (en)"),
+            Arguments.of("messages.notice", "de", "Notice (en)"),
+
+            Arguments.of("headline", "en-US", "Headline (en)"),
+            Arguments.of("messages.headline", "en-US", "Headline (en)"),
+            Arguments.of("text", "en-US", "Text (en-US)"),
+            Arguments.of("messages.text", "en-US", "Text (en-US)"),
+            Arguments.of("notice", "en-US", "Notice (en)"),
+            Arguments.of("messages.notice", "en-US", "Notice (en)"),
+
+            Arguments.of("headline", "es", "Headline (es)"),
+            Arguments.of("messages.headline", "es", "Headline (es)"),
+            Arguments.of("text", "es", "Text (es)"),
+            Arguments.of("messages.text", "es", "Text (es)"),
+            Arguments.of("notice", "es", "Notice (en)"),
+            Arguments.of("messages.notice", "es", "Notice (en)"),
+
+            Arguments.of("headline", "es-CR", "Headline (es-CR)"),
+            Arguments.of("messages.headline", "es-CR", "Headline (es-CR)"),
+            Arguments.of("text", "es-CR", "Text (es)"),
+            Arguments.of("messages.text", "es-CR", "Text (es)"),
+            Arguments.of("notice", "es-CR", "Notice (en)"),
+            Arguments.of("messages.notice", "es-CR", "Notice (en)"),
+
+            Arguments.of("headline", "jp", "Headline (en)"),
+            Arguments.of("messages.headline", "jp", "Headline (en)")
         );
     }
 }

@@ -14,8 +14,8 @@ public final class CatalogHandler {
         Locale defaultLocale,
         String defaultDomain
     ) {
-        this.catalogCache = new CatalogCache(defaultLocale, defaultDomain, cache);
-        this.catalogCache.setNextHandler(
+        this.catalogCache = new CatalogCache(cache);
+        this.catalogCache.nextHandle(
             catalogBuilder.createCatalog(new Catalog(defaultLocale, defaultDomain))
         );
     }
@@ -25,16 +25,12 @@ public final class CatalogHandler {
     }
 
     public String get(Locale locale, String code) {
-        String value = this.catalogCache.get(locale, code);
 
-        if (value != null) {
-            return value;
+        if (locale.toString().isEmpty()) {
+            return null;
         }
 
-        // If value not exists then init cache, because it was not in the cache.
-        this.initCache();
-
-        return null;
+        return this.catalogCache.get(locale, code);
     }
 
     void put(Locale locale, String code, String value) {

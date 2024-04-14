@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en"
+    target-language="en">
+    <body>
+      <trans-unit id="headline">
+        <source>Headline (en)</source>
+        <target>Headline (en)</target>
+      </trans-unit>
+      <trans-unit id="text">
+        <source>Text (en)</source>
+        <target>Text (en)</target>
+      </trans-unit>
+      <trans-unit id="notice">
+        <source>Notice (en)</source>
+        <target>Notice (en)</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

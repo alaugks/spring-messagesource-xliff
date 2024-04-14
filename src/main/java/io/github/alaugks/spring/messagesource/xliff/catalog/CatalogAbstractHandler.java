@@ -8,7 +8,7 @@ abstract class CatalogAbstractHandler implements CatalogInterface {
 
     protected CatalogInterface nextHandler;
 
-    public CatalogInterface setNextHandler(CatalogInterface handler) {
+    public CatalogInterface nextHandle(CatalogInterface handler) {
         this.nextHandler = handler;
         return this;
     }

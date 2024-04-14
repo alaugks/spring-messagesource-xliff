@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface CatalogInterface {
 
-    CatalogInterface setNextHandler(CatalogInterface handler);
+    CatalogInterface nextHandle(CatalogInterface handler);
 
     // HashMap<"language+region", HashMap<"code", "value">>
     Map<String, Map<String, String>> getAll();

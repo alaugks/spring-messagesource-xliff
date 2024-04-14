@@ -34,9 +34,8 @@ class CatalogTest {
         assertEquals("value_en_1", catalog.get(locale, "key_1"));
     }
 
-
     @Test
-    void test_en() {
+    void test_enl() {
         // Domain foo
         Locale locale = Locale.forLanguageTag("en");
         assertEquals("value_en_1", catalog.get(locale, "foo.key_1"));

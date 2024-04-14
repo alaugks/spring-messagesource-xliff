@@ -5,16 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 
@@ -35,7 +30,6 @@ class XliffTranslationMessageSourceTest {
             .basenamePattern("translations/*")
             .defaultLocale(Locale.forLanguageTag("en"))
             .build();
-        messageSource.initCache();
     }
 
     @Test
@@ -164,18 +158,6 @@ class XliffTranslationMessageSourceTest {
         ));
     }
 
-    @Order(200)
-    @ParameterizedTest()
-    @MethodSource("dataProvider_fallback")
-    void test_getMessage_Args_fallback(String code, Objects[] args, Locale locale, Object expected) {
-        String message = messageSource.getMessage(
-            code,
-            args,
-            locale
-        );
-        assertEquals(expected, message);
-    }
-
     @Test
     @Order(299)
     void test_getMessage_Args_NoSuchMessageException() {
@@ -251,28 +233,4 @@ class XliffTranslationMessageSourceTest {
             locale
         ));
     }
-
-    private static Stream<Arguments> dataProvider_fallback() {
-        return Stream.of(
-            Arguments.of(
-                "hello_world",
-                null,
-                Locale.forLanguageTag("jp"),
-                "Hello World (messages / en)"
-            ),
-            Arguments.of(
-                "hello_world",
-                null,
-                Locale.forLanguageTag("en-GB"),
-                "Hello World (messages / en)"
-            ),
-            Arguments.of(
-                "hello_world",
-                null,
-                Locale.forLanguageTag("en-US"),
-                "Hello World (messages / en_US)"
-            )
-        );
-    }
-
 }

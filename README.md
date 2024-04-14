@@ -248,10 +248,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
                 <source>Postcode</source>
                 <target>Postcode</target>
             </trans-unit>
-            <trans-unit id="headline-examples">
-                <source>Examples</source>
-                <target>Examples</target>
-            </trans-unit>
             <trans-unit id="translation-args-label">
                 <source>Translation with param</source>
                 <target>Translation with param</target>
@@ -284,10 +280,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
             <trans-unit id="postcode">
                 <source>Postcode</source>
                 <target>Postleitzahl</target>
-            </trans-unit>
-            <trans-unit id="headline-examples">
-                <source>Examples</source>
-                <target>Beispiele</target>
             </trans-unit>
             <trans-unit id="translation-args-label">
                 <source>Translation with param</source>
@@ -391,8 +383,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 | messages.headline               | Headline                            | Überschrift                        | Headline**                            |
 | postcode*                       | Postcode                            | Postleitzahl                       | Zip code                              |
 | messages.postcode               | Postcode                            | Postleitzahl                       | Zip code                              |
-| headline-examples*              | Examples                            | Beispiele                          | Examples**                            |
-| messages.headline-examples      | Examples                            | Beispiele                          | Examples**                            |
 | translation-args-label*         | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
 | messages.translation-args-label | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
 | email-notice*                   | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
@@ -418,8 +408,8 @@ packages and implementations that use the MessageSource.
 
 > [!NOTE]
 > Translations in the default domain can be selected using the ```id``` or ```domain.id```.
-Translations in other domains can only be selected using the ```otherdomain.id```. See the examples
-below.
+> Translations in other domains can only be selected using the ```otherdomain.id```. See the examples
+> below.
 
 
 <a name="a6.1"></a>
@@ -448,7 +438,7 @@ the [Full Example](#a7).
 <strong th:text="#{payment.expiry_date}"/>
 
 <!-- "Your email john.doe@example.com has been registered." -->
-<strong th:text="#{translation-args-label}"/>: <span th:text="#{email-notice('john.doe@example.com')}"/>
+<span th:text="#{email-notice('john.doe@example.com')}"/>
 
 <!-- "This is a default message." -->
 <span th:text="${#messages.msgOrNull('not-exists-id')} ?: #{default-message}"/>
@@ -469,45 +459,27 @@ public MyClass(MessageSource messageSource) {
 }
 
 // "Headline"
-this.messageSource.
-
-getMessage("headline",null,locale);
-this.messageSource.
-
-getMessage("messages.headline",null,locale);
+this.messageSource.getMessage("headline",null,locale);
+this.messageSource.getMessage("messages.headline",null,locale);
 
 // "Postcode"
-this.messageSource.
-
-getMessage("postcode",null,locale);
-this.messageSource.
-
-getMessage("messages.postcode",null,locale);
+this.messageSource.getMessage("postcode",null,locale);
+this.messageSource.getMessage("messages.postcode",null,locale);
 
 // "Payment"
-this.messageSource.
-
-getMessage("payment.headline",null,locale);
+this.messageSource.getMessage("payment.headline",null,locale);
 
 // "Expiry date"
-this.messageSource.
-
-getMessage("payment.expiry-date",null,locale);
+this.messageSource.getMessage("payment.expiry-date",null,locale);
 
 // "Your email john.doe@example.com has been registered."
 Object[] args = {"john.doe@example.com"};
-this.messageSource.
-
-getMessage("email-notice",args, locale);
-this.messageSource.
-
-getMessage("messages.email-notice",args, locale);
+this.messageSource.getMessage("email-notice",args, locale);
+this.messageSource.getMessage("messages.email-notice",args, locale);
 
 // "This is a default message."
 String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
-this.messageSource.
-
-getMessage("not-exists-id",null,defaultMessage, locale);
+this.messageSource.getMessage("not-exists-id",null,defaultMessage, locale);
 ```
 
 <a name="a6.3"></a>

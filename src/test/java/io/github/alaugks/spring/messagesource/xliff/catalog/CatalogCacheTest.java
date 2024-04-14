@@ -18,8 +18,6 @@ class CatalogCacheTest {
     @BeforeEach
     void beforeEach() {
         this.catalogCache = new CatalogCache(
-            Locale.forLanguageTag("en"),
-            "messages",
             TestUtilities.getCache()
         );
         this.locale = Locale.forLanguageTag("en");

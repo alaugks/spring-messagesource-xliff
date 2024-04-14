@@ -1,22 +1,17 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogCacheAdapter;
-import io.github.alaugks.spring.messagesource.xliff.catalog.finder.CatalogFinder;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.cache.Cache;
 
 public final class CatalogCache extends CatalogAbstractHandler {
 
     private final Cache cache;
-    private final Locale defaultLocale;
-    private final String domain;
 
-    public CatalogCache(Locale defaultLocal, String domain, Cache cache) {
-        this.defaultLocale = defaultLocal;
-        this.domain = domain;
+    public CatalogCache(Cache cache) {
         this.cache = cache;
     }
 
@@ -45,18 +40,23 @@ public final class CatalogCache extends CatalogAbstractHandler {
     @Override
     public String get(Locale locale, String code) {
 
-        CatalogFinder finder = new CatalogFinder(
-            new CatalogCacheAdapter(this.cache),
-            this.defaultLocale,
-            this.domain
-        );
-
-        String message = finder.find(locale, code);
-        if (message != null) {
-            return message;
+        if (locale.toString().isBlank() || code.isBlank()) {
+            return null;
         }
 
-        return super.get(locale, code);
+        // Find in Cache
+        String value = this.find(locale, code);
+        if (value != null) {
+            return value;
+        }
+
+        // Find in next Handler
+        value = super.get(locale, code);
+        if (value != null) {
+            this.put(locale, code, value);
+        }
+
+        return value;
     }
 
     @Override
@@ -64,11 +64,11 @@ public final class CatalogCache extends CatalogAbstractHandler {
         this.put(locale, CatalogUtilities.concatCode(domain, code), value);
     }
 
-    public void put(Locale locale, String code, String value) {
-        if (!locale.toString().isEmpty()) {
+    public void put(Locale locale, String code, String targetValue) {
+        if (!locale.toString().isBlank() || !code.isBlank()) {
             this.cache.putIfAbsent(
                 CatalogUtilities.createCode(locale, code),
-                value
+                targetValue
             );
         }
     }
@@ -76,11 +76,25 @@ public final class CatalogCache extends CatalogAbstractHandler {
     public void initCache() {
         super.getAll().forEach((langCode, catalogDomain) -> catalogDomain.forEach((code, value) ->
             this.put(
-                Locale.forLanguageTag(langCode.replace("_", "-")),
+                Locale.forLanguageTag(
+                    CatalogUtilities.normalizeLocaleKey(langCode)
+                ),
                 code,
                 value
             )
         ));
+    }
+
+    private String find(Locale locale, String code) {
+        Cache.ValueWrapper valueWrapper = this.cache.get(
+            CatalogUtilities.createCode(locale, code)
+        );
+
+        if (valueWrapper != null) {
+            return Objects.requireNonNull(valueWrapper.get()).toString();
+        }
+
+        return null;
     }
 
 }

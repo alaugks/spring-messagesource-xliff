@@ -9,7 +9,11 @@ public final class CatalogUtilities {
     }
 
     public static String localeToLocaleKey(Locale locale) {
-        return buildLocale(locale).toString().trim().toLowerCase().replace("_", "-");
+        return normalizeLocaleKey(buildLocale(locale).toString());
+    }
+
+    public static String normalizeLocaleKey(String langCode) {
+        return langCode.toLowerCase().replace("_", "-");
     }
 
     public static String concatCode(String domain, String code) {
