@@ -112,24 +112,6 @@ public final class Catalog extends CatalogAbstractHandler {
             return value;
         }
 
-        // Code+DefaultLanguage / DomainCode+DefaultLanguage
-        value = this.findInCatalog(
-            CatalogUtilities.buildLocaleWithoutRegion(this.defaultLocale),
-            code
-        );
-        if (value != null) {
-            return value;
-        }
-
-        // Code+DefaultLanguage / DomainCode+DefaultLanguage
-        value = this.findInCatalog(
-            CatalogUtilities.buildLocaleWithoutRegion(this.defaultLocale),
-            CatalogUtilities.concatCode(this.defaultDomain, code)
-        );
-        if (value != null) {
-            return value;
-        }
-
         return value;
     }
 
