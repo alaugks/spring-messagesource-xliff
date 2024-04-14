@@ -25,11 +25,6 @@ public final class CatalogHandler {
     }
 
     public String get(Locale locale, String code) {
-
-        if (locale.toString().isEmpty()) {
-            return null;
-        }
-
         return this.catalogCache.get(locale, code);
     }
 
