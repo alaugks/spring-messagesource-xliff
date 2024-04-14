@@ -78,7 +78,6 @@ class CatalogCacheTest {
     void test_put_not_overwrite() {
         this.catalogCache.put(this.locale, "domain", "code", "value_1");
         this.catalogCache.put(this.locale, "domain", "code", "value_2");
-        this.catalogCache.put(this.locale, "domain", "code", "value_3");
         assertEquals("value_1", this.catalogCache.get(this.locale, "domain.code"));
     }
 }

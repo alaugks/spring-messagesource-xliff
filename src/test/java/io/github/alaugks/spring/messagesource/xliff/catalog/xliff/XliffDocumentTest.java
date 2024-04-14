@@ -61,7 +61,12 @@ class XliffDocumentTest {
         String code, String expected) {
         var messageSource = XliffTranslationMessageSource
             .builder(TestUtilities.getCache())
-            .basenamePattern("identifier/*")
+            .basenamesPattern(
+                List.of(
+                    "fixtures/identifierv1.xliff",
+                    "fixtures/identifierv2.xliff"
+                )
+            )
             .defaultLocale(Locale.forLanguageTag("en"))
             .setTransUnitIdentifier(translationUnitIdentifiers)
             .build();

@@ -40,7 +40,9 @@ class CatalogBuilderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
             .builder()
             .defaultLocale(Locale.forLanguageTag("en-GB"))
-            .basenamesPattern(TestUtilities.listToSet("fixtures/*"))
+            .basenamesPattern(TestUtilities.listToSet(
+                "fixtures/xliff*.xliff"
+            ))
             .build();
 
         CatalogBuilder catalogBuilder = CatalogBuilder
@@ -48,9 +50,7 @@ class CatalogBuilderTest {
             .build();
 
         XliffMessageSourceVersionSupportException exception = assertThrows(
-            XliffMessageSourceVersionSupportException.class, () -> {
-                catalogBuilder.createCatalog(catalog);
-            }
+            XliffMessageSourceVersionSupportException.class, () -> catalogBuilder.createCatalog(catalog)
         );
         assertEquals("XLIFF version \"1.0\" not supported.", exception.getMessage());
     }
@@ -62,7 +62,7 @@ class CatalogBuilderTest {
         ResourcesLoader resourcesLoader = ResourcesLoader
             .builder()
             .defaultLocale(Locale.forLanguageTag("en"))
-            .basenamesPattern(TestUtilities.listToSet("translations_broken/*"))
+            .basenamesPattern(TestUtilities.listToSet("fixtures/parse_error.xliff"))
             .build();
 
         CatalogBuilder catalogBuilder = CatalogBuilder

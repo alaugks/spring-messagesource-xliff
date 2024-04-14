@@ -7,9 +7,9 @@
         <source>Payment (en)</source>
         <target>Payment (en)</target>
       </segment>
-      <segment id="headline">
-        <source>Text (en)</source>
-        <target>Text (en)</target>
+      <segment id="text">
+        <source>Payment Text (en)</source>
+        <target>Payment Text (en)</target>
       </segment>
     </unit>
   </file>
