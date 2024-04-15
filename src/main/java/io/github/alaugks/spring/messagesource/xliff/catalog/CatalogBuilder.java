@@ -9,6 +9,7 @@ import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
+import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader.TranslationFile;
 import java.io.IOException;
 import java.util.List;
 import javax.xml.XMLConstants;
@@ -78,9 +79,10 @@ public final class CatalogBuilder {
             .orElse(null);
     }
 
-    private void readFile(List<ResourcesLoader.Dto> translationFiles) throws ParserConfigurationException, IOException {
+    private void readFile(List<TranslationFile> translationTranslationFiles)
+        throws ParserConfigurationException, IOException {
 
-        for (ResourcesLoader.Dto translationFile : translationFiles) {
+        for (TranslationFile translationFile : translationTranslationFiles) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -88,7 +90,7 @@ public final class CatalogBuilder {
             documentBuilder.setErrorHandler(new SaxErrorHandler());
             Document document;
             try {
-                document = documentBuilder.parse(translationFile.getInputStream());
+                document = documentBuilder.parse(translationFile.inputStream());
             } catch (SAXException e) {
                 throw new XliffMessageSourceRuntimeException(e);
             }
@@ -106,7 +108,7 @@ public final class CatalogBuilder {
 
             if (xliffReader != null) {
                 xliffReader.setTransUnitIdentifier(this.transUnitIdentifier);
-                xliffReader.read(this.catalog, xliffDocument, translationFile.getDomain(), translationFile.getLocale());
+                xliffReader.read(this.catalog, xliffDocument, translationFile.domain(), translationFile.locale());
             } else {
                 throw new XliffMessageSourceVersionSupportException(
                     String.format("XLIFF version \"%s\" not supported.", xliffVersion)

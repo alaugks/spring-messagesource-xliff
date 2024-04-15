@@ -46,7 +46,7 @@ class XliffDocumentTest {
 
         var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff-value-test.xliff"));
         xliffDocument.getTransUnits("segment", List.of("id")).forEach(
-            transUnit -> transUnits.put(transUnit.getCode(), transUnit.getTargetValue())
+            transUnit -> transUnits.put(transUnit.code(), transUnit.value())
         );
 
         assertEquals("value", transUnits.get("element"));

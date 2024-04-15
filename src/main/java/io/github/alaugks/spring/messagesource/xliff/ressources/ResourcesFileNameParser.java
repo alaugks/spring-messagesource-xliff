@@ -14,53 +14,32 @@ final class ResourcesFileNameParser {
         this.filename = filename;
     }
 
-    public Dto parse() {
+    public Filename parse() {
         String regexp = "^(?<domain>[a-z0-9]+)(?:([_-](?<language>[a-z]+))(?:[_-](?<region>[a-z]+))?)?";
         Pattern pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(this.filename);
 
         if (matcher.find()) {
-            String domain = this.getGroup(matcher, "domain");
-            String language = this.getGroup(matcher, "language");
-            String region = this.getGroup(matcher, "region");
-            return new Dto(
-                domain,
-                language,
-                region
+            return new Filename(
+                this.getGroup(matcher, "domain"),
+                this.getGroup(matcher, "language"),
+                this.getGroup(matcher, "region")
             );
         }
         return null;
     }
 
-    public static class Dto {
-
-        private final String domain;
-        private final String language;
-        private final String region;
-
-        public Dto(String domain, String lang, String country) {
-            this.domain = domain;
-            this.language = lang;
-            this.region = country;
-        }
-
-        public String getDomain() {
-            return domain;
-        }
-
-        public String getLanguage() {
-            return language;
-        }
-
-        public String getRegion() {
-            return region;
-        }
+    public record Filename(String domain, String language, String region) {
 
         public boolean hasLocale() {
-            return getLocale() != null && !getLocale().toString().isEmpty();
+            Locale locale = locale();
+            if (locale != null) {
+                return !locale.toString().isEmpty();
+            }
+            return false;
         }
 
-        public Locale getLocale() {
+        public Locale locale() {
             try {
                 return CatalogUtilities.buildLocale(this.language, this.region);
             } catch (IllformedLocaleException e) {

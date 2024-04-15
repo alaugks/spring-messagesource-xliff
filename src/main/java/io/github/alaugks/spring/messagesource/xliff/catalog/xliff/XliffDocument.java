@@ -117,23 +117,7 @@ public final class XliffDocument {
         );
     }
 
-    public static class TransUnit {
-
-        private final String code;
-        private final String value;
-
-        public TransUnit(String code, String value) {
-            this.code = code;
-            this.value = value;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public String getTargetValue() {
-            return value;
-        }
+    public record TransUnit(String code, String value) {
     }
 
 }

@@ -1,5 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
+import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesFileNameParser.Filename;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,31 +47,31 @@ public final class ResourcesLoader {
 
     }
 
-    public List<Dto> getTranslationFiles() throws IOException {
-        ArrayList<Dto> translationFiles = new ArrayList<>();
+    public List<TranslationFile> getTranslationFiles() throws IOException {
+        ArrayList<TranslationFile> translationTranslationFiles = new ArrayList<>();
         PathMatchingResourcePatternResolver resourceLoader = new PathMatchingResourcePatternResolver();
         for (String basename : getBasenameSet()) {
             Resource[] resources = resourceLoader.getResources(basename);
             for (Resource resource : resources) {
                 if (this.isFileExtensionSupported(resource)) {
-                    Dto dto = this.parseFileName(resource);
-                    if (dto != null) {
-                        translationFiles.add(dto);
+                    TranslationFile translationFile = this.parseFileName(resource);
+                    if (translationFile != null) {
+                        translationTranslationFiles.add(translationFile);
                     }
                 }
             }
         }
 
-        return translationFiles;
+        return translationTranslationFiles;
     }
 
-    private Dto parseFileName(Resource resource) throws IOException {
-        ResourcesFileNameParser.Dto dto = new ResourcesFileNameParser(resource.getFilename()).parse();
-        if (dto != null) {
-            return new Dto(
-                dto.getDomain(),
-                dto.hasLocale()
-                    ? dto.getLocale()
+    private TranslationFile parseFileName(Resource resource) throws IOException {
+        Filename filename = new ResourcesFileNameParser(resource.getFilename()).parse();
+        if (filename != null) {
+            return new TranslationFile(
+                filename.domain(),
+                filename.hasLocale()
+                    ? filename.locale()
                     : this.defaultLocale,
                 resource.getInputStream()
             );
@@ -83,29 +84,7 @@ public final class ResourcesLoader {
         return fileExtension != null && this.fileExtensions.contains(fileExtension.toLowerCase());
     }
 
-    public static class Dto {
-
-        private final String domain;
-        private final Locale locale;
-        private final InputStream inputStream;
-
-        public Dto(String domain, Locale locale, InputStream inputStream) {
-            this.domain = domain;
-            this.locale = locale;
-            this.inputStream = inputStream;
-        }
-
-        public String getDomain() {
-            return domain;
-        }
-
-        public Locale getLocale() {
-            return locale;
-        }
-
-        public InputStream getInputStream() {
-            return inputStream;
-        }
+    public record TranslationFile(String domain, Locale locale, InputStream inputStream) {
     }
 
     private String getFileExtension(String filename) {

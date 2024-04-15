@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader.TranslationFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -64,10 +65,10 @@ class ResourcesLoaderTest {
             .basenamesPattern(TestUtilities.listToSet("translations_en_US/*"))
             .build();
 
-        ResourcesLoader.Dto dto = resourcesLoader.getTranslationFiles().get(0);
+        TranslationFile translationFile = resourcesLoader.getTranslationFiles().get(0);
 
-        assertEquals("messages", dto.getDomain());
-        assertEquals("en_US", dto.getLocale().toString());
-        assertInstanceOf(InputStream.class, dto.getInputStream());
+        assertEquals("messages", translationFile.domain());
+        assertEquals("en_US", translationFile.locale().toString());
+        assertInstanceOf(InputStream.class, translationFile.inputStream());
     }
 }
