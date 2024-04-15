@@ -1,11 +1,11 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
+package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
-import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
+import io.github.alaugks.spring.messagesource.xliff.catalog.XliffVersion2.Identifier;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 import org.junit.jupiter.api.Test;
@@ -22,5 +22,17 @@ class XliffVersion20Test {
         version.read(catalog, document, "domain", locale);
 
         assertEquals("Hello World (Xliff Version 2.0)", catalog.get(locale, "domain.code-1"));
+    }
+
+    @Test
+    void test_default_identifier() {
+        var identifier = new Identifier();
+        assertEquals(List.of("id"), identifier.getList());
+    }
+
+    @Test
+    void test_custom_identifier() {
+        var identifier = new Identifier(List.of("resname", "id"));
+        assertEquals(List.of("resname", "id"), identifier.getList());
     }
 }

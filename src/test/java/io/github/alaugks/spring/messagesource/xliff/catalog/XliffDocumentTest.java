@@ -1,4 +1,4 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
+package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
+import io.github.alaugks.spring.messagesource.xliff.catalog.XliffVersion2.Identifier;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,7 +58,8 @@ class XliffDocumentTest {
 
     @ParameterizedTest(name = "{index} => translationUnitIdentifiers={0}, code={1}, expected={2}, value={3}")
     @MethodSource("dataProvider_setTranslationUnitIdentifiersOrdering")
-    void test_setTranslationUnitIdentifiersOrdering(List<XliffIdentifierInterface> translationUnitIdentifiers,
+    void test_setTranslationUnitIdentifiersOrdering(
+        List<XliffVersionInterface.XliffIdentifierInterface> translationUnitIdentifiers,
         String code, String expected) {
         var messageSource = XliffTranslationMessageSource
             .builder(TestUtilities.getCache())
@@ -82,51 +84,51 @@ class XliffDocumentTest {
     private static Stream<Arguments> dataProvider_setTranslationUnitIdentifiersOrdering() {
         return Stream.of(
             Arguments.of(
-                Arrays.asList(new Xliff2XliffIdentifier(List.of("resname")),
-                    new Xliff12XliffIdentifier(List.of("resname"))),
+                Arrays.asList(new Identifier(List.of("resname")),
+                    new XliffVersion12.Identifier(List.of("resname"))),
                 "identifierv1.code-resname-a",
                 "Target A"
             ),
             Arguments.of(
-                Arrays.asList(new Xliff2XliffIdentifier(List.of("id")), new Xliff12XliffIdentifier(List.of("id"))),
+                Arrays.asList(new Identifier(List.of("id")), new XliffVersion12.Identifier(List.of("id"))),
                 "identifierv1.code-id-a",
                 "Target A"
             ),
 
             Arguments.of(
-                Arrays.asList(new Xliff2XliffIdentifier(List.of("resname", "id")),
-                    new Xliff12XliffIdentifier(List.of("resname", "id"))),
+                Arrays.asList(new Identifier(List.of("resname", "id")),
+                    new XliffVersion12.Identifier(List.of("resname", "id"))),
                 "identifierv1.code-id-b",
                 "Target B"
             ),
             Arguments.of(
-                Arrays.asList(new Xliff2XliffIdentifier(List.of("id", "resname")),
-                    new Xliff12XliffIdentifier(List.of("id", "resname"))),
+                Arrays.asList(new Identifier(List.of("id", "resname")),
+                    new XliffVersion12.Identifier(List.of("id", "resname"))),
                 "identifierv1.code-resname-c",
                 "Target C"
             ),
 
             Arguments.of(
-                Arrays.asList(new Xliff2XliffIdentifier(List.of("resname")),
-                    new Xliff12XliffIdentifier(List.of("resname"))),
+                Arrays.asList(new Identifier(List.of("resname")),
+                    new XliffVersion12.Identifier(List.of("resname"))),
                 "identifierv2.code-resname-a",
                 "Target A"
             ),
             Arguments.of(
-                Arrays.asList(new Xliff2XliffIdentifier(List.of("id")), new Xliff12XliffIdentifier(List.of("id"))),
+                Arrays.asList(new Identifier(List.of("id")), new XliffVersion12.Identifier(List.of("id"))),
                 "identifierv2.code-id-a",
                 "Target A"
             ),
 
             Arguments.of(
-                Arrays.asList(new Xliff2XliffIdentifier(List.of("resname", "id")),
-                    new Xliff12XliffIdentifier(List.of("resname", "id"))),
+                Arrays.asList(new Identifier(List.of("resname", "id")),
+                    new XliffVersion12.Identifier(List.of("resname", "id"))),
                 "identifierv2.code-id-b",
                 "Target B"
             ),
             Arguments.of(
-                Arrays.asList(new Xliff2XliffIdentifier(List.of("id", "resname")),
-                    new Xliff12XliffIdentifier(List.of("id", "resname"))),
+                Arrays.asList(new Identifier(List.of("id", "resname")),
+                    new XliffVersion12.Identifier(List.of("id", "resname"))),
                 "identifierv2.code-resname-c",
                 "Target C"
             )

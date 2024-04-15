@@ -2,7 +2,7 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffIdentifierInterface;
+import io.github.alaugks.spring.messagesource.xliff.catalog.XliffVersionInterface.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.text.MessageFormat;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
+package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import java.util.HashSet;
 import java.util.List;

@@ -1,6 +1,5 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
+package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
 import java.util.List;
 import java.util.Locale;
 
@@ -9,7 +8,7 @@ public final class XliffVersion12 implements XliffVersionInterface {
     private XliffIdentifierInterface transUnitIdentifier;
 
     public XliffVersion12() {
-        this.transUnitIdentifier = new Xliff12XliffIdentifier();
+        this.transUnitIdentifier = new Identifier();
     }
 
     @Override
@@ -29,4 +28,21 @@ public final class XliffVersion12 implements XliffVersionInterface {
         );
     }
 
+    public static final class Identifier implements XliffIdentifierInterface {
+
+        // https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers
+        private List<String> unitIdentifiers = List.of("resname", "id");
+
+        public Identifier() {
+        }
+
+        public Identifier(List<String> unitIdentifiers) {
+            this.unitIdentifiers = unitIdentifiers;
+        }
+
+        @Override
+        public List<String> getList() {
+            return this.unitIdentifiers;
+        }
+    }
 }

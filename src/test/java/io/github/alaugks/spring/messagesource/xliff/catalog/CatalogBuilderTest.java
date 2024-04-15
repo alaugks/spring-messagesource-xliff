@@ -1,4 +1,4 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog.xliff;
+package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
-import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseFatalErrorException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;

@@ -1,10 +1,5 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffDocument;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffIdentifierInterface;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffVersion12;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffVersion2;
-import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffVersionInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
@@ -24,7 +19,7 @@ public final class CatalogBuilder {
 
     private final ResourcesLoader resourceLoader;
     private Catalog catalog;
-    private final List<XliffIdentifierInterface> transUnitIdentifier;
+    private final List<XliffVersionInterface.XliffIdentifierInterface> transUnitIdentifier;
     List<XliffVersionInterface> supportedVersions = List.of(
         new XliffVersion12(),
         new XliffVersion2()
@@ -42,13 +37,14 @@ public final class CatalogBuilder {
     public static final class Builder {
 
         private final ResourcesLoader resourceLoader;
-        private List<XliffIdentifierInterface> transUnitIdentifier;
+        private List<XliffVersionInterface.XliffIdentifierInterface> transUnitIdentifier;
 
         private Builder(ResourcesLoader resourceLoader) {
             this.resourceLoader = resourceLoader;
         }
 
-        public Builder transUnitIdentifier(List<XliffIdentifierInterface> translationUnitIdentifiers) {
+        public Builder transUnitIdentifier(
+            List<XliffVersionInterface.XliffIdentifierInterface> translationUnitIdentifiers) {
             if (translationUnitIdentifiers != null) {
                 this.transUnitIdentifier = translationUnitIdentifiers;
             }
