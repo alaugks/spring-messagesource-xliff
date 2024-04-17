@@ -1,9 +1,9 @@
 name: "OSSRH Release"
 run-name: OSSRH Release [${{ github.ref_name }}]
 on:
-  push:
-    branches:
-      - snapshot/*
+  #  push:
+  #    branches:
+  #      - snapshot/*
   workflow_dispatch:
 jobs:
   release:
