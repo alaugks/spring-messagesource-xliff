@@ -10,12 +10,12 @@ This package provides a **MessageSource** for using translations from XLIFF file
 1. [Version](#a1)
 2. [Dependency](#a2)
 3. [MessageSource Configuration](#a3)
-   * 3.1. [CacheManager Configuration](#3.1)
-   * 3.2. [XliffTranslationMessageSource Configuration](#3.2)
+  * 3.1. [CacheManager Configuration](#a3.1)
+  * 3.2. [XliffTranslationMessageSource Configuration](#a3.2)
 4. [Cache warming with an ApplicationRunner (recommended)](#a4)
 5. [XLIFF Translation Files](#a5)
-6. [Using the MessageSource](#a7)
-7. [Full Example](#a8)
+6. [Using the MessageSource](#a6)
+7. [Full Example](#a7)
 8. [Support](#a8)
 9. [More Information](#a9)
 
@@ -64,8 +64,10 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 ## 3.1 CacheManager Configuration
 
 You may already have an existing CacheManager configuration. If not, the following minimum
-CacheManager configuration is required. All supported [Cache Provider](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider) can be used.
-No ExpireDate should be set for the XLIFF translations cache.
+CacheManager configuration is required.
+
+> [!Note]
+> No ExpireDate should be set for the XLIFF translations cache.
 
 ### CacheManager with ConcurrentMapCacheManager
 
@@ -78,7 +80,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.List;
 
 @Configuration
@@ -89,9 +90,7 @@ public class CacheConfig {
 
   @Bean
   public CacheManager cacheManager() {
-    ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-    cacheManager.setCacheNames(List.of(XLIFF_CACHE_NAME));
-    return cacheManager;
+    return new ConcurrentMapCacheManager(XLIFF_CACHE_NAME);
   }
 
 }    
@@ -99,24 +98,35 @@ public class CacheConfig {
 
 ### CacheManager with supported Cache Provider Caffeine
 
-You can see an example using Caffeine [here](https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
+All
+supported [Cache Provider](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider)
+can be used. You can see an example using
+Caffeine [here](https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
 
 ## 3.2 XliffTranslationMessageSource Configuration
 
-`setBasenamePattern(String basename)` or `setBasenamesPattern(Iterable<String> basenames)` (***required***)
+`basenamePattern(String basename)` or `basenamesPattern(Iterable<String> basenames)` (
+***required***)
 
 * Defines the pattern used to select the XLIFF files.
 * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
 * Files with the extension `xliff` and `xlf` are filtered from the result list.
 
-`setDefaultLocale(Locale locale)` (***required***)
+`defaultLocale(Locale locale)` (***required***)
 * Defines the default language.
 
-`setDefaultDomain(String defaultDomain)`
+`defaultDomain(String defaultDomain)`
 
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a5).
+* Defines the default domain. Default is `messages`. For more information,
+  see [XlIFF Translations Files](#a4).
 
 ### MessageSource Configuration
+
+For this example:
+
+* The previously created cache is fetched with the constant `CacheConfig.XLIFF_CACHE_NAME`.
+* Default language is `en`.
+* The Xliff files are stored in `src/main/resources/translations`.
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
@@ -124,12 +134,10 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 import java.util.Locale;
 
 @Configuration
-public class MessageConfig implements WebMvcConfigurer {
+public class MessageConfig {
 
   @Bean()
   public MessageSource messageSource(CacheManager cacheManager) {
@@ -139,42 +147,11 @@ public class MessageConfig implements WebMvcConfigurer {
             .basenamePattern("translations/*")
             .build();
   }
+
 }
 ```
 
 <a name="a4"></a>
-
-## 4. Cache warming with an ApplicationRunner (recommended)
-
-In the following example, the cache of translations is warmed up after the application starts.
-
-```java
-import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Component;
-
-@Component
-public class CacheWarmUpMessageSource implements ApplicationRunner {
-
-  private final MessageSource messageSource;
-
-  public CacheWarmUpMessageSource(MessageSource messageSource) {
-    this.messageSource = messageSource;
-  }
-
-  @Override
-  public void run(ApplicationArguments args) {
-    if (this.messageSource instanceof XliffTranslationMessageSource) {
-      ((XliffTranslationMessageSource) this.messageSource).initCache();
-    }
-  }
-    
-}
-```
-
-<a name="a5"></a>
 
 ## 5. XLIFF Translation Files
 
@@ -248,10 +225,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
                 <source>Postcode</source>
                 <target>Postcode</target>
             </trans-unit>
-            <trans-unit id="translation-args-label">
-                <source>Translation with param</source>
-                <target>Translation with param</target>
-            </trans-unit>
             <trans-unit id="email-notice">
                 <source>Your email {0} has been registered.</source>
                 <target>Your email {0} has been registered.</target>
@@ -280,10 +253,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
             <trans-unit id="postcode">
                 <source>Postcode</source>
                 <target>Postleitzahl</target>
-            </trans-unit>
-            <trans-unit id="translation-args-label">
-                <source>Translation with param</source>
-                <target>Übersetzung mit Parameter</target>
             </trans-unit>
             <trans-unit id="email-notice">
                 <source>Your email {0} has been registered.</source>
@@ -383,8 +352,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 | messages.headline               | Headline                            | Überschrift                        | Headline**                            |
 | postcode*                       | Postcode                            | Postleitzahl                       | Zip code                              |
 | messages.postcode               | Postcode                            | Postleitzahl                       | Zip code                              |
-| translation-args-label*         | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
-| messages.translation-args-label | Translation with param              | Übersetzung mit Parameter          | Translation with param**              |
 | email-notice*                   | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
 | messages.email-notice           | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
 | default-message*                | This is a default message.          | Das ist ein Standardtext.          | This is a default message.**          |
@@ -398,12 +365,13 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 > **Example of a fallback. With locale `en-US` it tries to select the translation with id `headline` in messages_en-US. The id `headline` does not exist, so it tries to select the translation with locale `en` in messages.
 
 
-<a name="a6"></a>
+<a name="a5"></a>
 
 ## 6. Using the MessageSource
 
 With the implementation and use of the MessageSource interface, the translations are also available
-in [Thymeleaf](#a6.1), as [Service (Dependency Injection)](#a6.2) and [Custom Validation Messages](#a6.3). Also in
+in [Thymeleaf](#a5.1), as [Service (Dependency Injection)](#a5.2)
+and [Custom Validation Messages](#a5.3). Also in
 packages and implementations that use the MessageSource.
 
 > [!NOTE]
@@ -412,11 +380,11 @@ packages and implementations that use the MessageSource.
 > below.
 
 
-<a name="a6.1"></a>
+<a name="a5.1"></a>
 ### Thymeleaf
 
 With the configured MessageSource, the translations are available in Thymeleaf. See the example in
-the [Full Example](#a7).
+the [Full Example](#a6).
 
 ```html
 <!-- "Headline" -->
@@ -445,49 +413,69 @@ the [Full Example](#a7).
 
 ```
 
-<a name="a6.2"></a>
+<a name="a5.2"></a>
 ### Service (Dependency Injection)
 
-The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a7).
+The MessageSource can be set via Autowire to access the translations. See the example in
+the [Full Example](#a6).
 
 ```java
 // Autowire MessageSourceInterface
 private MessageSource messageSource;
 
+// Constructor
 public MyClass(MessageSource messageSource) {
   this.messageSource = messageSource;
 }
 
 // "Headline"
-this.messageSource.getMessage("headline",null,locale);
-this.messageSource.getMessage("messages.headline",null,locale);
+this.messageSource.
+
+getMessage("headline",null,locale);
+this.messageSource.
+
+getMessage("messages.headline",null,locale);
 
 // "Postcode"
-this.messageSource.getMessage("postcode",null,locale);
-this.messageSource.getMessage("messages.postcode",null,locale);
+this.messageSource.
+
+getMessage("postcode",null,locale);
+this.messageSource.
+
+getMessage("messages.postcode",null,locale);
 
 // "Payment"
-this.messageSource.getMessage("payment.headline",null,locale);
+this.messageSource.
+
+getMessage("payment.headline",null,locale);
 
 // "Expiry date"
-this.messageSource.getMessage("payment.expiry-date",null,locale);
+this.messageSource.
+
+getMessage("payment.expiry-date",null,locale);
 
 // "Your email john.doe@example.com has been registered."
 Object[] args = {"john.doe@example.com"};
-this.messageSource.getMessage("email-notice",args, locale);
-this.messageSource.getMessage("messages.email-notice",args, locale);
+this.messageSource.
+
+getMessage("email-notice",args, locale);
+this.messageSource.
+
+getMessage("messages.email-notice",args, locale);
 
 // "This is a default message."
 String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
-this.messageSource.getMessage("not-exists-id",null,defaultMessage, locale);
+this.messageSource.
+
+getMessage("not-exists-id",null,defaultMessage, locale);
 ```
 
-<a name="a6.3"></a>
+<a name="a5.3"></a>
 ### Custom Validation Messages
 
 The article [Custom Validation MessageSource in Spring Boot](https://www.baeldung.com/spring-custom-validation-message-source) describes how to use custom validation messages.
 
-<a name="a7"></a>
+<a name="a6"></a>
 
 ## 7. Full Example
 
@@ -514,61 +502,3 @@ If you have questions, comments or feature requests please use the [Discussions]
 ### Caching
 * [A Guide To Caching in Spring](https://www.baeldung.com/spring-cache-tutorial)
 * [Implementing a Cache with Spring Boot](https://reflectoring.io/spring-boot-cache/)
-
-
-
-<!-- 
-## Use @Cachable proxy
-
-
-```java
-import io.github.alaugks.spring.messagesourcece.xliff.XliffCacheableKeyGenerator;
-import io.github.alaugks.spring.messagesourcece.xliff.XliffTranslationMessageSource;
-import io.github.alaugks.spring.messagesourcece.xliff.catalog.CatalogCache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.lang.Nullable;
-
-import java.util.Locale;
-
-class CacheableXliffTranslationMessageSource extends XliffTranslationMessageSource {
-    public CacheableXliffTranslationMessageSource(CacheManager cacheManager) {
-        super(cacheManager);
-    }
-
-    @Nullable
-    @Cacheable(
-            value = XliffTranslationMessageSource.CACHE_NAME,
-            keyGenerator = XliffCacheableKeyGenerator.GENERATOR_NAME,
-            condition = "#args.length == 0" // Do not cache with replaced args
-    )
-    @Override
-    public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale) {
-        return super.getMessage(code, args, defaultMessage, locale);
-    }
-
-    @Nullable
-    @Cacheable(
-            value = XliffTranslationMessageSource.CACHE_NAME,
-            keyGenerator = XliffCacheableKeyGenerator.GENERATOR_NAME,
-            condition = "#args.length == 0" // Do not cache with replaced args
-    )
-    @Override
-    public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-        return super.getMessage(code, args, locale);
-    }
-
-    @Cacheable(
-            value = XliffTranslationMessageSource.CACHE_NAME,
-            keyGenerator = XliffCacheableKeyGenerator.GENERATOR_NAME,
-            condition = "#resolvable.getArguments().length == 0" // Do not cache with replaced args
-    )
-    @Override
-    public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
-        return super.getMessage(resolvable, locale);
-    }
-}
-```
--->
