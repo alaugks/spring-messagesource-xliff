@@ -8,7 +8,7 @@ public final class XliffVersion12 implements XliffVersionInterface {
     private XliffIdentifierInterface transUnitIdentifier;
 
     public XliffVersion12() {
-        this.transUnitIdentifier = new Identifier();
+        this.transUnitIdentifier = new Identifier(List.of("resname", "id"));
     }
 
     @Override
@@ -30,11 +30,7 @@ public final class XliffVersion12 implements XliffVersionInterface {
 
     public static final class Identifier implements XliffIdentifierInterface {
 
-        // https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers
-        private List<String> unitIdentifiers = List.of("resname", "id");
-
-        public Identifier() {
-        }
+        private final List<String> unitIdentifiers;
 
         public Identifier(List<String> unitIdentifiers) {
             this.unitIdentifiers = unitIdentifiers;

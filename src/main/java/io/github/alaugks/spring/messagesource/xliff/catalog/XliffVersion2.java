@@ -8,7 +8,7 @@ public final class XliffVersion2 implements XliffVersionInterface {
     private XliffIdentifierInterface transUnitIdentifier;
 
     public XliffVersion2() {
-        this.transUnitIdentifier = new Identifier();
+        this.transUnitIdentifier = new Identifier(List.of("id"));
     }
 
     @Override
@@ -30,12 +30,7 @@ public final class XliffVersion2 implements XliffVersionInterface {
 
     public static final class Identifier implements XliffIdentifierInterface {
 
-        // https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment
-        // https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment
-        private List<String> unitIdentifiers = List.of("id");
-
-        public Identifier() {
-        }
+        private final List<String> unitIdentifiers;
 
         public Identifier(List<String> unitIdentifiers) {
             this.unitIdentifiers = unitIdentifiers;

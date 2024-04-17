@@ -26,7 +26,7 @@ class XliffVersion20Test {
 
     @Test
     void test_default_identifier() {
-        var identifier = new Identifier();
+        var identifier = new Identifier(List.of("id"));
         assertEquals(List.of("id"), identifier.getList());
     }
 

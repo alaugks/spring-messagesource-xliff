@@ -28,7 +28,7 @@ class XliffVersion12Test {
 
     @Test
     void test_default_identifier() {
-        var identifier = new Identifier();
+        var identifier = new Identifier(Arrays.asList("resname", "id"));
         assertEquals(Arrays.asList("resname", "id"), identifier.getList());
     }
 
