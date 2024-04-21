@@ -10,14 +10,11 @@ This package provides a **MessageSource** for using translations from XLIFF file
 1. [Version](#a1)
 2. [Dependency](#a2)
 3. [MessageSource Configuration](#a3)
-  * 3.1. [CacheManager Configuration](#a3.1)
-  * 3.2. [XliffTranslationMessageSource Configuration](#a3.2)
-4. [Cache warming with an ApplicationRunner (recommended)](#a4)
-5. [XLIFF Translation Files](#a5)
-6. [Using the MessageSource](#a6)
-7. [Full Example](#a7)
-8. [Support](#a8)
-9. [More Information](#a9)
+4. [XLIFF Translation Files](#a5)
+5. [Using the MessageSource](#a6)
+6. [Full Example](#a7)
+7. [Support](#a8)
+8. [More Information](#a9)
 
 <a name="a1"></a>
 ## 1. Versions
@@ -63,9 +60,8 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 
 ## 3.1 CacheManager Configuration
 
-You may already have an existing CacheManager configuration. If not, the following minimum
-CacheManager configuration is required.
-
+You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required. All [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. Here is an [example using Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
+                                                                                                                                   
 > [!Note]
 > No ExpireDate should be set for the XLIFF translations cache.
 
@@ -153,7 +149,7 @@ public class MessageConfig {
 
 <a name="a4"></a>
 
-## 5. XLIFF Translation Files
+## 4. XLIFF Translation Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
@@ -331,10 +327,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
        srcLang="en" trgLang="en-US">
     <file id="payment_en-US">
         <unit>
-            <segment id="headline">
-                <source>Payment</source>
-                <target>Payment</target>
-            </segment>
             <segment id="expiry_date">
                 <source>Expiry date</source>
                 <target>Expiration date</target>
@@ -346,28 +338,71 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 
 ##### Target value
 
-| id                              | en                                  | de                                 | en-US                                 |
-|---------------------------------|-------------------------------------|------------------------------------|---------------------------------------|
-| headline*                       | Headline                            | Überschrift                        | Headline**                            |
-| messages.headline               | Headline                            | Überschrift                        | Headline**                            |
-| postcode*                       | Postcode                            | Postleitzahl                       | Zip code                              |
-| messages.postcode               | Postcode                            | Postleitzahl                       | Zip code                              |
-| email-notice*                   | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
-| messages.email-notice           | Your email {0} has been registered. | Ihre E-Mail {0} wurde registriert. | Your email {0} has been registered.** |
-| default-message*                | This is a default message.          | Das ist ein Standardtext.          | This is a default message.**          |
-| messages.default-message        | This is a default message.          | Das ist ein Standardtext.          | This is a default message.**          |
-| payment.headline                | Payment                             | Zahlung                            | Payment                               |
-| payment.expiry_date             | Expiry date                         | Ablaufdatum                        | Expiration date                       |
+<table>
+  <thead>
+  <tr>
+    <th>id</th>
+    <th>en</th>
+    <th>en-US</th>
+    <th>de</th>
+    <th>jp***</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>headline*<br>messages.headline</td>
+    <td>Headline</td>
+    <td>Headline**</td>
+    <td>Überschrift</td>
+    <td>Headline</td>
+  </tr>
+  <tr>
+    <td>postcode*<br>messages.postcode</td>
+    <td>Postcode</td>
+    <td>Zip code</td>
+    <td>Postleitzahl</td>
+    <td>Postcode</td>
+  </tr>
+  <tr>
+    <td>email-notice*<br>messages.email-notice</td>
+    <td>Your email {0} has been registered.</td>
+    <td>Your email {0} has been registered.**</td>
+    <td>Ihre E-Mail {0} wurde registriert.</td>
+    <td>Your email {0} has been registered.</td>
+  </tr>
+  <tr>
+    <td>default-message*<br>messages.default-message</td>
+    <td>This is a default message.</td>
+    <td>This is a default message.**</td>
+    <td>Das ist ein Standardtext.</td>
+    <td>This is a default message.</td>
+  </tr>
+  <tr>
+    <td>payment.headline</td>
+    <td>Payment</td>
+    <td>Payment**</td>
+    <td>Zahlung</td>
+    <td>Payment</td>
+  </tr>
+  <tr>
+    <td>payment.expiry_date</td>
+    <td>Expiry date</td>
+    <td>Expiration date</td>
+    <td>Ablaufdatum</td>
+    <td>Expiry date</td>
+  </tr>
+  </tbody>
+</table>
 
-> [!NOTE]
 > *Default domain is `messages`.
 >
-> **Example of a fallback. With locale `en-US` it tries to select the translation with id `headline` in messages_en-US. The id `headline` does not exist, so it tries to select the translation with locale `en` in messages.
-
+> **Example of a fallback from Language_Region (`en-US`) to Language (`en`). The `id` does not exist in `en-US`, so it tries to select the translation with locale `en`.
+> 
+> ***There is no translation for Japanese (`jp`). The default locale translations (`en`) are selected.
 
 <a name="a5"></a>
 
-## 6. Using the MessageSource
+## 5. Using the MessageSource
 
 With the implementation and use of the MessageSource interface, the translations are also available
 in [Thymeleaf](#a5.1), as [Service (Dependency Injection)](#a5.2)
@@ -387,30 +422,32 @@ With the configured MessageSource, the translations are available in Thymeleaf. 
 the [Full Example](#a6).
 
 ```html
-<!-- "Headline" -->
-<h1 th:text="#{messages.headline}"/>
+<!-- Default domain: messages -->
 
 <!-- "Headline" -->
 <h1 th:text="#{headline}"/>
-
-<!-- "Postcode" -->
-<label th:text="#{messages.postcode}"/>
+<h1 th:text="#{messages.headline}"/>
 
 <!-- "Postcode" -->
 <label th:text="#{postcode}"/>
+<label th:text="#{messages.postcode}"/>
+
+<!-- "Your email john.doe@example.com has been registered." -->
+<span th:text="#{email-notice('john.doe@example.com')}"/>
+<span th:text="#{messages.email-notice('john.doe@example.com')}"/>
+
+<!-- "This is a default message." -->
+<span th:text="${#messages.msgOrNull('not-exists-id')} ?: #{default-message}"/>
+<span th:text="${#messages.msgOrNull('not-exists-id')} ?: #{messages.default-message}"/>
+
+
+<!-- Domain: payment -->
 
 <!-- "Payment" -->
 <h2 th:text="#{payment.headline}"/>
 
 <!-- "Expiry date" -->
 <strong th:text="#{payment.expiry_date}"/>
-
-<!-- "Your email john.doe@example.com has been registered." -->
-<span th:text="#{email-notice('john.doe@example.com')}"/>
-
-<!-- "This is a default message." -->
-<span th:text="${#messages.msgOrNull('not-exists-id')} ?: #{default-message}"/>
-
 ```
 
 <a name="a5.2"></a>
@@ -420,54 +457,44 @@ The MessageSource can be set via Autowire to access the translations. See the ex
 the [Full Example](#a6).
 
 ```java
-// Autowire MessageSourceInterface
-private MessageSource messageSource;
+import org.springframework.context.MessageSource;
 
-// Constructor
+private final MessageSource messageSource;
+
+// Autowire MessageSource
 public MyClass(MessageSource messageSource) {
-  this.messageSource = messageSource;
+    this.messageSource = messageSource;
 }
 
+
+// Default domain: messages
+
 // "Headline"
-this.messageSource.
-
-getMessage("headline",null,locale);
-this.messageSource.
-
-getMessage("messages.headline",null,locale);
+this.messageSource.getMessage("headline", null, locale);
+this.messageSource.getMessage("messages.headline", null, locale);
 
 // "Postcode"
-this.messageSource.
-
-getMessage("postcode",null,locale);
-this.messageSource.
-
-getMessage("messages.postcode",null,locale);
-
-// "Payment"
-this.messageSource.
-
-getMessage("payment.headline",null,locale);
-
-// "Expiry date"
-this.messageSource.
-
-getMessage("payment.expiry-date",null,locale);
+this.messageSource.getMessage("postcode", null, locale);
+this.messageSource.getMessage("messages.postcode", null, locale);
 
 // "Your email john.doe@example.com has been registered."
 Object[] args = {"john.doe@example.com"};
-this.messageSource.
-
-getMessage("email-notice",args, locale);
-this.messageSource.
-
-getMessage("messages.email-notice",args, locale);
+this.messageSource.getMessage("email-notice", args, locale);
+this.messageSource.getMessage("messages.email-notice", args, locale);
 
 // "This is a default message."
-String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
-this.messageSource.
+//String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
+String defaultMessage = this.messageSource.getMessage("messages.default-message", null, locale);
+this.messageSource.getMessage("not-exists-id", null, defaultMessage, locale);
 
-getMessage("not-exists-id",null,defaultMessage, locale);
+
+// Domain: payment
+
+// "Payment"
+this.messageSource.getMessage("payment.headline", null, locale);
+
+// "Expiry date"
+this.messageSource.getMessage("payment.expiry-date", null, locale);
 ```
 
 <a name="a5.3"></a>
@@ -477,22 +504,22 @@ The article [Custom Validation MessageSource in Spring Boot](https://www.baeldun
 
 <a name="a6"></a>
 
-## 7. Full Example
+## 6. Full Example
 
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
 
 Repository: https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot<br>
 Website: https://spring-boot-xliff-example.alaugks.dev
 
-<a name="a8"></a>
+<a name="a7"></a>
 
-## 8. Support
+## 7. Support
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
 
-<a name="a9"></a>
+<a name="a8"></a>
 
-## 9. More Information
+## 8. More Information
 
 ### MessageSource, Internationalization and Thymeleaf
 * [Guide to Internationalization in Spring Boot](https://www.baeldung.com/spring-boot-internationalization)
