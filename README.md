@@ -10,11 +10,11 @@ This package provides a **MessageSource** for using translations from XLIFF file
 1. [Version](#a1)
 2. [Dependency](#a2)
 3. [MessageSource Configuration](#a3)
-4. [XLIFF Translation Files](#a5)
-5. [Using the MessageSource](#a6)
-6. [Full Example](#a7)
-7. [Support](#a8)
-8. [More Information](#a9)
+4. [XLIFF Translation Files](#a4)
+5. [Using the MessageSource](#a5)
+6. [Full Example](#a6)
+7. [Support](#a7)
+8. [More Information](#a8)
 
 <a name="a1"></a>
 ## 1. Versions
