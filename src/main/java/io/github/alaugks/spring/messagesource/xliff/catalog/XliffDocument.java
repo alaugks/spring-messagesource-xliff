@@ -118,6 +118,7 @@ public final class XliffDocument {
     }
 
     public record TransUnit(String code, String value) {
+
     }
 
 }

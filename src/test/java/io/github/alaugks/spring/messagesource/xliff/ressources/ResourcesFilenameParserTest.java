@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesFileNameParser.Filename;
+import io.github.alaugks.spring.messagesource.xliff.records.Filename;
 import org.junit.jupiter.api.Test;
 
 class ResourcesFilenameParserTest {

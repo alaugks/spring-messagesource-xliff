@@ -1,81 +1,68 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
+import io.github.alaugks.spring.messagesource.xliff.catalog.XliffVersionInterface.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseFatalErrorException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader.TranslationFile;
+import io.github.alaugks.spring.messagesource.xliff.records.Translation;
+import io.github.alaugks.spring.messagesource.xliff.records.TranslationFile;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.springframework.util.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-public final class CatalogBuilder {
+public final class XliffCatalogBuilder {
 
-    private final ResourcesLoader resourceLoader;
-    private Catalog catalog;
+    private final List<TranslationFile> translationFiles;
+    private final String defaultDomain;
+    private final Locale defaultLocale;
     private final List<XliffVersionInterface.XliffIdentifierInterface> transUnitIdentifier;
+    private final List<Translation> translations;
     List<XliffVersionInterface> supportedVersions = List.of(
         new XliffVersion12(),
         new XliffVersion2()
     );
 
-    public CatalogBuilder(Builder builder) {
-        this.resourceLoader = builder.resourceLoader;
-        this.transUnitIdentifier = builder.transUnitIdentifier;
+    public XliffCatalogBuilder(
+        List<TranslationFile> translationFiles,
+        String defaultDomain,
+        Locale defaultLocale,
+        List<XliffIdentifierInterface> transUnitIdentifier
+    ) {
+        this.translationFiles = translationFiles;
+        this.defaultDomain = defaultDomain;
+        this.defaultLocale = defaultLocale;
+        this.transUnitIdentifier = transUnitIdentifier;
+        this.translations = new ArrayList<>();
     }
 
-    public static Builder builder(ResourcesLoader resourceLoader) {
-        return new Builder(resourceLoader);
-    }
-
-    public static final class Builder {
-
-        private final ResourcesLoader resourceLoader;
-        private List<XliffVersionInterface.XliffIdentifierInterface> transUnitIdentifier;
-
-        private Builder(ResourcesLoader resourceLoader) {
-            this.resourceLoader = resourceLoader;
-        }
-
-        public Builder transUnitIdentifier(
-            List<XliffVersionInterface.XliffIdentifierInterface> translationUnitIdentifiers) {
-            if (translationUnitIdentifiers != null) {
-                this.transUnitIdentifier = translationUnitIdentifiers;
-            }
-            return this;
-        }
-
-        public CatalogBuilder build() {
-            return new CatalogBuilder(this);
-        }
-
-    }
-
-    public Catalog createCatalog(Catalog catalog) {
+    public BaseCatalog getBaseCatalog() {
         try {
-            this.catalog = catalog;
-            this.readFile(resourceLoader.getTranslationFiles());
-            return this.catalog;
+            // Default Domain
+            Assert.notNull(this.defaultDomain, "Default domain is null");
+            Assert.isTrue(!this.defaultDomain.trim().isEmpty(), "Default domain is empty");
+
+            // Default Locale
+            Assert.notNull(this.defaultLocale, "Default locale is null");
+            Assert.isTrue(!this.defaultLocale.toString().trim().isEmpty(), "Default locale is empty");
+
+            this.readFiles(translationFiles);
+            return new BaseCatalog(translations, this.defaultLocale, this.defaultDomain);
         } catch (ParserConfigurationException | IOException e) {
-            throw new XliffMessageSourceRuntimeException(e);
+            throw new XliffMessageSourceSAXParseFatalErrorException(e);
         }
     }
 
-    public XliffVersionInterface getReader(String version) {
-        return this.supportedVersions
-            .stream()
-            .filter(o -> o.support(version))
-            .findFirst()
-            .orElse(null);
-    }
-
-    private void readFile(List<TranslationFile> translationTranslationFiles)
+    private void readFiles(List<TranslationFile> translationTranslationFiles)
         throws ParserConfigurationException, IOException {
 
         for (TranslationFile translationFile : translationTranslationFiles) {
@@ -100,11 +87,15 @@ public final class CatalogBuilder {
 
             String xliffVersion = xliffDocument.getXliffVersion();
 
-            XliffVersionInterface xliffReader = this.getReader(xliffVersion);
+            XliffVersionInterface xliffReader = this.supportedVersions
+                .stream()
+                .filter(o -> o.support(xliffVersion))
+                .findFirst()
+                .orElse(null);
 
             if (xliffReader != null) {
                 xliffReader.setTransUnitIdentifier(this.transUnitIdentifier);
-                xliffReader.read(this.catalog, xliffDocument, translationFile.domain(), translationFile.locale());
+                xliffReader.read(this.translations, xliffDocument, translationFile.domain(), translationFile.locale());
             } else {
                 throw new XliffMessageSourceVersionSupportException(
                     String.format("XLIFF version \"%s\" not supported.", xliffVersion)

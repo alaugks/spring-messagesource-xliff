@@ -4,8 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader.TranslationFile;
-import java.io.IOException;
+import io.github.alaugks.spring.messagesource.xliff.records.TranslationFile;
 import java.io.InputStream;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
@@ -13,57 +12,37 @@ import org.junit.jupiter.api.Test;
 class ResourcesLoaderTest {
 
     @Test
-    void test_setBasenamePattern() throws IOException {
-        ResourcesLoader resourcesLoader = ResourcesLoader
-            .builder()
-            .defaultLocale(Locale.forLanguageTag("en"))
-            .basenamesPattern(TestUtilities.listToSet("translations/*"))
-            .build();
-
+    void test_setBasenamePattern() {
+        var resourcesLoader = TestUtilities.getResourcesLoader(Locale.forLanguageTag("en"), "translations/*");
         assertEquals(5, resourcesLoader.getTranslationFiles().size());
     }
 
     @Test
-    void test_setBasenamePattern_domainMessages() throws IOException {
-        ResourcesLoader resourcesLoader = ResourcesLoader
-            .builder()
-            .defaultLocale(Locale.forLanguageTag("en"))
-            .basenamesPattern(TestUtilities.listToSet("translations/messages*"))
-            .build();
-
+    void test_setBasenamePattern_domainMessages() {
+        var resourcesLoader = TestUtilities.getResourcesLoader(Locale.forLanguageTag("en"), "translations/messages*");
         assertEquals(3, resourcesLoader.getTranslationFiles().size());
     }
 
 
     @Test
-    void test_setBasenamePattern_languageDe() throws IOException {
-        ResourcesLoader resourcesLoader = ResourcesLoader
-            .builder()
-            .defaultLocale(Locale.forLanguageTag("en"))
-            .basenamesPattern(TestUtilities.listToSet("translations/*_de*"))
-            .build();
-
+    void test_setBasenamePattern_languageDe() {
+        var resourcesLoader = TestUtilities.getResourcesLoader(Locale.forLanguageTag("en"), "translations/*_de*");
         assertEquals(2, resourcesLoader.getTranslationFiles().size());
     }
 
     @Test
-    void test_setBasenamesPattern() throws IOException {
-        ResourcesLoader resourcesLoader = ResourcesLoader
-            .builder()
-            .defaultLocale(Locale.forLanguageTag("en"))
-            .basenamesPattern(TestUtilities.listToSet("translations_en/*", "translations_de/*"))
-            .build();
-
+    void test_setBasenamesPattern() {
+        var resourcesLoader = TestUtilities.getResourcesLoader(
+            Locale.forLanguageTag("en"),
+            "translations_en/*",
+            "translations_de/*"
+        );
         assertEquals(4, resourcesLoader.getTranslationFiles().size());
     }
 
     @Test
-    void test_Dto() throws IOException {
-        ResourcesLoader resourcesLoader = ResourcesLoader
-            .builder()
-            .defaultLocale(Locale.forLanguageTag("en"))
-            .basenamesPattern(TestUtilities.listToSet("translations_en_US/*"))
-            .build();
+    void test_Dto() {
+        var resourcesLoader = TestUtilities.getResourcesLoader(Locale.forLanguageTag("en"), "translations_en_US/*");
 
         TranslationFile translationFile = resourcesLoader.getTranslationFiles().get(0);
 

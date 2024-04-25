@@ -6,37 +6,25 @@ import org.springframework.cache.Cache;
 
 public final class CatalogHandler {
 
-    private final CatalogCache catalogCache;
+    private final CatalogInterface catalog;
 
     public CatalogHandler(
-        CatalogBuilder catalogBuilder,
-        Cache cache,
-        Locale defaultLocale,
-        String defaultDomain
+        BaseCatalog baseCatalog,
+        Cache cache
     ) {
-        this.catalogCache = new CatalogCache(cache);
-        this.catalogCache.nextHandle(
-            catalogBuilder.createCatalog(new Catalog(defaultLocale, defaultDomain))
-        );
+        if (cache != null) {
+            this.catalog = new CacheCatalog(cache);
+            this.catalog.nextHandler(baseCatalog);
+        } else {
+            this.catalog = baseCatalog;
+        }
     }
 
     public Map<String, Map<String, String>> getAll() {
-        return this.catalogCache.getAll();
+        return this.catalog.getAll();
     }
 
     public String get(Locale locale, String code) {
-        return this.catalogCache.get(locale, code);
-    }
-
-    void put(Locale locale, String code, String value) {
-        this.catalogCache.put(
-            locale,
-            code,
-            value
-        );
-    }
-
-    public void initCache() {
-        this.catalogCache.initCache();
+        return this.catalog.get(locale, code);
     }
 }

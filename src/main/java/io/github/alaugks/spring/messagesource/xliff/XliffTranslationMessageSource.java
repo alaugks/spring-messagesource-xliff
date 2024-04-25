@@ -1,7 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
+import io.github.alaugks.spring.messagesource.xliff.catalog.XliffCatalogBuilder;
 import io.github.alaugks.spring.messagesource.xliff.catalog.XliffVersionInterface.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.text.MessageFormat;
@@ -24,21 +24,24 @@ public class XliffTranslationMessageSource implements MessageSource {
     private final CatalogHandler catalogHandler;
 
     private XliffTranslationMessageSource(Builder builder) {
-        ResourcesLoader resourcesLoader = ResourcesLoader
-            .builder()
-            .defaultLocale(builder.defaultLocale)
-            .basenamesPattern(builder.basenames)
-            .build();
 
-        this.catalogHandler = new CatalogHandler(
-            CatalogBuilder.builder(resourcesLoader)
-                .transUnitIdentifier(builder.transUnitIdentifier)
-                .build(),
-            builder.cache, builder.defaultLocale,
-            builder.defaultDomain
+        ResourcesLoader resourcesLoader = new ResourcesLoader(
+            builder.defaultLocale,
+            builder.basenames,
+            List.of("xlf", "xliff")
         );
 
-        this.catalogHandler.initCache();
+        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(
+            resourcesLoader.getTranslationFiles(),
+            builder.defaultDomain,
+            builder.defaultLocale,
+            builder.transUnitIdentifier
+        );
+
+        this.catalogHandler = new CatalogHandler(
+            xliffCatalogBuilder.getBaseCatalog(),
+            builder.cache
+        );
     }
 
     public static Builder builder(Cache cacheManager) {
@@ -140,10 +143,6 @@ public class XliffTranslationMessageSource implements MessageSource {
         }
 
         throw new NoSuchMessageException(codes != null && codes.length > 0 ? codes[codes.length - 1] : "", locale);
-    }
-
-    public void initCache() {
-        this.catalogHandler.initCache();
     }
 
     private String internalMessage(String code, Locale locale) throws NoSuchMessageException {

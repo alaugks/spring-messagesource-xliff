@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import io.github.alaugks.spring.messagesource.xliff.records.Translation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,29 +30,31 @@ class CatalogAbstractHandlerTest {
     void test_handling_catalog_and_caching() {
         Map<Object, Object> cache;
 
-        // Init CatalogCache
-        var catalogCache = new CatalogCache(this.cache);
-        // Init Catalog
-        var catalog = new Catalog(this.locale, this.domain);
-        // Set Chain of Responsibility
-        catalogCache.nextHandle(catalog);
+        List<Translation> translations = new ArrayList<>();
+        translations.add(new Translation(this.locale, "key", "value_from_file", this.domain));
 
-        // Put translation to catalog
-        catalog.put(this.locale, this.domain, "key", "value_from_file");
+        // Init CacheCatalog
+        var catalogCache = new CacheCatalog(this.cache);
+        // Init BaseCatalog
+        var catalog = new BaseCatalog(translations, this.locale, this.domain);
+        // Set Chain of Responsibility
+        catalogCache.nextHandler(catalog);
+
+        // Put translation to baseCatalog
         assertEquals("value_from_file", catalog.get(this.locale, this.domain + ".key"));
 
         // Is translation in catalogCache (NOT)
         cache = TestUtilities.cacheToArray(this.cache);
         assertNull(cache.get("en|key"));
 
-        // Catalog Hit
+        // BaseCatalog Hit
         assertEquals("value_from_file", catalogCache.get(locale, "key"));
 
         // Is translation in catalogCache (YES)
         cache = TestUtilities.cacheToArray(this.cache);
         assertEquals("value_from_file", cache.get("en|key"));
 
-        // CatalogCache Hit
+        // CacheCatalog Hit
         // Overwrite cacheItem to test translation is from Cache
         this.cache.put("en|key", "value_from_cache");
         assertEquals("value_from_cache", catalogCache.get(locale, "key"));

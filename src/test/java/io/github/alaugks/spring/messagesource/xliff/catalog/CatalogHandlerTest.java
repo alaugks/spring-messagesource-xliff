@@ -15,33 +15,22 @@ class CatalogHandlerTest {
     @BeforeEach
     void beforeEach() {
         this.locale = Locale.forLanguageTag("en");
+
         this.catalogHandler = new CatalogHandler(
-            CatalogBuilder
-                .builder(TestUtilities.getResourcesLoader())
-                .build(),
-            TestUtilities.getCache(), Locale.forLanguageTag("en"),
-            "messages"
+            TestUtilities.getTestBaseCatalog(),
+            null
         );
     }
 
     @Test
-    void test_put() {
-        this.catalogHandler.put(this.locale, "my-test-code", "my-test-value");
-        assertEquals("my-test-value", this.catalogHandler.get(locale, "my-test-code"));
-    }
-
-    @Test
-    void test_initCache() {
-        assertEquals(0, this.catalogHandler.getAll().size());
-        this.catalogHandler.initCache();
+    void test_getAll() {
         assertEquals(3, this.catalogHandler.getAll().size());
     }
 
     @Test
     void test_get() {
         assertEquals("Hello World (messages / en)", this.catalogHandler.get(this.locale, "hello_world"));
-        assertEquals("Hello World (messages / en)",
-            this.catalogHandler.get(this.locale, "messages.hello_world"));
+        assertEquals("Hello World (messages / en)", this.catalogHandler.get(this.locale, "messages.hello_world"));
     }
 
 }

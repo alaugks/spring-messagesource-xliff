@@ -1,19 +1,22 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
+import io.github.alaugks.spring.messagesource.xliff.records.Translation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public final class Catalog extends CatalogAbstractHandler {
+public final class BaseCatalog extends CatalogAbstractHandler {
 
     private final HashMap<String, Map<String, String>> catalogMap;
     private final Locale defaultLocale;
     private final String defaultDomain;
 
-    public Catalog(Locale defaultLocal, String defaultDomain) {
+    public BaseCatalog(List<Translation> translations, Locale defaultLocal, String defaultDomain) {
         this.catalogMap = new HashMap<>();
         this.defaultLocale = defaultLocal;
         this.defaultDomain = defaultDomain;
+        translations.forEach(t -> this.put(t.locale(), t.domain(), t.code(), t.value()));
     }
 
     @Override
@@ -40,8 +43,7 @@ public final class Catalog extends CatalogAbstractHandler {
         return super.get(locale, code);
     }
 
-    @Override
-    public void put(Locale locale, String domain, String code, String value) {
+    private void put(Locale locale, String domain, String code, String value) {
         if (!locale.toString().isEmpty() && !code.isEmpty()) {
             String localeKey = CatalogUtilities.localeToLocaleKey(locale);
             this.catalogMap.putIfAbsent(

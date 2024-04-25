@@ -1,5 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
+import io.github.alaugks.spring.messagesource.xliff.records.Translation;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,9 +23,9 @@ public final class XliffVersion2 implements XliffVersionInterface {
     }
 
     @Override
-    public void read(CatalogInterface catalog, XliffDocument document, String domain, Locale locale) {
+    public void read(List<Translation> translations, XliffDocument document, String domain, Locale locale) {
         document.getTransUnits("segment", this.transUnitIdentifier.getList()).forEach(
-            transUnit -> catalog.put(locale, domain, transUnit.code(), transUnit.value())
+            transUnit -> translations.add(new Translation(locale, transUnit.code(), transUnit.value(), domain))
         );
     }
 

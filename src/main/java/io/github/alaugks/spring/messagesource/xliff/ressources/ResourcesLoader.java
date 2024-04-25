@@ -1,8 +1,9 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
-import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesFileNameParser.Filename;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
+import io.github.alaugks.spring.messagesource.xliff.records.Filename;
+import io.github.alaugks.spring.messagesource.xliff.records.TranslationFile;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -15,54 +16,35 @@ public final class ResourcesLoader {
 
     private final Locale defaultLocale;
     private final Set<String> basenames;
-    private final List<String> fileExtensions = List.of("xlf", "xliff");
+    private final List<String> fileExtensions;
 
-    private ResourcesLoader(ResourcesLoader.Builder builder) {
-        this.defaultLocale = builder.defaultLocale;
-        this.basenames = builder.basenames;
+
+    public ResourcesLoader(Locale defaultLocale, Set<String> basenames, List<String> fileExtensions) {
+        this.defaultLocale = defaultLocale;
+        this.basenames = basenames;
+        this.fileExtensions = fileExtensions;
     }
 
-    public static ResourcesLoader.Builder builder() {
-        return new ResourcesLoader.Builder();
-    }
-
-    public static final class Builder {
-
-        private Locale defaultLocale;
-        private Set<String> basenames;
-
-        public ResourcesLoader.Builder defaultLocale(Locale locale) {
-            this.defaultLocale = locale;
-            return this;
-        }
-
-        public ResourcesLoader.Builder basenamesPattern(Set<String> basenames) {
-            this.basenames = basenames;
-            return this;
-        }
-
-        public ResourcesLoader build() {
-            return new ResourcesLoader(this);
-        }
-
-    }
-
-    public List<TranslationFile> getTranslationFiles() throws IOException {
-        ArrayList<TranslationFile> translationTranslationFiles = new ArrayList<>();
-        PathMatchingResourcePatternResolver resourceLoader = new PathMatchingResourcePatternResolver();
-        for (String basename : getBasenameSet()) {
-            Resource[] resources = resourceLoader.getResources(basename);
-            for (Resource resource : resources) {
-                if (this.isFileExtensionSupported(resource)) {
-                    TranslationFile translationFile = this.parseFileName(resource);
-                    if (translationFile != null) {
-                        translationTranslationFiles.add(translationFile);
+    public List<TranslationFile> getTranslationFiles() {
+        try {
+            ArrayList<TranslationFile> translationTranslationFiles = new ArrayList<>();
+            PathMatchingResourcePatternResolver resourceLoader = new PathMatchingResourcePatternResolver();
+            for (String basename : getBasenameSet()) {
+                Resource[] resources = resourceLoader.getResources(basename);
+                for (Resource resource : resources) {
+                    if (this.isFileExtensionSupported(resource)) {
+                        TranslationFile translationFile = this.parseFileName(resource);
+                        if (translationFile != null) {
+                            translationTranslationFiles.add(translationFile);
+                        }
                     }
                 }
             }
-        }
 
-        return translationTranslationFiles;
+            return translationTranslationFiles;
+        } catch (IOException e) {
+            throw new XliffMessageSourceRuntimeException(e);
+        }
     }
 
     private TranslationFile parseFileName(Resource resource) throws IOException {
@@ -82,9 +64,6 @@ public final class ResourcesLoader {
     private boolean isFileExtensionSupported(Resource resource) {
         String fileExtension = this.getFileExtension(resource.getFilename());
         return fileExtension != null && this.fileExtensions.contains(fileExtension.toLowerCase());
-    }
-
-    public record TranslationFile(String domain, Locale locale, InputStream inputStream) {
     }
 
     private String getFileExtension(String filename) {

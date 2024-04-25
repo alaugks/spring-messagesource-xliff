@@ -1,10 +1,12 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogBuilder;
+import io.github.alaugks.spring.messagesource.xliff.catalog.BaseCatalog;
+import io.github.alaugks.spring.messagesource.xliff.catalog.XliffCatalogBuilder;
+import io.github.alaugks.spring.messagesource.xliff.records.TranslationFile;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,13 +28,33 @@ public class TestUtilities {
 
     public static final String CATALOG_CACHE = "test-cache";
 
-    public static Catalog getTestCatalog() {
-        return CatalogBuilder
-            .builder(getResourcesLoader())
-            .build()
-            .createCatalog(
-                new Catalog(Locale.forLanguageTag("en"), "messages")
-            );
+    public static BaseCatalog getTestBaseCatalog(String ressource, Locale locale, String domain) {
+        var files = new ArrayList<TranslationFile>();
+        files.add(
+            new TranslationFile(
+                domain,
+                locale,
+                TestUtilities.class.getClassLoader().getResourceAsStream(ressource)
+            )
+        );
+
+        XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(
+            files,
+            domain,
+            locale,
+            null
+        );
+
+        return xliffCatalogBuilder.getBaseCatalog();
+    }
+
+    public static BaseCatalog getTestBaseCatalog() {
+        return new XliffCatalogBuilder(
+            getResourcesLoader().getTranslationFiles(),
+            "messages",
+            Locale.forLanguageTag("en"),
+            null
+        ).getBaseCatalog();
     }
 
     public static Cache getCache() {
@@ -45,13 +67,21 @@ public class TestUtilities {
         return cacheManager;
     }
 
-    public static ResourcesLoader getResourcesLoader() {
-        return ResourcesLoader
-            .builder()
-            .defaultLocale(Locale.forLanguageTag("en"))
-            .basenamesPattern(listToSet("translations/*"))
-            .build();
+    public static ResourcesLoader getResourcesLoader(Locale locale, String... list) {
+        return new ResourcesLoader(
+            locale,
+            listToSet(list),
+            List.of("xlf", "xliff")
+        );
     }
+
+    public static ResourcesLoader getResourcesLoader() {
+        return getResourcesLoader(
+            Locale.forLanguageTag("en"),
+            "translations/*"
+        );
+    }
+
 
     public static Document getDocument(InputStream inputStream)
         throws ParserConfigurationException, SAXException, IOException {
