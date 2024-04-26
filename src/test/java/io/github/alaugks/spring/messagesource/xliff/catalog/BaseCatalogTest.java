@@ -31,7 +31,7 @@ class BaseCatalogTest {
         translations.add(new Translation(Locale.forLanguageTag("en-US"), "key_1", "value_en_us_1", "foo"));
         translations.add(new Translation(Locale.forLanguageTag("en_US"), "key_2", "value_en_us_2", "foo"));
 
-        baseCatalog = new BaseCatalog(translations, Locale.forLanguageTag("en"), "foo").build();
+        baseCatalog = BaseCatalog.builder(translations, Locale.forLanguageTag("en"), "foo").build();
     }
 
     @Test

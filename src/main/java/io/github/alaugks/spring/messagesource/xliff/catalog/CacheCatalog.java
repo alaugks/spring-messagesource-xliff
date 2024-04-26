@@ -11,8 +11,33 @@ public final class CacheCatalog extends CatalogHandlerAbstract {
 
     private final Cache cache;
 
-    public CacheCatalog(Cache cache) {
-        this.cache = cache;
+    private CacheCatalog(Builder builder) {
+        this.nextHandler(builder.nextHandler);
+        this.cache = builder.cache;
+        this.build();
+    }
+
+    public static Builder builder(Cache cache) {
+        return new Builder(cache);
+    }
+
+    public static final class Builder {
+
+        private final Cache cache;
+        private CatalogInterface nextHandler;
+
+        Builder(Cache cache) {
+            this.cache = cache;
+        }
+
+        public Builder nextHandler(CatalogInterface handler) {
+            this.nextHandler = handler;
+            return this;
+        }
+
+        public CacheCatalog build() {
+            return new CacheCatalog(this);
+        }
     }
 
     @Override
@@ -58,8 +83,7 @@ public final class CacheCatalog extends CatalogHandlerAbstract {
         return value;
     }
 
-    @Override
-    public CacheCatalog build() {
+    private void build() {
         super.getAll().forEach((langCode, catalogDomain) -> catalogDomain.forEach((code, value) ->
             this.put(
                 Locale.forLanguageTag(
@@ -69,7 +93,6 @@ public final class CacheCatalog extends CatalogHandlerAbstract {
                 value
             )
         ));
-        return this;
     }
 
     private void put(Locale locale, String code, String targetValue) {

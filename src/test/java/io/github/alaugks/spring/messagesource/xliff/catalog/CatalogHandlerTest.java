@@ -41,7 +41,7 @@ class CatalogHandlerTest {
         String localeKey = "en|" + key;
         List<Translation> translations = new ArrayList<>();
         translations.add(new Translation(this.locale, "key", "value_from_file", domain));
-        var catalog = new BaseCatalog(translations, this.locale, domain).build();
+        var catalog = BaseCatalog.builder(translations, this.locale, domain).build();
 
         var cache = TestUtilities.getCache();
 

@@ -27,7 +27,7 @@ class CacheCatalogTest {
         cache.put("de|messages.m_de_2", "value_m_de_2");
         cache.put("de|domain.d_de_1", "value_d_de_1");
 
-        this.cacheCatalog = new CacheCatalog(cache);
+        this.cacheCatalog = CacheCatalog.builder(cache).build();
     }
 
     @Test
@@ -62,7 +62,7 @@ class CacheCatalogTest {
 
     @Test
     void test_cache_isNull() {
-        this.cacheCatalog = new CacheCatalog(null);
+        this.cacheCatalog = CacheCatalog.builder(null).build();
         assertInstanceOf(HashMap.class, this.cacheCatalog.getAll());
     }
 }

@@ -25,7 +25,7 @@ public final class XliffCatalogBuilder {
     private final List<TranslationFile> translationFiles;
     private final String defaultDomain;
     private final Locale defaultLocale;
-    private final List<XliffVersionInterface.XliffIdentifierInterface> transUnitIdentifier;
+    private final List<XliffIdentifierInterface> transUnitIdentifier;
     private final List<Translation> translations;
     List<XliffVersionInterface> supportedVersions = List.of(
         new XliffVersion12(),
@@ -56,7 +56,7 @@ public final class XliffCatalogBuilder {
             Assert.isTrue(!this.defaultLocale.toString().trim().isEmpty(), "Default locale is empty");
 
             this.readFiles(translationFiles);
-            return new BaseCatalog(translations, this.defaultLocale, this.defaultDomain).build();
+            return BaseCatalog.builder(translations, this.defaultLocale, this.defaultDomain).build();
         } catch (ParserConfigurationException | IOException e) {
             throw new XliffMessageSourceSAXParseFatalErrorException(e);
         }
