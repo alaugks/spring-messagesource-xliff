@@ -1,6 +1,5 @@
 package io.github.alaugks.spring.messagesource.xliff.records;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogUtilities;
 import java.util.IllformedLocaleException;
 import java.util.Locale;
 
@@ -16,7 +15,14 @@ public record Filename(String domain, String language, String region) {
 
     public Locale locale() {
         try {
-            return CatalogUtilities.buildLocale(this.language, this.region);
+            Locale.Builder localeBuilder = new Locale.Builder();
+            if (language != null && !language.isEmpty()) {
+                localeBuilder.setLanguage(language);
+                if (region != null && !region.isEmpty()) {
+                    localeBuilder.setRegion(region);
+                }
+            }
+            return localeBuilder.build();
         } catch (IllformedLocaleException e) {
             return null;
         }

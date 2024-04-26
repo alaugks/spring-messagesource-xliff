@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-abstract class CatalogAbstractHandler implements CatalogInterface {
+abstract class CatalogHandlerAbstract implements CatalogInterface {
 
     protected CatalogInterface nextHandler;
 
@@ -29,5 +29,18 @@ abstract class CatalogAbstractHandler implements CatalogInterface {
         }
 
         return this.nextHandler.get(locale, code);
+    }
+
+    protected String localeToLocaleKey(Locale locale) {
+        Locale.Builder localeBuilder = new Locale.Builder();
+        localeBuilder.setLanguage(locale.getLanguage());
+        if (!locale.getCountry().isEmpty()) {
+            localeBuilder.setRegion(locale.getCountry());
+        }
+        return normalizeLocaleKey(localeBuilder.build().toString());
+    }
+
+    protected String normalizeLocaleKey(String langCode) {
+        return langCode.toLowerCase().replace("_", "-");
     }
 }

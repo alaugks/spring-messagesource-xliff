@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.cache.Cache;
 
-public final class CacheCatalog extends CatalogAbstractHandler {
+public final class CacheCatalog extends CatalogHandlerAbstract {
 
     private final Cache cache;
 
@@ -62,7 +62,7 @@ public final class CacheCatalog extends CatalogAbstractHandler {
     private void put(Locale locale, String code, String targetValue) {
         if (!locale.toString().isEmpty() && !code.isEmpty()) {
             this.cache.putIfAbsent(
-                CatalogUtilities.createCode(locale, code),
+                this.createCacheKey(locale, code),
                 targetValue
             );
         }
@@ -72,7 +72,7 @@ public final class CacheCatalog extends CatalogAbstractHandler {
         super.getAll().forEach((langCode, catalogDomain) -> catalogDomain.forEach((code, value) ->
             this.put(
                 Locale.forLanguageTag(
-                    CatalogUtilities.normalizeLocaleKey(langCode)
+                    super.normalizeLocaleKey(langCode)
                 ),
                 code,
                 value
@@ -82,7 +82,7 @@ public final class CacheCatalog extends CatalogAbstractHandler {
 
     private String find(Locale locale, String code) {
         Cache.ValueWrapper valueWrapper = this.cache.get(
-            CatalogUtilities.createCode(locale, code)
+            this.createCacheKey(locale, code)
         );
 
         if (valueWrapper != null) {
@@ -92,4 +92,7 @@ public final class CacheCatalog extends CatalogAbstractHandler {
         return null;
     }
 
+    private String createCacheKey(Locale locale, String code) {
+        return super.localeToLocaleKey(locale) + "|" + code;
+    }
 }

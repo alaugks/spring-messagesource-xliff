@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public final class BaseCatalog extends CatalogAbstractHandler {
+public final class BaseCatalog extends CatalogHandlerAbstract {
 
     private final HashMap<String, Map<String, String>> catalogMap;
     private final Locale defaultLocale;
@@ -45,13 +45,13 @@ public final class BaseCatalog extends CatalogAbstractHandler {
 
     private void put(Locale locale, String domain, String code, String value) {
         if (!locale.toString().isEmpty() && !code.isEmpty()) {
-            String localeKey = CatalogUtilities.localeToLocaleKey(locale);
+            String localeKey = super.localeToLocaleKey(locale);
             this.catalogMap.putIfAbsent(
                 localeKey,
                 new HashMap<>()
             );
             this.catalogMap.get(localeKey).putIfAbsent(
-                CatalogUtilities.concatCode(domain, code),
+                concatCode(domain, code),
                 value
             );
         }
@@ -62,7 +62,7 @@ public final class BaseCatalog extends CatalogAbstractHandler {
 
         // Code+LocaleRegion
         value = this.findInCatalog(
-            CatalogUtilities.buildLocale(locale),
+            locale,
             code
         );
         if (value != null) {
@@ -71,8 +71,8 @@ public final class BaseCatalog extends CatalogAbstractHandler {
 
         // Code+LocaleRegion / DomainCode+LanguageRegion
         value = this.findInCatalog(
-            CatalogUtilities.buildLocale(locale),
-            CatalogUtilities.concatCode(this.defaultDomain, code)
+            locale,
+            concatCode(this.defaultDomain, code)
         );
         if (value != null) {
             return value;
@@ -80,7 +80,7 @@ public final class BaseCatalog extends CatalogAbstractHandler {
 
         // Code+Language / DomainCode+Language
         value = this.findInCatalog(
-            CatalogUtilities.buildLocaleWithoutRegion(locale),
+            buildLocaleWithoutRegion(locale),
             code
         );
         if (value != null) {
@@ -89,8 +89,8 @@ public final class BaseCatalog extends CatalogAbstractHandler {
 
         // Code+Language / DomainCode+Language
         value = this.findInCatalog(
-            CatalogUtilities.buildLocaleWithoutRegion(locale),
-            CatalogUtilities.concatCode(this.defaultDomain, code)
+            buildLocaleWithoutRegion(locale),
+            concatCode(this.defaultDomain, code)
         );
         if (value != null) {
             return value;
@@ -98,7 +98,7 @@ public final class BaseCatalog extends CatalogAbstractHandler {
 
         // Code+DefaultLanguageRegion / DomainCode+DefaultLanguageRegion
         value = this.findInCatalog(
-            CatalogUtilities.buildLocale(this.defaultLocale),
+            this.defaultLocale,
             code
         );
         if (value != null) {
@@ -107,8 +107,8 @@ public final class BaseCatalog extends CatalogAbstractHandler {
 
         // Code+DefaultLanguageRegion / DomainCode+DefaultLanguageRegion
         value = this.findInCatalog(
-            CatalogUtilities.buildLocale(this.defaultLocale),
-            CatalogUtilities.concatCode(this.defaultDomain, code)
+            this.defaultLocale,
+            concatCode(this.defaultDomain, code)
         );
         if (value != null) {
             return value;
@@ -118,12 +118,23 @@ public final class BaseCatalog extends CatalogAbstractHandler {
     }
 
     public String findInCatalog(Locale locale, String code) {
-        if (this.catalogMap.containsKey(CatalogUtilities.localeToLocaleKey(locale))) {
-            Map<String, String> languageCatalog = this.catalogMap.get(CatalogUtilities.localeToLocaleKey(locale));
+        String localeKey = super.localeToLocaleKey(locale);
+        if (this.catalogMap.containsKey(localeKey)) {
+            Map<String, String> languageCatalog = this.catalogMap.get(localeKey);
             if (languageCatalog.containsKey(code)) {
                 return languageCatalog.get(code);
             }
         }
         return null;
+    }
+
+    private static String concatCode(String domain, String code) {
+        return domain + "." + code;
+    }
+
+    private static Locale buildLocaleWithoutRegion(Locale locale) {
+        Locale.Builder localeBuilder = new Locale.Builder();
+        localeBuilder.setLanguage(locale.getLanguage());
+        return localeBuilder.build();
     }
 }
