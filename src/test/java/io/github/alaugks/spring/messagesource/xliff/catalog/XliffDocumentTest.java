@@ -62,7 +62,7 @@ class XliffDocumentTest {
         List<XliffVersionInterface.XliffIdentifierInterface> translationUnitIdentifiers,
         String code, String expected) {
         var messageSource = XliffTranslationMessageSource
-            .builder(TestUtilities.getCache())
+            .builder()
             .basenamesPattern(
                 List.of(
                     "fixtures/identifierv1.xliff",

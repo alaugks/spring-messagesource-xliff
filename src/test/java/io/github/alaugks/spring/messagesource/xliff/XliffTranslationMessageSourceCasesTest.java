@@ -16,7 +16,7 @@ class XliffTranslationMessageSourceCasesTest {
 
     XliffTranslationMessageSourceCasesTest() {
         this.messageSourceExample = XliffTranslationMessageSource
-            .builder(TestUtilities.getCache())
+            .builder()
             .basenamePattern("translations_example/*")
             .defaultLocale(Locale.forLanguageTag("en"))
             .build();
@@ -25,7 +25,7 @@ class XliffTranslationMessageSourceCasesTest {
     @Test
     void test_setDefaultDomain() {
         var messageSource = XliffTranslationMessageSource
-            .builder(TestUtilities.getCache())
+            .builder()
             .basenamePattern("translations/*")
             .defaultLocale(Locale.forLanguageTag("en"))
             .defaultDomain("otherdomain")
@@ -41,7 +41,7 @@ class XliffTranslationMessageSourceCasesTest {
     @Test
     void test_setBasenamesPattern() {
         var messageSource = XliffTranslationMessageSource
-            .builder(TestUtilities.getCache())
+            .builder()
             .basenamesPattern(
                 List.of(
                     "translations_en/*",

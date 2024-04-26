@@ -44,21 +44,17 @@ public class XliffTranslationMessageSource implements MessageSource {
         );
     }
 
-    public static Builder builder(Cache cacheManager) {
-        return new Builder(cacheManager);
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static final class Builder {
 
-        private final Cache cache;
+        private Cache cache;
         private Locale defaultLocale;
         private final Set<String> basenames = new HashSet<>();
         private String defaultDomain = "messages";
         private List<XliffIdentifierInterface> transUnitIdentifier;
-
-        private Builder(Cache cache) {
-            this.cache = cache;
-        }
 
         public Builder defaultLocale(Locale locale) {
             this.defaultLocale = locale;
@@ -84,6 +80,11 @@ public class XliffTranslationMessageSource implements MessageSource {
 
         public Builder defaultDomain(String defaultDomain) {
             this.defaultDomain = defaultDomain;
+            return this;
+        }
+
+        public Builder withCache(Cache cache) {
+            this.cache = cache;
             return this;
         }
 
