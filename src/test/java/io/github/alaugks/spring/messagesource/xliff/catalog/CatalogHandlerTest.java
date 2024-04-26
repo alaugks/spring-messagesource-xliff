@@ -1,6 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.records.Translation;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 
 class CatalogHandlerTest {
 
@@ -43,31 +43,34 @@ class CatalogHandlerTest {
 
     @Test
     void test_handling_catalog_and_caching() {
-        // Init BaseCatalog
+        String key = this.domain + ".key";
+        String localeKey = "en|" + key;
         List<Translation> translations = new ArrayList<>();
         translations.add(new Translation(this.locale, "key", "value_from_file", this.domain));
-        var catalog = new BaseCatalog(translations, this.locale, this.domain);
+        var catalog = new BaseCatalog(translations, this.locale, this.domain).build();
 
-        var cache = new ConcurrentMapCacheManager("test-cache").getCache("test-cache");
+        var cache = TestUtilities.getCache();
+
+        // Is translation in cache?
+        var cacheBuffer = TestUtilities.cacheToArray(cache);
+        assertNull(cacheBuffer.get(localeKey));
 
         var catalogHandler = new CatalogHandler(
             catalog,
             cache
         );
 
-        // Put translation to baseCatalog
-        assertEquals("value_from_file", catalogHandler.get(this.locale, this.domain + ".key"));
+        // Cache is build
+        cacheBuffer = TestUtilities.cacheToArray(cache);
+        assertEquals("value_from_file", cacheBuffer.get(localeKey));
 
-        // BaseCatalog Hit
-        assertEquals("value_from_file", catalogHandler.get(locale, "key"));
-
-        var cacheBuffer = TestUtilities.cacheToArray(cache);
-        assertEquals("value_from_file", cacheBuffer.get("en|key"));
+        // Hit
+        assertEquals("value_from_file", catalogHandler.get(this.locale, key));
 
         // CacheCatalog Hit
         // Overwrite cacheItem to test translation is from Cache
-        cache.put("en|key", "value_from_cache");
-        assertEquals("value_from_cache", catalogHandler.get(locale, "key"));
+        cache.put(localeKey, "value_from_cache");
+        assertEquals("value_from_cache", catalogHandler.get(locale, key));
     }
 
 }

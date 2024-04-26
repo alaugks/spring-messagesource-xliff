@@ -13,7 +13,6 @@ public final class CacheCatalog extends CatalogHandlerAbstract {
 
     public CacheCatalog(Cache cache) {
         this.cache = cache;
-        this.initCache();
     }
 
     @Override
@@ -59,16 +58,8 @@ public final class CacheCatalog extends CatalogHandlerAbstract {
         return value;
     }
 
-    private void put(Locale locale, String code, String targetValue) {
-        if (!locale.toString().isEmpty() && !code.isEmpty()) {
-            this.cache.putIfAbsent(
-                this.createCacheKey(locale, code),
-                targetValue
-            );
-        }
-    }
-
-    private void initCache() {
+    @Override
+    public CacheCatalog build() {
         super.getAll().forEach((langCode, catalogDomain) -> catalogDomain.forEach((code, value) ->
             this.put(
                 Locale.forLanguageTag(
@@ -78,6 +69,16 @@ public final class CacheCatalog extends CatalogHandlerAbstract {
                 value
             )
         ));
+        return this;
+    }
+
+    private void put(Locale locale, String code, String targetValue) {
+        if (!locale.toString().isEmpty() && !code.isEmpty()) {
+            this.cache.putIfAbsent(
+                this.createCacheKey(locale, code),
+                targetValue
+            );
+        }
     }
 
     private String find(Locale locale, String code) {

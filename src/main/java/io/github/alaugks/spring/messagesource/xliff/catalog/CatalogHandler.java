@@ -14,7 +14,7 @@ public final class CatalogHandler {
     ) {
         if (cache != null) {
             this.catalog = new CacheCatalog(cache);
-            this.catalog.nextHandler(baseCatalog);
+            this.catalog.nextHandler(baseCatalog).build();
         } else {
             this.catalog = baseCatalog;
         }

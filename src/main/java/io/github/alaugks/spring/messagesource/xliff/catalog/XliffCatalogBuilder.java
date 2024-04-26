@@ -56,7 +56,7 @@ public final class XliffCatalogBuilder {
             Assert.isTrue(!this.defaultLocale.toString().trim().isEmpty(), "Default locale is empty");
 
             this.readFiles(translationFiles);
-            return new BaseCatalog(translations, this.defaultLocale, this.defaultDomain);
+            return new BaseCatalog(translations, this.defaultLocale, this.defaultDomain).build();
         } catch (ParserConfigurationException | IOException e) {
             throw new XliffMessageSourceSAXParseFatalErrorException(e);
         }

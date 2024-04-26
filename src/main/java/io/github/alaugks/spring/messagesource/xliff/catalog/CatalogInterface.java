@@ -11,4 +11,6 @@ public interface CatalogInterface {
     Map<String, Map<String, String>> getAll();
 
     String get(Locale locale, String code);
+
+    CatalogInterface build();
 }

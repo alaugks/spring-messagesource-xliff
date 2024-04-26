@@ -11,12 +11,13 @@ public final class BaseCatalog extends CatalogHandlerAbstract {
     private final HashMap<String, Map<String, String>> catalogMap;
     private final Locale defaultLocale;
     private final String defaultDomain;
+    private final List<Translation> translations;
 
     public BaseCatalog(List<Translation> translations, Locale defaultLocal, String defaultDomain) {
         this.catalogMap = new HashMap<>();
+        this.translations = translations;
         this.defaultLocale = defaultLocal;
         this.defaultDomain = defaultDomain;
-        translations.forEach(t -> this.put(t.locale(), t.domain(), t.code(), t.value()));
     }
 
     @Override
@@ -41,6 +42,12 @@ public final class BaseCatalog extends CatalogHandlerAbstract {
         }
 
         return super.get(locale, code);
+    }
+
+    @Override
+    public BaseCatalog build() {
+        this.translations.forEach(t -> this.put(t.locale(), t.domain(), t.code(), t.value()));
+        return this;
     }
 
     private void put(Locale locale, String domain, String code, String value) {
