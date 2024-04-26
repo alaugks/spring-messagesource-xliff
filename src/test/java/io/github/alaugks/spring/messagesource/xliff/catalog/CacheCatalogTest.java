@@ -1,9 +1,11 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
+import java.util.HashMap;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,4 +62,9 @@ class CacheCatalogTest {
         assertNull(cacheCatalog.get(Locale.forLanguageTag(""), "messages.m_en_1"));
     }
 
+    @Test
+    void test_cache_isNull() {
+        this.cacheCatalog = new CacheCatalog(null);
+        assertInstanceOf(HashMap.class, this.cacheCatalog.getAll());
+    }
 }
