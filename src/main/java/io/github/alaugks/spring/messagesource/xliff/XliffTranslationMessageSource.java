@@ -111,6 +111,11 @@ public class XliffTranslationMessageSource implements MessageSource {
 
     @Nullable
     public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale) {
+        String message = this.internalMessageWithDefaultMessage(code, defaultMessage, locale);
+        if (message == null) {
+            return null;
+        }
+
         return this.format(
             this.internalMessageWithDefaultMessage(code, defaultMessage, locale),
             args
@@ -118,9 +123,9 @@ public class XliffTranslationMessageSource implements MessageSource {
     }
 
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-        String translation = this.internalMessage(code, locale);
-        if (translation != null) {
-            return this.format(translation, args);
+        String message = this.internalMessage(code, locale);
+        if (message != null) {
+            return this.format(message, args);
         }
 
         throw new NoSuchMessageException(code, locale);
@@ -130,9 +135,9 @@ public class XliffTranslationMessageSource implements MessageSource {
         String[] codes = resolvable.getCodes();
         if (codes != null) {
             for (String code : codes) {
-                String translation = this.internalMessage(code, locale);
-                if (translation != null) {
-                    return this.format(translation, resolvable.getArguments());
+                String message = this.internalMessage(code, locale);
+                if (message != null) {
+                    return this.format(message, resolvable.getArguments());
                 }
             }
         }

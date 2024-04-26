@@ -71,6 +71,24 @@ class XliffTranslationMessageSourceTest {
 
     @Test
     @Order(100)
+    void test_getMessage_Args_and_Default__messageNotExists_defaultIsNull() {
+        assertNull(messageSource.getMessage(
+            "not_exists",
+            null,
+            null,
+            Locale.forLanguageTag("en")
+        ));
+
+        assertNull(messageSource.getMessage(
+            "not_exists",
+            null,
+            null,
+            Locale.forLanguageTag("de")
+        ));
+    }
+
+    @Test
+    @Order(100)
     void test_getMessage_Args_and_Default_messageExists_messageWithArgs() {
         Object[] args = {"Road Runner", "Wile E. Coyote"};
         assertEquals("Road Runner and Wile E. Coyote", messageSource.getMessage(
