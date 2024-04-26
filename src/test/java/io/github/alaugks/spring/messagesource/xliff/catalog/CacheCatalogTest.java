@@ -7,17 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import java.util.HashMap;
 import java.util.Locale;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 @SuppressWarnings("java:S5778")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CacheCatalogTest {
 
     private CacheCatalog cacheCatalog;
 
-    @BeforeEach
-    void beforeEach() {
-
+    @BeforeAll
+    void beforeAll() {
         var cache = TestUtilities.getCache();
         cache.put("en|messages.m_en_1", "value_m_en_1");
         cache.put("en|messages.m_en_2", "value_m_en_2");
@@ -52,7 +53,7 @@ class CacheCatalogTest {
     }
 
     @Test
-    void test_get_netExists() {
+    void test_get_notExists() {
         assertNull(cacheCatalog.get(Locale.forLanguageTag("en"), "messages.not_exists"));
     }
 
