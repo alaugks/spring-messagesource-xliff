@@ -141,8 +141,8 @@ public class MessageConfig {
   @Bean()
   public MessageSource messageSource(CacheManager cacheManager) {
     return XliffTranslationMessageSource
-            .builder(cacheManager.getCache(CacheConfig.XLIFF_CACHE_NAME))
-            .withCache(TestUtilities.getCache())
+            .builder()
+            .withCache(cacheManager.getCache(CacheConfig.XLIFF_CACHE_NAME))
             .defaultLocale(Locale.forLanguageTag("en"))
             .basenamePattern("translations/*")
             .build();
