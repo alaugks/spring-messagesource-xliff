@@ -116,6 +116,9 @@ Caffeine [here](https://github.com/alaugks/spring-messagesource-xliff-example-sp
 * Defines the default domain. Default is `messages`. For more information,
   see [XlIFF Translations Files](#a4).
 
+`withCache(Cache cache)` (***recommended***)
+* [Cache](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html) ... !!!Description!!!
+
 ### MessageSource Configuration
 
 For this example:
@@ -139,6 +142,7 @@ public class MessageConfig {
   public MessageSource messageSource(CacheManager cacheManager) {
     return XliffTranslationMessageSource
             .builder(cacheManager.getCache(CacheConfig.XLIFF_CACHE_NAME))
+            .withCache(TestUtilities.getCache())
             .defaultLocale(Locale.forLanguageTag("en"))
             .basenamePattern("translations/*")
             .build();
