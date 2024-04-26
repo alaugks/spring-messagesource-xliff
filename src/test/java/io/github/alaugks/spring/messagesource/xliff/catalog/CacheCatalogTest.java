@@ -32,12 +32,9 @@ class CacheCatalogTest {
 
     @Test
     void test_getAll() {
-        var en = Locale.forLanguageTag("en");
-        var de = Locale.forLanguageTag("de");
-
         var all = this.cacheCatalog.getAll();
-        var transEn = all.get(en.toString());
-        var transDe = all.get(de.toString());
+        var transEn = all.get(Locale.forLanguageTag("en").toString());
+        var transDe = all.get(Locale.forLanguageTag("de").toString());
 
         assertEquals("value_m_en_1", transEn.get("messages.m_en_1"));
         assertEquals("value_m_en_2", transEn.get("messages.m_en_2"));
