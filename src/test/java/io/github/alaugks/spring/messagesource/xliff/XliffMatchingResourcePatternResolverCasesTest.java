@@ -1,19 +1,18 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class XliffMatchingResourcePatternResolverCasesTest {
 
@@ -97,6 +96,36 @@ class XliffMatchingResourcePatternResolverCasesTest {
                 Locale.forLanguageTag("en-US")
         );
         assertEquals("Other Hello EN (otherdomain)", message);
+    }
+
+    @Test
+    void test_messagesFormat_choice() {
+        var messageSource = new XliffTranslationMessageSource(TestUtilities.getMockedCacheManager());
+        messageSource.setBasenamesPattern(List.of("translations/*"));
+        messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
+        messageSource.initCache();
+
+        assertEquals("There are 10,000 files.", messageSource.getMessage(
+            "format_choice",
+            new Object[]{10000L},
+            Locale.forLanguageTag("en")
+        ));
+        assertEquals("There is one file.", messageSource.getMessage(
+            "format_choice",
+            new Object[]{1},
+            Locale.forLanguageTag("en")
+        ));
+
+        assertEquals("Es gibt 10.000 Dateien.", messageSource.getMessage(
+            "format_choice",
+            new Object[]{10000L},
+            Locale.forLanguageTag("de")
+        ));
+        assertEquals("Es gibt eine Datei.", messageSource.getMessage(
+            "format_choice",
+            new Object[]{1},
+            Locale.forLanguageTag("de")
+        ));
     }
 
     @ParameterizedTest(name = "{index} => translationUnitIdentifiers={0}, code={1}, expected={2}, targetValue={3}")

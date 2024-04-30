@@ -84,14 +84,15 @@ public class XliffTranslationMessageSource implements MessageSource {
     public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale) {
         return this.format(
                 this.internalMessageWithDefaultMessage(code, defaultMessage, locale),
-                args
+            args,
+            locale
         );
     }
 
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
         CatalogWrapper.Translation translation = this.internalMessage(code, locale);
         if (translation.exists()) {
-            return this.format(translation.toString(), args);
+            return this.format(translation.toString(), args, locale);
         }
 
         throw new NoSuchMessageException(code, locale);
@@ -103,14 +104,14 @@ public class XliffTranslationMessageSource implements MessageSource {
             for (String code : codes) {
                 CatalogWrapper.Translation translation = internalMessage(code, locale);
                 if (translation.exists()) {
-                    return this.format(translation.toString(), resolvable.getArguments());
+                    return this.format(translation.toString(), resolvable.getArguments(), locale);
                 }
             }
         }
         if (resolvable instanceof DefaultMessageSourceResolvable) {
             String defaultMessage = resolvable.getDefaultMessage();
             if (defaultMessage != null) {
-                return this.format(defaultMessage, resolvable.getArguments());
+                return this.format(defaultMessage, resolvable.getArguments(), locale);
             }
         }
 
@@ -137,9 +138,9 @@ public class XliffTranslationMessageSource implements MessageSource {
         this.catalogWrapper.initCache();
     }
 
-    private String format(@Nullable String message, @Nullable Object[] args) {
+    private String format(@Nullable String message, @Nullable Object[] args, Locale locale) {
         if (message != null && args != null && args.length > 0) {
-            return new MessageFormat(message).format(args);
+            return new MessageFormat(message, locale).format(args);
         }
         return message;
     }
