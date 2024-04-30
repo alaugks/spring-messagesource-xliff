@@ -118,14 +118,15 @@ public class XliffTranslationMessageSource implements MessageSource {
 
         return this.format(
             this.internalMessageWithDefaultMessage(code, defaultMessage, locale),
-            args
+            args,
+            locale
         );
     }
 
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
         String message = this.internalMessage(code, locale);
         if (message != null) {
-            return this.format(message, args);
+            return this.format(message, args, locale);
         }
 
         throw new NoSuchMessageException(code, locale);
@@ -137,14 +138,14 @@ public class XliffTranslationMessageSource implements MessageSource {
             for (String code : codes) {
                 String message = this.internalMessage(code, locale);
                 if (message != null) {
-                    return this.format(message, resolvable.getArguments());
+                    return this.format(message, resolvable.getArguments(), locale);
                 }
             }
         }
         if (resolvable instanceof DefaultMessageSourceResolvable) {
             String defaultMessage = resolvable.getDefaultMessage();
             if (defaultMessage != null) {
-                return this.format(defaultMessage, resolvable.getArguments());
+                return this.format(defaultMessage, resolvable.getArguments(), locale);
             }
         }
 
@@ -167,9 +168,9 @@ public class XliffTranslationMessageSource implements MessageSource {
         return this.catalogHandler.get(locale, code);
     }
 
-    private String format(@Nullable String message, @Nullable Object[] args) {
+    private String format(@Nullable String message, @Nullable Object[] args, Locale locale) {
         if (message != null && args != null && args.length > 0) {
-            return new MessageFormat(message).format(args);
+            return new MessageFormat(message, locale).format(args);
         }
         return message;
     }

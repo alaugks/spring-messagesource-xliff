@@ -38,6 +38,39 @@ class XliffTranslationMessageSourceCasesTest {
         ));
     }
 
+
+    @Test
+    void test_messagesFormat_choice() {
+        var messageSource = XliffTranslationMessageSource
+            .builder()
+            .basenamePattern("translations/*")
+            .defaultLocale(Locale.forLanguageTag("en"))
+            .build();
+
+        assertEquals("There are 10,000 files.", messageSource.getMessage(
+            "format_choice",
+            new Object[]{10000L},
+            Locale.forLanguageTag("en")
+        ));
+        assertEquals("There is one file.", messageSource.getMessage(
+            "format_choice",
+            new Object[]{1},
+            Locale.forLanguageTag("en")
+        ));
+
+        assertEquals("Es gibt 10.000 Dateien.", messageSource.getMessage(
+            "format_choice",
+            new Object[]{10000L},
+            Locale.forLanguageTag("de")
+        ));
+        assertEquals("Es gibt eine Datei.", messageSource.getMessage(
+            "format_choice",
+            new Object[]{1},
+            Locale.forLanguageTag("de")
+        ));
+    }
+
+
     @Test
     void test_setBasenamesPattern() {
         var messageSource = XliffTranslationMessageSource
