@@ -22,13 +22,14 @@ This package provides a **MessageSource** for using translations from XLIFF file
 | Version        | Description                                                                               |
 |:---------------|:------------------------------------------------------------------------------------------|
 | 2.0.0-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |
+| 1.2.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.1) |
 | 1.2.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.0) |
 | 1.1.2          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
 | 1.1.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
 | 1.1.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
 | 1.0.0          | First public version                                                                      |
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.1.2)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.2.1)
 
 
 <a name="a2"></a>
@@ -158,6 +159,7 @@ public class MessageConfig {
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
 * Translation files must be stored in the resource folder and have the extension `xliff` or `xlf`.
+* FormatType and FormatStyle is supported. See [MessageFormat](https://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html) documentation for more information.
 * In the XLIFF files, the `<target/>` is retrieved in a `<trans-unit/>` (XLIFF 1.2) or `<segment/>` (XLIFF 2.*).
   * **XLIFF 1.2**:
     * If the attribute `resname` does not exist, the attribute `id` is used to determine the identifier.
