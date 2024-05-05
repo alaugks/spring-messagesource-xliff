@@ -1,6 +1,5 @@
 package io.github.alaugks.spring.messagesource.xliff.catalog;
 
-import io.github.alaugks.spring.messagesource.xliff.catalog.XliffVersionInterface.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseFatalErrorException;
@@ -25,7 +24,6 @@ public final class XliffCatalogBuilder {
     private final List<TranslationFile> translationFiles;
     private final String defaultDomain;
     private final Locale defaultLocale;
-    private final List<XliffIdentifierInterface> transUnitIdentifier;
     private final List<Translation> translations;
     List<XliffVersionInterface> supportedVersions = List.of(
         new XliffVersion12(),
@@ -35,13 +33,11 @@ public final class XliffCatalogBuilder {
     public XliffCatalogBuilder(
         List<TranslationFile> translationFiles,
         String defaultDomain,
-        Locale defaultLocale,
-        List<XliffIdentifierInterface> transUnitIdentifier
+        Locale defaultLocale
     ) {
         this.translationFiles = translationFiles;
         this.defaultDomain = defaultDomain;
         this.defaultLocale = defaultLocale;
-        this.transUnitIdentifier = transUnitIdentifier;
         this.translations = new ArrayList<>();
     }
 
@@ -55,17 +51,17 @@ public final class XliffCatalogBuilder {
             Assert.notNull(this.defaultLocale, "Default locale is null");
             Assert.isTrue(!this.defaultLocale.toString().trim().isEmpty(), "Default locale is empty");
 
-            this.readFiles(translationFiles);
+            this.parseXliffDocuments(translationFiles);
             return BaseCatalog.builder(translations, this.defaultLocale, this.defaultDomain).build();
         } catch (ParserConfigurationException | IOException e) {
             throw new XliffMessageSourceSAXParseFatalErrorException(e);
         }
     }
 
-    private void readFiles(List<TranslationFile> translationTranslationFiles)
+    private void parseXliffDocuments(List<TranslationFile> xliffFiles)
         throws ParserConfigurationException, IOException {
 
-        for (TranslationFile translationFile : translationTranslationFiles) {
+        for (TranslationFile xliffFile : xliffFiles) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -73,7 +69,7 @@ public final class XliffCatalogBuilder {
             documentBuilder.setErrorHandler(new SaxErrorHandler());
             Document document;
             try {
-                document = documentBuilder.parse(translationFile.inputStream());
+                document = documentBuilder.parse(xliffFile.inputStream());
             } catch (SAXException e) {
                 throw new XliffMessageSourceRuntimeException(e);
             }
@@ -85,20 +81,28 @@ public final class XliffCatalogBuilder {
                 continue;
             }
 
-            String xliffVersion = xliffDocument.getXliffVersion();
+            String version = xliffDocument.getXliffVersion();
 
-            XliffVersionInterface xliffReader = this.supportedVersions
+            XliffVersionInterface xliffSupported = this.supportedVersions
                 .stream()
-                .filter(o -> o.support(xliffVersion))
+                .filter(o -> o.support(xliffDocument.getXliffVersion()))
                 .findFirst()
                 .orElse(null);
 
-            if (xliffReader != null) {
-                xliffReader.setTransUnitIdentifier(this.transUnitIdentifier);
-                xliffReader.read(this.translations, xliffDocument, translationFile.domain(), translationFile.locale());
+            if (xliffSupported != null) {
+                xliffDocument.getTransUnits(xliffSupported.getTransUnitName(), xliffSupported.getIdentifier()).forEach(
+                    transUnit -> this.translations.add(
+                        new Translation(
+                            xliffFile.locale(),
+                            transUnit.code(),
+                            transUnit.value(),
+                            xliffFile.domain()
+                        )
+                    )
+                );
             } else {
                 throw new XliffMessageSourceVersionSupportException(
-                    String.format("XLIFF version \"%s\" not supported.", xliffVersion)
+                    String.format("XLIFF version \"%s\" not supported.", version)
                 );
             }
         }

@@ -34,8 +34,7 @@ class XliffCatalogBuilderTest {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(
             files,
             "message",
-            Locale.forLanguageTag("en"),
-            null
+            Locale.forLanguageTag("en")
         );
 
         XliffMessageSourceVersionSupportException exception = assertThrows(
@@ -58,8 +57,7 @@ class XliffCatalogBuilderTest {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(
             files,
             "message",
-            Locale.forLanguageTag("en"),
-            null
+            Locale.forLanguageTag("en")
         );
 
         assertThrows(

@@ -2,7 +2,6 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogHandler;
 import io.github.alaugks.spring.messagesource.xliff.catalog.XliffCatalogBuilder;
-import io.github.alaugks.spring.messagesource.xliff.catalog.XliffVersionInterface.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -34,8 +33,7 @@ public class XliffTranslationMessageSource implements MessageSource {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(
             resourcesLoader.getTranslationFiles(),
             builder.defaultDomain,
-            builder.defaultLocale,
-            builder.transUnitIdentifier
+            builder.defaultLocale
         );
 
         this.catalogHandler = new CatalogHandler(
@@ -54,7 +52,6 @@ public class XliffTranslationMessageSource implements MessageSource {
         private Locale defaultLocale;
         private final Set<String> basenames = new HashSet<>();
         private String defaultDomain = "messages";
-        private List<XliffIdentifierInterface> transUnitIdentifier;
 
         public Builder defaultLocale(Locale locale) {
             this.defaultLocale = locale;
@@ -88,11 +85,6 @@ public class XliffTranslationMessageSource implements MessageSource {
             return this;
         }
 
-        public Builder setTransUnitIdentifier(List<XliffIdentifierInterface> transUnitIdentifier) {
-            this.transUnitIdentifier = transUnitIdentifier;
-            return this;
-        }
-
         public XliffTranslationMessageSource build() {
             // Default Domain
             Assert.notNull(this.defaultDomain, "Default domain is null");
@@ -111,11 +103,6 @@ public class XliffTranslationMessageSource implements MessageSource {
 
     @Nullable
     public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale) {
-        String message = this.internalMessageWithDefaultMessage(code, defaultMessage, locale);
-        if (message == null) {
-            return null;
-        }
-
         return this.format(
             this.internalMessageWithDefaultMessage(code, defaultMessage, locale),
             args,

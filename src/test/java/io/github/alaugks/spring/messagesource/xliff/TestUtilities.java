@@ -41,8 +41,7 @@ public class TestUtilities {
         XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder(
             files,
             domain,
-            locale,
-            null
+            locale
         );
 
         return xliffCatalogBuilder.getBaseCatalog();
@@ -52,8 +51,7 @@ public class TestUtilities {
         return new XliffCatalogBuilder(
             getResourcesLoader().getTranslationFiles(),
             "messages",
-            Locale.forLanguageTag("en"),
-            null
+            Locale.forLanguageTag("en")
         ).getBaseCatalog();
     }
 

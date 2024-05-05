@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 public final class XliffDocument {
 
     private final Element root;
-    private List<String> translationUnitIdentifiers;
+    private List<String> identifiers;
     private NodeList nodeList;
 
     public XliffDocument(Element root) {
@@ -25,7 +25,7 @@ public final class XliffDocument {
 
     public Set<TransUnit> getTransUnits(String transUnitName, List<String> translationUnitIdentifiers) {
         this.nodeList = this.root.getElementsByTagName(transUnitName);
-        this.translationUnitIdentifiers = translationUnitIdentifiers;
+        this.identifiers = translationUnitIdentifiers;
         return this.getNodes();
     }
 
@@ -40,28 +40,21 @@ public final class XliffDocument {
         );
     }
 
-    private String getAttributeValue(Node node) {
-        if (node != null) {
-            return node.getNodeValue();
-        }
-        return null;
-    }
-
     private Set<TransUnit> getNodes() {
         Set<TransUnit> transUnits = new HashSet<>();
 
         for (int item = 0; item < nodeList.getLength(); item++) {
-            Node translationNode = nodeList.item(item);
-
-            /* Translation Node */
-            Element node = (Element) translationNode;
+            Element node = (Element) nodeList.item(item);
 
             String code = this.getCode(node);
+
             if (code != null) {
                 transUnits.add(
                     new TransUnit(
                         code,
-                        this.getTargetValue(node)
+                        getCharacterDataFromElement(
+                            node.getElementsByTagName("target").item(0).getFirstChild()
+                        )
                     )
                 );
             }
@@ -70,11 +63,9 @@ public final class XliffDocument {
         return transUnits;
     }
 
-    private String getCode(
-        Element translationUnit
-    ) {
-        if (this.translationUnitIdentifiers != null) {
-            for (String name : this.translationUnitIdentifiers) {
+    private String getCode(Element translationUnit) {
+        if (this.identifiers != null) {
+            for (String name : this.identifiers) {
                 String value = this.getAttributeValue(translationUnit, name);
                 if (value != null) {
                     return value;
@@ -83,18 +74,6 @@ public final class XliffDocument {
         }
 
         return null;
-    }
-
-    private String getTargetValue(Element translationNodeElement) {
-        return this.getElementValue(translationNodeElement);
-    }
-
-    private String getElementValue(Element translationNodeElement) {
-        return this.getCharacterDataFromElement(
-            this.getFirstChild(
-                translationNodeElement.getElementsByTagName("target")
-            )
-        );
     }
 
     private String getCharacterDataFromElement(Node child) {
@@ -107,14 +86,17 @@ public final class XliffDocument {
         return null;
     }
 
-    private Node getFirstChild(NodeList nodeList) {
-        return nodeList.item(0).getFirstChild();
-    }
-
     private String getAttributeValue(Node translationNode, String attributeName) {
         return this.getAttributeValue(
             translationNode.getAttributes().getNamedItem(attributeName)
         );
+    }
+
+    private String getAttributeValue(Node node) {
+        if (node != null) {
+            return node.getNodeValue();
+        }
+        return null;
     }
 
     public record TransUnit(String code, String value) {

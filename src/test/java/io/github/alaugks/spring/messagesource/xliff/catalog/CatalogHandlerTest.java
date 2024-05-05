@@ -76,8 +76,7 @@ class CatalogHandlerTest {
                 "translations_example/*"
             ).getTranslationFiles(),
             "messages",
-            Locale.forLanguageTag("en"),
-            null
+            Locale.forLanguageTag("en")
         );
 
         var cache = TestUtilities.getCache();
