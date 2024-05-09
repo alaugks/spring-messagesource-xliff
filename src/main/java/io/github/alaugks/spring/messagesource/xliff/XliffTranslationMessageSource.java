@@ -86,17 +86,6 @@ public class XliffTranslationMessageSource implements MessageSource {
         }
 
         public XliffTranslationMessageSource build() {
-            // Default Domain
-            Assert.notNull(this.defaultDomain, "Default domain is null");
-            Assert.isTrue(!this.defaultDomain.trim().isEmpty(), "Default domain is empty");
-
-            // Default Locale
-            Assert.notNull(this.defaultLocale, "Default locale is null");
-            Assert.isTrue(!this.defaultLocale.toString().trim().isEmpty(), "Default locale is empty");
-
-            // Basenames
-            Assert.notEmpty(this.basenames, "Basename(s) is not set");
-
             return new XliffTranslationMessageSource(this);
         }
     }

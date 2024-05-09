@@ -12,7 +12,7 @@ class ResourcesFilenameParserTest {
 
     @Test
     void test_domain_withoutLocale() {
-        Filename filename = new ResourcesFileNameParser("message").parse();
+        Filename filename = new ResourcesFileNameParser("message.ext").parse();
         assertEquals("message", filename.domain());
         assertNull(filename.language());
         assertNull(filename.region());
@@ -20,7 +20,7 @@ class ResourcesFilenameParserTest {
 
     @Test
     void test_domain_en() {
-        Filename filename = new ResourcesFileNameParser("message_en").parse();
+        Filename filename = new ResourcesFileNameParser("message_en.ext").parse();
         assertEquals("message", filename.domain());
         assertEquals("en", filename.language());
         assertNull(filename.region());
@@ -29,7 +29,7 @@ class ResourcesFilenameParserTest {
 
     @Test
     void test_domain_en_withDash() {
-        Filename filename = new ResourcesFileNameParser("message-en").parse();
+        Filename filename = new ResourcesFileNameParser("message-en.ext").parse();
         assertEquals("message", filename.domain());
         assertEquals("en", filename.language());
         assertNull(filename.region());
@@ -38,7 +38,7 @@ class ResourcesFilenameParserTest {
 
     @Test
     void test_domain_enGB() {
-        Filename filename = new ResourcesFileNameParser("message_en_GB").parse();
+        Filename filename = new ResourcesFileNameParser("message_en_GB.ext").parse();
         assertEquals("message", filename.domain());
         assertEquals("en", filename.language());
         assertEquals("GB", filename.region());
@@ -47,7 +47,7 @@ class ResourcesFilenameParserTest {
 
     @Test
     void test_domain_enGB_withDash() {
-        Filename filename = new ResourcesFileNameParser("message-en-GB").parse();
+        Filename filename = new ResourcesFileNameParser("message-en-GB.ext").parse();
         assertEquals("message", filename.domain());
         assertEquals("en", filename.language());
         assertEquals("GB", filename.region());
@@ -56,13 +56,13 @@ class ResourcesFilenameParserTest {
 
     @Test
     void test_hasNoLocale() {
-        Filename filename = new ResourcesFileNameParser("message").parse();
+        Filename filename = new ResourcesFileNameParser("message.ext").parse();
         assertFalse(filename.hasLocale());
     }
 
     @Test
     void test_hasLocale() {
-        Filename filename = new ResourcesFileNameParser("message_de").parse();
+        Filename filename = new ResourcesFileNameParser("message_de.ext").parse();
         assertTrue(filename.hasLocale());
     }
 }

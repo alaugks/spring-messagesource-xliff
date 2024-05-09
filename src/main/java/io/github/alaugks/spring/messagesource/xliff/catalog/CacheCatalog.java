@@ -69,12 +69,16 @@ public final class CacheCatalog extends CatalogHandlerAbstract {
             return null;
         }
 
-        String value = this.find(locale, code);
+        String value = null;
+        Cache.ValueWrapper valueWrapper = this.cache.get(this.createCacheKey(locale, code));
+        if (valueWrapper != null) {
+            value = Objects.requireNonNull(valueWrapper.get()).toString();
+        }
+
         if (value != null) {
             return value;
         }
 
-        // Find in next Handler
         value = super.get(locale, code);
         if (value != null) {
             this.put(locale, code, value);
@@ -102,18 +106,6 @@ public final class CacheCatalog extends CatalogHandlerAbstract {
                 targetValue
             );
         }
-    }
-
-    private String find(Locale locale, String code) {
-        Cache.ValueWrapper valueWrapper = this.cache.get(
-            this.createCacheKey(locale, code)
-        );
-
-        if (valueWrapper != null) {
-            return Objects.requireNonNull(valueWrapper.get()).toString();
-        }
-
-        return null;
     }
 
     private String createCacheKey(Locale locale, String code) {

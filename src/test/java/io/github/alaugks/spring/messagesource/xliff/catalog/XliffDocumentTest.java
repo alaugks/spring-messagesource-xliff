@@ -7,18 +7,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 class XliffDocumentTest {
 
     @Test
     void test_getXliffVersion() throws ParserConfigurationException, IOException, SAXException {
-        var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff21.xliff"));
+        var xliffDocument = new XliffDocument(this.getDocument("fixtures/xliff21.xliff"));
 
         assertTrue(xliffDocument.isXliffDocument());
         assertEquals("2.1", xliffDocument.getXliffVersion());
@@ -26,7 +30,7 @@ class XliffDocumentTest {
 
     @Test
     void test_fail() throws ParserConfigurationException, IOException, SAXException {
-        var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff-fail.xliff"));
+        var xliffDocument = new XliffDocument(this.getDocument("fixtures/xliff-fail.xliff"));
 
         assertFalse(xliffDocument.isXliffDocument());
         assertNull(xliffDocument.getXliffVersion());
@@ -37,7 +41,7 @@ class XliffDocumentTest {
         throws ParserConfigurationException, IOException, SAXException {
         Map<Object, Object> transUnits = new HashMap<>();
 
-        var xliffDocument = new XliffDocument(TestUtilities.getDocument("fixtures/xliff-value-test.xliff"));
+        var xliffDocument = new XliffDocument(this.getDocument("fixtures/xliff-value-test.xliff"));
         xliffDocument.getTransUnits("segment", List.of("id")).forEach(
             transUnit -> transUnits.put(transUnit.code(), transUnit.value())
         );
@@ -46,5 +50,16 @@ class XliffDocumentTest {
         assertEquals("value", transUnits.get("element-newline"));
         assertEquals("value", transUnits.get("element-with-cdata"));
         assertEquals("value", transUnits.get("element-with-cdata-newline"));
+    }
+
+    private Document getDocument(InputStream inputStream)
+        throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        return builder.parse(inputStream);
+    }
+
+    private Document getDocument(String path) throws ParserConfigurationException, SAXException, IOException {
+        return this.getDocument(TestUtilities.class.getClassLoader().getResourceAsStream(path));
     }
 }

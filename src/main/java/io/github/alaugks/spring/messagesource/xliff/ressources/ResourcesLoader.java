@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.util.Assert;
 
 public final class ResourcesLoader {
 
@@ -18,8 +19,18 @@ public final class ResourcesLoader {
     private final Set<String> basenames;
     private final List<String> fileExtensions;
 
-
     public ResourcesLoader(Locale defaultLocale, Set<String> basenames, List<String> fileExtensions) {
+
+        // Default Locale
+        Assert.notNull(defaultLocale, "Default locale cant not be null");
+        Assert.isTrue(!defaultLocale.toString().trim().isEmpty(), "Default locale cant not be empty");
+
+        // TranslationFiles
+        Assert.notEmpty(basenames, "Basename(s) is not set");
+
+        // FileExtensions
+        Assert.notNull(fileExtensions, "List of FileExtensions cant not be null");
+
         this.defaultLocale = defaultLocale;
         this.basenames = basenames;
         this.fileExtensions = fileExtensions;

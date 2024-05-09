@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import io.github.alaugks.spring.messagesource.xliff.records.Translation;
+import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,7 +20,7 @@ class CatalogHandlerTest {
     @Test
     void test_getAll() {
         var catalogHandler = new CatalogHandler(
-            TestUtilities.getTestBaseCatalog(),
+            this.getTestBaseCatalog(),
             null
         );
         assertEquals(3, catalogHandler.getAll().size());
@@ -27,7 +29,7 @@ class CatalogHandlerTest {
     @Test
     void test_get() {
         var catalogHandler = new CatalogHandler(
-            TestUtilities.getTestBaseCatalog(),
+            this.getTestBaseCatalog(),
             null
         );
         assertEquals("Hello World (messages / en)", catalogHandler.get(this.locale, "hello_world"));
@@ -71,9 +73,10 @@ class CatalogHandlerTest {
     void test_putFallbackToCache() {
 
         var xliffCatalogBuildernew = new XliffCatalogBuilder(
-            TestUtilities.getResourcesLoader(
+            new ResourcesLoader(
                 Locale.forLanguageTag("en"),
-                "translations_example/*"
+                new HashSet<>(List.of("translations_example/*")),
+                List.of("xlf", "xliff")
             ).getTranslationFiles(),
             "messages",
             Locale.forLanguageTag("en")
@@ -119,4 +122,15 @@ class CatalogHandlerTest {
         assertEquals("Payment Text (es)", cacheItems.get("es-cr|payment.text"));
     }
 
+    public BaseCatalog getTestBaseCatalog() {
+        return new XliffCatalogBuilder(
+            new ResourcesLoader(
+                Locale.forLanguageTag("en"),
+                new HashSet<>(List.of("translations/*")),
+                List.of("xlf", "xliff")
+            ).getTranslationFiles(),
+            "messages",
+            Locale.forLanguageTag("en")
+        ).getBaseCatalog();
+    }
 }

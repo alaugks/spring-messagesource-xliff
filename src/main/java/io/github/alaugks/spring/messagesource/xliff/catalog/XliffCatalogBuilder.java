@@ -2,7 +2,7 @@ package io.github.alaugks.spring.messagesource.xliff.catalog;
 
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
-import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseFatalErrorException;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import io.github.alaugks.spring.messagesource.xliff.records.Translation;
 import io.github.alaugks.spring.messagesource.xliff.records.TranslationFile;
@@ -30,11 +30,19 @@ public final class XliffCatalogBuilder {
         new XliffVersion2()
     );
 
-    public XliffCatalogBuilder(
-        List<TranslationFile> translationFiles,
-        String defaultDomain,
-        Locale defaultLocale
-    ) {
+    public XliffCatalogBuilder(List<TranslationFile> translationFiles, String defaultDomain, Locale defaultLocale) {
+
+        // TranslationFiles
+        Assert.notNull(translationFiles, "List of TranslationFiles cant not be null");
+
+        // Default Domain
+        Assert.notNull(defaultDomain, "Default domain cant not be null");
+        Assert.isTrue(!defaultDomain.trim().isEmpty(), "Default domain is empty");
+
+        // Default Locale
+        Assert.notNull(defaultLocale, "Default locale  cant not be null");
+        Assert.isTrue(!defaultLocale.toString().trim().isEmpty(), "Default locale cant not be empty");
+
         this.translationFiles = translationFiles;
         this.defaultDomain = defaultDomain;
         this.defaultLocale = defaultLocale;
@@ -43,18 +51,10 @@ public final class XliffCatalogBuilder {
 
     public BaseCatalog getBaseCatalog() {
         try {
-            // Default Domain
-            Assert.notNull(this.defaultDomain, "Default domain is null");
-            Assert.isTrue(!this.defaultDomain.trim().isEmpty(), "Default domain is empty");
-
-            // Default Locale
-            Assert.notNull(this.defaultLocale, "Default locale is null");
-            Assert.isTrue(!this.defaultLocale.toString().trim().isEmpty(), "Default locale is empty");
-
             this.parseXliffDocuments(translationFiles);
             return BaseCatalog.builder(translations, this.defaultLocale, this.defaultDomain).build();
         } catch (ParserConfigurationException | IOException e) {
-            throw new XliffMessageSourceSAXParseFatalErrorException(e);
+            throw new FatalError(e);
         }
     }
 
@@ -106,5 +106,50 @@ public final class XliffCatalogBuilder {
                 );
             }
         }
+    }
+
+    public static final class XliffVersion2 implements XliffVersionInterface {
+
+        @Override
+        public boolean support(String version) {
+            return List.of("2.0", "2.1").contains(version);
+        }
+
+        @Override
+        public String getTransUnitName() {
+            return "segment";
+        }
+
+        @Override
+        public List<String> getIdentifier() {
+            return List.of("id");
+        }
+    }
+
+    public static final class XliffVersion12 implements XliffVersionInterface {
+
+        @Override
+        public boolean support(String version) {
+            return version.equals("1.2");
+        }
+
+        @Override
+        public String getTransUnitName() {
+            return "trans-unit";
+        }
+
+        @Override
+        public List<String> getIdentifier() {
+            return List.of("resname", "id");
+        }
+    }
+
+    public interface XliffVersionInterface {
+
+        boolean support(String version);
+
+        String getTransUnitName();
+
+        List<String> getIdentifier();
     }
 }
