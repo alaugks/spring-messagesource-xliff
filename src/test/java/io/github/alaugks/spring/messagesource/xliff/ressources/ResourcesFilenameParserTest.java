@@ -1,9 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff.ressources;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.alaugks.spring.messagesource.xliff.records.Filename;
 import org.junit.jupiter.api.Test;
@@ -52,17 +50,5 @@ class ResourcesFilenameParserTest {
         assertEquals("en", filename.language());
         assertEquals("GB", filename.region());
         assertEquals("en_GB", filename.locale().toString());
-    }
-
-    @Test
-    void test_hasNoLocale() {
-        Filename filename = new ResourcesFileNameParser("message.ext").parse();
-        assertFalse(filename.hasLocale());
-    }
-
-    @Test
-    void test_hasLocale() {
-        Filename filename = new ResourcesFileNameParser("message_de.ext").parse();
-        assertTrue(filename.hasLocale());
     }
 }

@@ -1,5 +1,6 @@
 package io.github.alaugks.spring.messagesource.xliff.records;
 
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.IllformedLocaleException;
 import java.util.Locale;
 
@@ -22,7 +23,7 @@ public record Filename(String domain, String language, String region) {
             }
             return null;
         } catch (IllformedLocaleException e) {
-            return null;
+            throw new XliffMessageSourceRuntimeException(e);
         }
     }
 }
