@@ -1,11 +1,10 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog;
+package io.github.alaugks.spring.messagesource.xliff;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.alaugks.spring.messagesource.xliff.TestUtilities;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -60,6 +59,6 @@ class XliffDocumentTest {
     }
 
     private Document getDocument(String path) throws ParserConfigurationException, SAXException, IOException {
-        return this.getDocument(TestUtilities.class.getClassLoader().getResourceAsStream(path));
+        return this.getDocument(getClass().getClassLoader().getResourceAsStream(path));
     }
 }

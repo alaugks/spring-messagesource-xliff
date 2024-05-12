@@ -29,6 +29,10 @@
             <target>
               <![CDATA[Es gibt {0,choice,0#keine Datei|1#eine Datei|1<{0,number,integer} Dateien}.]]></target>
           </trans-unit>
+            <trans-unit>
+                <source>no code</source>
+                <target>no code</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

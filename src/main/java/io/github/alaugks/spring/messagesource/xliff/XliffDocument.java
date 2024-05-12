@@ -1,9 +1,10 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog;
+package io.github.alaugks.spring.messagesource.xliff;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,7 +13,7 @@ import org.w3c.dom.NodeList;
 public final class XliffDocument {
 
     private final Element root;
-    private List<String> identifiers;
+    private List<String> transUnitIdentifiers;
     private NodeList nodeList;
 
     public XliffDocument(Element root) {
@@ -23,9 +24,9 @@ public final class XliffDocument {
         this.root = document.getDocumentElement();
     }
 
-    public Set<TransUnit> getTransUnits(String transUnitName, List<String> translationUnitIdentifiers) {
+    public Set<TransUnit> getTransUnits(String transUnitName, List<String> transUnitIdentifiers) {
         this.nodeList = this.root.getElementsByTagName(transUnitName);
-        this.identifiers = translationUnitIdentifiers;
+        this.transUnitIdentifiers = transUnitIdentifiers;
         return this.getNodes();
     }
 
@@ -48,42 +49,36 @@ public final class XliffDocument {
 
             String code = this.getCode(node);
 
-            if (code != null) {
-                transUnits.add(
-                    new TransUnit(
-                        code,
-                        getCharacterDataFromElement(
-                            node.getElementsByTagName("target").item(0).getFirstChild()
-                        )
-                    )
-                );
+            if (code == null) {
+                continue;
             }
+
+            transUnits.add(
+                new TransUnit(
+                    code,
+                    getCharacterDataFromElement(
+                        node.getElementsByTagName("target").item(0).getFirstChild()
+                    )
+                )
+            );
         }
 
         return transUnits;
     }
 
     private String getCode(Element translationUnit) {
-        if (this.identifiers != null) {
-            for (String name : this.identifiers) {
-                String value = this.getAttributeValue(translationUnit, name);
-                if (value != null) {
-                    return value;
-                }
-            }
-        }
-
-        return null;
+        return Arrays.stream(this.transUnitIdentifiers.toArray())
+            .map(value -> this.getAttributeValue(translationUnit, value.toString()))
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
     }
 
     private String getCharacterDataFromElement(Node child) {
-        if (child instanceof CharacterData node) {
-            if (child.getNextSibling() != null) {
-                return child.getNextSibling().getTextContent().trim();
-            }
-            return node.getData().trim();
+        if (child.getNextSibling() != null) {
+            return child.getNextSibling().getTextContent().trim();
         }
-        return null;
+        return child.getNodeValue().trim();
     }
 
     private String getAttributeValue(Node translationNode, String attributeName) {
@@ -102,5 +97,4 @@ public final class XliffDocument {
     public record TransUnit(String code, String value) {
 
     }
-
 }

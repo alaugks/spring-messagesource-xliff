@@ -1,4 +1,4 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog;
+package io.github.alaugks.spring.messagesource.xliff;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -6,9 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
-import io.github.alaugks.spring.messagesource.xliff.records.TranslationFile;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,29 +20,13 @@ class XliffCatalogBuilderTest {
 
     @Test
     void test_getBaseCatalog() {
-
-        var files = new ArrayList<TranslationFile>();
-        files.add(
-            new TranslationFile(
-                "messages",
-                Locale.forLanguageTag("en"),
-                getClass().getClassLoader().getResourceAsStream("translations/messages.xliff")
-            )
-        );
-
-        files.add(
-            new TranslationFile(
-                "messages",
-                Locale.forLanguageTag("de"),
-                getClass().getClassLoader().getResourceAsStream("translations/messages_de.xliff")
-            )
-        );
-
         var catalog = new XliffCatalogBuilder(
-            files,
+            new HashSet<>(List.of("translations/messages.xliff", "translations/messages_de.xliff")),
+            List.of("xlf", "xliff"),
             "messages",
             Locale.forLanguageTag("en")
         ).getBaseCatalog();
+        catalog.build();
 
         assertEquals("Hello World (messages / en)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_world"));
         assertEquals("Hallo Welt (messages / de)", catalog.get(Locale.forLanguageTag("de"), "messages.hello_world"));
@@ -50,7 +35,7 @@ class XliffCatalogBuilderTest {
     @Test
     void test_parseError() {
         var xliffCatalogBuilder = this.getXliffCatalogBuilder(
-            "fixtures/parse_error.xliff",
+            new HashSet<>(List.of("fixtures/parse_error.xliff")),
             Locale.forLanguageTag("en"),
             "message"
         );
@@ -67,7 +52,7 @@ class XliffCatalogBuilderTest {
     @Test
     void test_versionNotSupported() {
         var xliffCatalogBuilder = this.getXliffCatalogBuilder(
-            "fixtures/xliff10.xliff",
+            new HashSet<>(List.of("fixtures/xliff10.xliff")),
             Locale.forLanguageTag("en"),
             "message"
         );
@@ -81,42 +66,35 @@ class XliffCatalogBuilderTest {
 
     @ParameterizedTest
     @MethodSource("dataProvider_loadVersions")
-    void test_versionSupported(String ressourcePath, String expected) {
-        var baseCatalog = this.getXliffCatalogBuilder(
-            ressourcePath,
+    void test_versionSupported(String ressourcePath, String domain, String expected) {
+        var xliffCatalogBuilder = this.getXliffCatalogBuilder(
+            new HashSet<>(List.of(ressourcePath)),
             Locale.forLanguageTag("en"),
-            "domain"
+            domain
         );
+        var catalog = xliffCatalogBuilder.getBaseCatalog();
+        catalog.build();
 
         assertEquals(
             expected,
-            baseCatalog.getBaseCatalog().get(Locale.forLanguageTag("en"), "domain.code-1")
+            catalog.get(Locale.forLanguageTag("en"), domain + ".code-1")
         );
     }
 
     private static Stream<Arguments> dataProvider_loadVersions() {
         return Stream.of(
-            Arguments.of("fixtures/xliff12.xliff", "Hello World (Xliff Version 1.2)"),
-            Arguments.of("fixtures/xliff20.xliff", "Hello World (Xliff Version 2.0)"),
-            Arguments.of("fixtures/xliff21.xliff", "Hello World (Xliff Version 2.1)")
+            Arguments.of("fixtures/xliff12.xliff", "xliff12", "Hello World (Xliff Version 1.2)"),
+            Arguments.of("fixtures/xliff20.xliff", "xliff20", "Hello World (Xliff Version 2.0)"),
+            Arguments.of("fixtures/xliff21.xliff", "xliff21", "Hello World (Xliff Version 2.1)")
         );
     }
 
-    private XliffCatalogBuilder getXliffCatalogBuilder(String ressource, Locale locale, String domain) {
-        var files = new ArrayList<TranslationFile>();
-        files.add(
-            new TranslationFile(
-                domain,
-                locale,
-                getClass().getClassLoader().getResourceAsStream(ressource)
-            )
-        );
-
+    private XliffCatalogBuilder getXliffCatalogBuilder(Set<String> files, Locale locale, String domain) {
         return new XliffCatalogBuilder(
             files,
+            List.of("xlf", "xliff"),
             domain,
             locale
         );
     }
-
 }

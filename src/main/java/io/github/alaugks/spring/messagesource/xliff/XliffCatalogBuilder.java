@@ -1,15 +1,18 @@
-package io.github.alaugks.spring.messagesource.xliff.catalog;
+package io.github.alaugks.spring.messagesource.xliff;
 
+import io.github.alaugks.spring.messagesource.base.catalog.Catalog;
+import io.github.alaugks.spring.messagesource.base.records.Translation;
+import io.github.alaugks.spring.messagesource.base.records.TranslationFile;
+import io.github.alaugks.spring.messagesource.base.ressources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
-import io.github.alaugks.spring.messagesource.xliff.records.Translation;
-import io.github.alaugks.spring.messagesource.xliff.records.TranslationFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,38 +24,44 @@ import org.xml.sax.SAXException;
 
 public final class XliffCatalogBuilder {
 
-    private final List<TranslationFile> translationFiles;
     private final String defaultDomain;
     private final Locale defaultLocale;
     private final List<Translation> translations;
+    private final List<String> fileExtensions;
+    private final Set<String> basenames;
     List<XliffVersionInterface> supportedVersions = List.of(
         new XliffVersion12(),
-        new XliffVersion2()
+        new XliffVersion2x()
     );
 
-    public XliffCatalogBuilder(List<TranslationFile> translationFiles, String defaultDomain, Locale defaultLocale) {
-
-        // TranslationFiles
-        Assert.notNull(translationFiles, "List of TranslationFiles cant not be null");
-
-        // Default Domain
+    public XliffCatalogBuilder(
+        Set<String> basenames,
+        List<String> fileExtensions,
+        String defaultDomain,
+        Locale defaultLocale
+    ) {
+        Assert.notNull(basenames, "Basename(s) cant not be null");
+        Assert.notNull(fileExtensions, "FileExtensions cant not be null");
         Assert.notNull(defaultDomain, "Default domain cant not be null");
-        Assert.isTrue(!defaultDomain.trim().isEmpty(), "Default domain is empty");
-
-        // Default Locale
         Assert.notNull(defaultLocale, "Default locale  cant not be null");
-        Assert.isTrue(!defaultLocale.toString().trim().isEmpty(), "Default locale cant not be empty");
 
-        this.translationFiles = translationFiles;
+        this.basenames = basenames;
         this.defaultDomain = defaultDomain;
         this.defaultLocale = defaultLocale;
+        this.fileExtensions = fileExtensions;
         this.translations = new ArrayList<>();
     }
 
-    public BaseCatalog getBaseCatalog() {
+    public Catalog getBaseCatalog() {
         try {
-            this.parseXliffDocuments(translationFiles);
-            return BaseCatalog.builder(translations, this.defaultLocale, this.defaultDomain).build();
+            ResourcesLoader resourcesLoader = new ResourcesLoader(
+                this.defaultLocale,
+                this.basenames,
+                this.fileExtensions
+            );
+
+            this.parseXliffDocuments(resourcesLoader.getTranslationFiles());
+            return new Catalog(this.translations, this.defaultLocale, this.defaultDomain);
         } catch (ParserConfigurationException | IOException e) {
             throw new FatalError(e);
         }
@@ -93,10 +102,10 @@ public final class XliffCatalogBuilder {
                 xliffDocument.getTransUnits(xliffSupported.getTransUnitName(), xliffSupported.getIdentifier()).forEach(
                     transUnit -> this.translations.add(
                         new Translation(
+                            xliffFile.domain(),
                             xliffFile.locale(),
                             transUnit.code(),
-                            transUnit.value(),
-                            xliffFile.domain()
+                            transUnit.value()
                         )
                     )
                 );
@@ -108,7 +117,7 @@ public final class XliffCatalogBuilder {
         }
     }
 
-    public static final class XliffVersion2 implements XliffVersionInterface {
+    public static final class XliffVersion2x implements XliffVersionInterface {
 
         @Override
         public boolean support(String version) {
