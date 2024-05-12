@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +48,18 @@ class XliffCatalogBuilderTest {
         assertThrows(
             FatalError.class, xliffCatalogBuilder::getBaseCatalog
         );
+    }
+
+    @Test
+    void test_noXliffDocument() {
+        var catalog = new XliffCatalogBuilder(
+            new HashSet<>(List.of("fixtures/no-xliff.xml")),
+            List.of("xml"),
+            "message",
+            Locale.forLanguageTag("en")
+        ).getBaseCatalog();
+
+        assertEquals(new HashMap<>(), catalog.getAll());
     }
 
     @Test
