@@ -15,7 +15,7 @@
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Parent package to provide a custom MessageSource for Spring and Spring Boot.</description>
+    <description>Provides a MessageSource for translations from XLIFF files for Spring and Spring Boot.</description>
     <url>https://github.com/alaugks/spring-messagesource-base</url>
 
     <licenses>
