@@ -20,13 +20,18 @@ This package provides a **MessageSource** for using translations from XLIFF file
 
 | Version        | Description                                                                               |
 |:---------------|:------------------------------------------------------------------------------------------|
-| 2.0.0-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |
 | 1.2.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.1) |
 | 1.2.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.0) |
 | 1.1.2          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
 | 1.1.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
 | 1.1.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
 | 1.0.0          | First public version                                                                      |
+
+### Snapshots
+| Version        | Description                                                                               |
+|:---------------|:------------------------------------------------------------------------------------------|
+| 2.0.0-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |                                                                 |
+
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.2.1)
 
@@ -96,7 +101,7 @@ public class MessageConfig {
 <a name="a4"></a>
 ## 4. CacheManager Configuration
 
-You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required. All [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. Here is an [example using Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
+You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required. All [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. Here is an [example using Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
                                                                                                                                    
 
 
@@ -503,7 +508,7 @@ The article [Custom Validation MessageSource in Spring Boot](https://www.baeldun
 
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
 
-Repository: https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot<br>
+Repository: https://github.com/alaugks/spring-messagesource-xliff-example<br>
 Website: https://spring-boot-xliff-example.alaugks.dev
 
 
