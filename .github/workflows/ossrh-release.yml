@@ -1,5 +1,3 @@
-# Action configuration is based on the following articles:
-# https://blogs.itemis.com/en/github-actions-releasing-artifacts-into-maven-central
 name: "OSSRH Release"
 run-name: OSSRH Release [${{ github.ref_name }}]
 on:
@@ -11,6 +9,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -24,6 +23,11 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PRIVATE_KEY_PASSPHRASE
           cache: 'maven'
+
+      - name: Run Tests
+        run: |
+          mvn test
+
       - name: Build & Deploy
         run: |
           mvn -U -B clean deploy -P release
