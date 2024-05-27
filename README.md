@@ -3,7 +3,7 @@
 
 # XLIFF Translation Support for Spring Boot and Spring
 
-This package provides a **MessageSource** for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
+This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
 **Table of content**
 
@@ -55,82 +55,37 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 <a name="a3"></a>
 ## 3. MessageSource Configuration
 
-The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface. An instance of the [CacheManager](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider) is required for caching the translations.
+The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface.
 
-<a name="a3.1"></a>
+`builder(Locale locale, String, String basename | List<String> basenames)` (***required***)
+* Argument `locale`: Defines the default language.
+* Argument `basename(s)`:
+  * Defines the pattern used to select the XLIFF files.
+  * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
+  * Files with the extension `xliff` and `xlf` are filtered from the result list.
 
-## 3.1 CacheManager Configuration
-
-You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required. All [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. Here is an [example using Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
-                                                                                                                                   
-> [!Note]
-> No ExpireDate should be set for the XLIFF translations cache.
-
-### CacheManager with ConcurrentMapCacheManager
-
-[ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html)
-is the default cache in Spring Boot and Spring.
-
-```java
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import java.util.List;
-
-@Configuration
-@EnableCaching
-public class CacheConfig {
-
-  public static final String XLIFF_CACHE_NAME = "my-xliff-cache-key-name";
-
-  @Bean
-  public CacheManager cacheManager() {
-    return new ConcurrentMapCacheManager(XLIFF_CACHE_NAME);
-  }
-
-}    
-```
-
-### CacheManager with supported Cache Provider Caffeine
-
-All
-supported [Cache Provider](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider)
-can be used. You can see an example using
-Caffeine [here](https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
-
-## 3.2 XliffTranslationMessageSource Configuration
-
-`basenamePattern(String basename)` or `basenamesPattern(Iterable<String> basenames)` (
-***required***)
-
-* Defines the pattern used to select the XLIFF files.
-* The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
-* Files with the extension `xliff` and `xlf` are filtered from the result list.
-
-`defaultLocale(Locale locale)` (***required***)
-* Defines the default language.
 
 `defaultDomain(String defaultDomain)`
 
 * Defines the default domain. Default is `messages`. For more information,
   see [XlIFF Translations Files](#a4).
 
-`withCache(Cache cache)` (***recommended***)
-* [Cache](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html) ... !!!Description!!!
+`withCache(org.springframework.cache.Cache cache)` (***recommended***)
 
-### MessageSource Configuration
+[//]: # (* [org.springframework.cache.Cache]&#40;https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html&#41;)
+* All [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. Here is an [example using Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
+* [ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html) is the default cache in Spring Boot and Spring.
 
-For this example:
+### Example
 
-* The previously created cache is fetched with the constant `CacheConfig.XLIFF_CACHE_NAME`.
 * Default language is `en`.
 * The Xliff files are stored in `src/main/resources/translations`.
+* A cache for caching translations fallback mechanism.
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -139,13 +94,14 @@ import java.util.Locale;
 @Configuration
 public class MessageConfig {
 
-  @Bean()
+  @Bean
   public MessageSource messageSource(CacheManager cacheManager) {
     return XliffTranslationMessageSource
-            .builder()
-            .withCache(cacheManager.getCache(CacheConfig.XLIFF_CACHE_NAME))
-            .defaultLocale(Locale.forLanguageTag("en"))
-            .basenamePattern("translations/*")
+            .builder(
+                Locale.forLanguageTag("en"),
+                "translations/*"
+            )
+            .withCache(new ConcurrentMapCache('xliff-messagesource'))
             .build();
   }
 

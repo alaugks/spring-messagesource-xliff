@@ -22,7 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-public final class XliffCatalogBuilder {
+public final class XliffCatalog {
 
     private final String defaultDomain;
     private final Locale defaultLocale;
@@ -34,7 +34,7 @@ public final class XliffCatalogBuilder {
         new XliffVersion2x()
     );
 
-    public XliffCatalogBuilder(
+    public XliffCatalog(
         Set<String> basenames,
         List<String> fileExtensions,
         String defaultDomain,
@@ -52,7 +52,7 @@ public final class XliffCatalogBuilder {
         this.translations = new ArrayList<>();
     }
 
-    public Catalog getBaseCatalog() {
+    public Catalog createCatalog() {
         try {
             ResourcesLoader resourcesLoader = new ResourcesLoader(
                 this.defaultLocale,

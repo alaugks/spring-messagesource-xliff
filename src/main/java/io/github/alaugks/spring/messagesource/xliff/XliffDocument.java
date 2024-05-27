@@ -46,32 +46,22 @@ public final class XliffDocument {
 
         for (int item = 0; item < nodeList.getLength(); item++) {
             Element node = (Element) nodeList.item(item);
-
-            String code = this.getCode(node);
-
-            if (code == null) {
-                continue;
-            }
-
-            transUnits.add(
-                new TransUnit(
-                    code,
-                    getCharacterDataFromElement(
-                        node.getElementsByTagName("target").item(0).getFirstChild()
+            Arrays.stream(this.transUnitIdentifiers.toArray())
+                .map(value -> this.getAttributeValue(
+                    node.getAttributes().getNamedItem(value.toString())
+                ))
+                .filter(Objects::nonNull)
+                .findFirst().ifPresent(code -> transUnits.add(
+                    new TransUnit(
+                        code,
+                        getCharacterDataFromElement(
+                            node.getElementsByTagName("target").item(0).getFirstChild()
+                        )
                     )
-                )
-            );
+                ));
         }
 
         return transUnits;
-    }
-
-    private String getCode(Element translationUnit) {
-        return Arrays.stream(this.transUnitIdentifiers.toArray())
-            .map(value -> this.getAttributeValue(translationUnit, value.toString()))
-            .filter(Objects::nonNull)
-            .findFirst()
-            .orElse(null);
     }
 
     private String getCharacterDataFromElement(Node child) {
@@ -79,12 +69,6 @@ public final class XliffDocument {
             return child.getNextSibling().getTextContent().trim();
         }
         return child.getNodeValue().trim();
-    }
-
-    private String getAttributeValue(Node translationNode, String attributeName) {
-        return this.getAttributeValue(
-            translationNode.getAttributes().getNamedItem(attributeName)
-        );
     }
 
     private String getAttributeValue(Node node) {

@@ -17,16 +17,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class XliffCatalogBuilderTest {
+class XliffCatalogTest {
 
     @Test
-    void test_getBaseCatalog() {
-        var catalog = new XliffCatalogBuilder(
+    void test_createCatalog() {
+        var catalog = new XliffCatalog(
             new HashSet<>(List.of("translations/messages.xliff", "translations/messages_de.xliff")),
             List.of("xlf", "xliff"),
             "messages",
             Locale.forLanguageTag("en")
-        ).getBaseCatalog();
+        ).createCatalog();
         catalog.build();
 
         assertEquals("Hello World (messages / en)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_world"));
@@ -42,22 +42,22 @@ class XliffCatalogBuilderTest {
         );
 
         assertThrows(
-            XliffMessageSourceSAXParseException.class, xliffCatalogBuilder::getBaseCatalog
+            XliffMessageSourceSAXParseException.class, xliffCatalogBuilder::createCatalog
         );
 
         assertThrows(
-            FatalError.class, xliffCatalogBuilder::getBaseCatalog
+            FatalError.class, xliffCatalogBuilder::createCatalog
         );
     }
 
     @Test
     void test_noXliffDocument() {
-        var catalog = new XliffCatalogBuilder(
+        var catalog = new XliffCatalog(
             new HashSet<>(List.of("fixtures/no-xliff.xml")),
             List.of("xml"),
             "message",
             Locale.forLanguageTag("en")
-        ).getBaseCatalog();
+        ).createCatalog();
 
         assertEquals(new HashMap<>(), catalog.getAll());
     }
@@ -71,7 +71,7 @@ class XliffCatalogBuilderTest {
         );
 
         XliffMessageSourceVersionSupportException exception = assertThrows(
-            XliffMessageSourceVersionSupportException.class, xliffCatalogBuilder::getBaseCatalog
+            XliffMessageSourceVersionSupportException.class, xliffCatalogBuilder::createCatalog
         );
         assertEquals("XLIFF version \"1.0\" not supported.", exception.getMessage());
     }
@@ -85,7 +85,7 @@ class XliffCatalogBuilderTest {
             Locale.forLanguageTag("en"),
             domain
         );
-        var catalog = xliffCatalogBuilder.getBaseCatalog();
+        var catalog = xliffCatalogBuilder.createCatalog();
         catalog.build();
 
         assertEquals(
@@ -102,8 +102,8 @@ class XliffCatalogBuilderTest {
         );
     }
 
-    private XliffCatalogBuilder getXliffCatalogBuilder(Set<String> files, Locale locale, String domain) {
-        return new XliffCatalogBuilder(
+    private XliffCatalog getXliffCatalogBuilder(Set<String> files, Locale locale, String domain) {
+        return new XliffCatalog(
             files,
             List.of("xlf", "xliff"),
             domain,

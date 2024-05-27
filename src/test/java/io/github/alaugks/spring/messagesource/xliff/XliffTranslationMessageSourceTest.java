@@ -28,7 +28,7 @@ class XliffTranslationMessageSourceTest {
     @BeforeAll
     static void beforeAll() {
         messageSource = XliffTranslationMessageSource
-            .builder("translations/*", Locale.forLanguageTag("en"))
+            .builder(Locale.forLanguageTag("en"), "translations/*")
             .withCache(new ConcurrentMapCache("test-cache"))
             .build();
     }

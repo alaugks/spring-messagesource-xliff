@@ -13,7 +13,7 @@ class XliffTranslationMessageSourceCasesTest {
     @Test
     void test_defaultDomain() {
         var messageSource = XliffTranslationMessageSource
-            .builder("translations/*", Locale.forLanguageTag("en"))
+            .builder(Locale.forLanguageTag("en"), "translations/*")
             .defaultDomain("otherdomain")
             .build();
 
@@ -27,7 +27,7 @@ class XliffTranslationMessageSourceCasesTest {
     @Test
     void test_fileExtensions() {
         var messageSource = XliffTranslationMessageSource
-            .builder("translations/*", Locale.forLanguageTag("en"))
+            .builder(Locale.forLanguageTag("en"), "translations/*")
             .fileExtensions(List.of("xlf"))
             .build();
 
@@ -43,11 +43,10 @@ class XliffTranslationMessageSourceCasesTest {
     void test_setBasenamesPattern() {
         var messageSource = XliffTranslationMessageSource
             .builder(
-                List.of(
+                Locale.forLanguageTag("en"), List.of(
                     "translations_en/*",
                     "translations_de/*"
-                ),
-                Locale.forLanguageTag("en")
+                )
             )
             .build();
 
