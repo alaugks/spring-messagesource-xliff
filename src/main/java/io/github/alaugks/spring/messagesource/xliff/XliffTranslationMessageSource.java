@@ -3,6 +3,9 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.base.BaseTranslationMessageSource;
 import io.github.alaugks.spring.messagesource.base.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.base.catalog.CatalogHandler;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +39,10 @@ public class XliffTranslationMessageSource implements MessageSource {
         private String defaultDomain = "messages";
         private List<String> fileExtensions = List.of("xlf", "xliff");
         private Cache cache;
+        private List<XliffIdentifierInterface> identifier = List.of(
+            new Xliff12Identifier(List.of("resname", "id")),
+            new Xliff2xIdentifier(List.of("id"))
+        );
 
         public Builder(Locale defaultLocale, List<String> basenames) {
             this.defaultLocale = defaultLocale;
@@ -58,21 +65,25 @@ public class XliffTranslationMessageSource implements MessageSource {
             return this;
         }
 
+        public Builder identifier(List<XliffIdentifierInterface> identifier) {
+            this.identifier = identifier;
+            return this;
+        }
+
         public XliffTranslationMessageSource build() {
-            CatalogHandler.Builder catalogHandler = CatalogHandler.builder();
-
-            if (this.cache != null) {
-                catalogHandler.addHandler(new CatalogCache(this.cache));
-            }
-
-            catalogHandler.addHandler(
+            CatalogHandler.Builder catalogHandler = CatalogHandler.builder(
                 new XliffCatalog(
                     this.basenames,
                     this.fileExtensions,
                     this.defaultDomain,
-                    this.defaultLocale
+                    this.defaultLocale,
+                    this.identifier
                 ).createCatalog()
             );
+
+            if (this.cache != null) {
+                catalogHandler.catalogCache(new CatalogCache(this.cache));
+            }
 
             return new XliffTranslationMessageSource(
                 new BaseTranslationMessageSource(catalogHandler.build())

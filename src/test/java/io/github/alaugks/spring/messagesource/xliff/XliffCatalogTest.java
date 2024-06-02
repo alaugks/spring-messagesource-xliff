@@ -3,6 +3,9 @@ package io.github.alaugks.spring.messagesource.xliff;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
@@ -25,7 +28,11 @@ class XliffCatalogTest {
             new HashSet<>(List.of("translations/messages.xliff", "translations/messages_de.xliff")),
             List.of("xlf", "xliff"),
             "messages",
-            Locale.forLanguageTag("en")
+            Locale.forLanguageTag("en"),
+            List.of(
+                new Xliff12Identifier(List.of("resname", "id")),
+                new Xliff2xIdentifier(List.of("id"))
+            )
         ).createCatalog();
         catalog.build();
 
@@ -56,7 +63,8 @@ class XliffCatalogTest {
             new HashSet<>(List.of("fixtures/no-xliff.xml")),
             List.of("xml"),
             "message",
-            Locale.forLanguageTag("en")
+            Locale.forLanguageTag("en"),
+            null
         ).createCatalog();
 
         assertEquals(new HashMap<>(), catalog.getAll());
@@ -107,7 +115,101 @@ class XliffCatalogTest {
             files,
             List.of("xlf", "xliff"),
             domain,
-            locale
+            locale,
+            List.of(
+                new Xliff12Identifier(List.of("resname", "id")),
+                new Xliff2xIdentifier(List.of("id"))
+            )
+        );
+    }
+
+    @ParameterizedTest()
+    @MethodSource("dataProvider_setTranslationUnitIdentifiersOrdering")
+    void test_setTranslationUnitIdentifiersOrdering(
+        List<XliffIdentifierInterface> translationUnitIdentifiers,
+        String code,
+        String expected
+    ) {
+        var messageSource = XliffTranslationMessageSource
+            .builder(
+                Locale.forLanguageTag("en"),
+                List.of(
+                    "fixtures/identifierv1.xliff",
+                    "fixtures/identifierv2.xliff"
+                )
+            )
+            .identifier(translationUnitIdentifiers)
+            .build();
+
+        String message = messageSource.getMessage(
+            code,
+            null,
+            Locale.forLanguageTag("en")
+        );
+        assertEquals(expected, message);
+    }
+
+    private static Stream<Arguments> dataProvider_setTranslationUnitIdentifiersOrdering() {
+        return Stream.of(
+            Arguments.of(
+                List.of(
+                    new Xliff12Identifier(List.of("resname"))
+                ),
+                "identifierv1.code-resname-a",
+                "Target A"
+            ),
+            Arguments.of(
+                List.of(
+                    new Xliff12Identifier(List.of("id"))
+                ),
+                "identifierv1.code-id-a",
+                "Target A"
+            ),
+
+            Arguments.of(
+                List.of(
+                    new Xliff12Identifier(List.of("resname", "id"))
+                ),
+                "identifierv1.code-id-b",
+                "Target B"
+            ),
+            Arguments.of(
+                List.of(
+                    new Xliff12Identifier(List.of("id", "resname"))
+                ),
+                "identifierv1.code-resname-c",
+                "Target C"
+            ),
+
+            Arguments.of(
+                List.of(
+                    new Xliff2xIdentifier(List.of("resname"))
+                ),
+                "identifierv2.code-resname-a",
+                "Target A"
+            ),
+            Arguments.of(
+                List.of(
+                    new Xliff2xIdentifier(List.of("id"))
+                ),
+                "identifierv2.code-id-a",
+                "Target A"
+            ),
+
+            Arguments.of(
+                List.of(
+                    new Xliff2xIdentifier(List.of("resname", "id"))
+                ),
+                "identifierv2.code-id-b",
+                "Target B"
+            ),
+            Arguments.of(
+                List.of(
+                    new Xliff2xIdentifier(List.of("id", "resname"))
+                ),
+                "identifierv2.code-resname-c",
+                "Target C"
+            )
         );
     }
 }

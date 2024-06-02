@@ -6,7 +6,7 @@
           source-language="en"
           target-language="de">
         <body>
-          <trans-unit id="hello_world" resname="hello_world">
+            <trans-unit resname="hello_world">
                 <source>
 
                   Hello World (messages / en)
@@ -15,7 +15,7 @@
                   Hallo Welt (messages / de)
                 </target>
             </trans-unit>
-            <trans-unit id="roadrunner">
+            <trans-unit resname="roadrunner">
                 <source>
                     {0} and {1}
                 </source>
@@ -23,7 +23,7 @@
                     {0} und {1}
                 </target>
             </trans-unit>
-          <trans-unit id="format_choice">
+            <trans-unit resname="format_choice">
             <source>
               <![CDATA[There {0,choice,0#are no files|1#is one file|1<are {0,number,integer} files}.]]></source>
             <target>

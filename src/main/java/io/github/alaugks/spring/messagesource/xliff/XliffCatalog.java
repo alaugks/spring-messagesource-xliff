@@ -29,6 +29,8 @@ public final class XliffCatalog {
     private final List<Translation> translations;
     private final List<String> fileExtensions;
     private final Set<String> basenames;
+    private final List<XliffIdentifierInterface> identifiers;
+
     List<XliffVersionInterface> supportedVersions = List.of(
         new XliffVersion12(),
         new XliffVersion2x()
@@ -38,7 +40,8 @@ public final class XliffCatalog {
         Set<String> basenames,
         List<String> fileExtensions,
         String defaultDomain,
-        Locale defaultLocale
+        Locale defaultLocale,
+        List<XliffIdentifierInterface> identifiers
     ) {
         Assert.notNull(basenames, "Basename(s) cant not be null");
         Assert.notNull(fileExtensions, "FileExtensions cant not be null");
@@ -50,6 +53,7 @@ public final class XliffCatalog {
         this.defaultLocale = defaultLocale;
         this.fileExtensions = fileExtensions;
         this.translations = new ArrayList<>();
+        this.identifiers = identifiers == null ? List.of() : identifiers;
     }
 
     public Catalog createCatalog() {
@@ -92,20 +96,23 @@ public final class XliffCatalog {
 
             String version = xliffDocument.getXliffVersion();
 
-            XliffVersionInterface xliffSupported = this.supportedVersions
+            XliffVersionInterface xliffVersionObject = this.supportedVersions
                 .stream()
                 .filter(o -> o.support(xliffDocument.getXliffVersion()))
                 .findFirst()
                 .orElse(null);
 
-            if (xliffSupported != null) {
-                xliffDocument.getTransUnits(xliffSupported.getTransUnitName(), xliffSupported.getIdentifier()).forEach(
+            if (xliffVersionObject != null) {
+                xliffDocument.getTransUnits(
+                    xliffVersionObject.getTransUnitName(),
+                    this.resolveIdentifiers(this.identifiers, xliffVersionObject).list()
+                ).forEach(
                     transUnit -> this.translations.add(
                         new Translation(
-                            xliffFile.domain(),
                             xliffFile.locale(),
                             transUnit.code(),
-                            transUnit.value()
+                            transUnit.value(),
+                            xliffFile.domain()
                         )
                     )
                 );
@@ -114,6 +121,35 @@ public final class XliffCatalog {
                     String.format("XLIFF version \"%s\" not supported.", version)
                 );
             }
+        }
+    }
+
+    public XliffIdentifierInterface resolveIdentifiers(
+        List<XliffIdentifierInterface> identifiers,
+        XliffVersionInterface xliffVersionObject
+    ) {
+        return identifiers
+            .stream()
+            .filter(u -> u.getClass() == xliffVersionObject.getDefaultIdentifier().getClass())
+            .findFirst()
+            .orElse(xliffVersionObject.getDefaultIdentifier());
+    }
+
+    public static final class XliffVersion12 implements XliffVersionInterface {
+
+        @Override
+        public boolean support(String version) {
+            return version.equals("1.2");
+        }
+
+        @Override
+        public String getTransUnitName() {
+            return "trans-unit";
+        }
+
+        @Override
+        public XliffIdentifierInterface getDefaultIdentifier() {
+            return new Xliff12Identifier(List.of());
         }
     }
 
@@ -130,26 +166,8 @@ public final class XliffCatalog {
         }
 
         @Override
-        public List<String> getIdentifier() {
-            return List.of("id");
-        }
-    }
-
-    public static final class XliffVersion12 implements XliffVersionInterface {
-
-        @Override
-        public boolean support(String version) {
-            return version.equals("1.2");
-        }
-
-        @Override
-        public String getTransUnitName() {
-            return "trans-unit";
-        }
-
-        @Override
-        public List<String> getIdentifier() {
-            return List.of("resname", "id");
+        public XliffIdentifierInterface getDefaultIdentifier() {
+            return new Xliff2xIdentifier(List.of());
         }
     }
 
@@ -159,6 +177,19 @@ public final class XliffCatalog {
 
         String getTransUnitName();
 
-        List<String> getIdentifier();
+        XliffIdentifierInterface getDefaultIdentifier();
+    }
+
+    record Xliff12Identifier(List<String> list) implements XliffIdentifierInterface {
+
+    }
+
+    record Xliff2xIdentifier(List<String> list) implements XliffIdentifierInterface {
+
+    }
+
+    public interface XliffIdentifierInterface {
+
+        List<String> list();
     }
 }

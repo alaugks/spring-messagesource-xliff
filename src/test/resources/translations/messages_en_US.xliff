@@ -6,7 +6,7 @@
           source-language="en"
           target-language="en_US">
         <body>
-          <trans-unit id="hello_world" resname="hello_world">
+            <trans-unit resname="hello_world">
                 <source>
                   Hello World (messages / en)
                 </source>
@@ -14,7 +14,7 @@
                   Hello World (messages / en_US)
                 </target>
             </trans-unit>
-            <trans-unit id="roadrunner">
+            <trans-unit resname="roadrunner">
                 <source>
                     {0} and {1}
                 </source>

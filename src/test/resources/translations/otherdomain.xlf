@@ -6,7 +6,7 @@
           source-language="en"
           target-language="en">
         <body>
-          <trans-unit id="hello_world" resname="hello_world">
+            <trans-unit resname="hello_world">
                 <source>
                   Hello World (otherdomain / en)
                 </source>
