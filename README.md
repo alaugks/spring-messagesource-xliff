@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> Version 2.0.0.1-SNAPSHOT is work in progress.
+> Version 2.0.0.*-SNAPSHOT is work in progress.
 
 # XLIFF Translation Support for Spring Boot and Spring
 
@@ -21,7 +21,7 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 
 | Version          | Description                                                                               |
 |:-----------------|:------------------------------------------------------------------------------------------|
-| 2.0.0.1-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |
+| 2.0.0.rc1-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |
 | 1.2.1            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.1) |
 | 1.2.0            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.0) |
 | 1.1.2            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
@@ -41,14 +41,14 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>2.0.0.1-SNAPSHOT</version>
+    <version>2.0.0.rc1-SNAPSHOT</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0.1-SNAPSHOT'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0.rc1-SNAPSHOT'
 ```
 
 
@@ -57,8 +57,8 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 
 The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface.
 
-`builder(Locale locale, String, String basename | List<String> basenames)` (***required***)
-* Argument `locale`: Defines the default language.
+`builder(Locale defaultLocale, String, String basename | List<String> basenames)` (***required***)
+* Argument `locale`: Defines the default locale.
 * Argument `basename(s)`:
   * Defines the pattern used to select the XLIFF files.
   * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
@@ -73,12 +73,14 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 `withCache(org.springframework.cache.Cache cache)` (***recommended***)
 
 [//]: # (* [org.springframework.cache.Cache]&#40;https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html&#41;)
-* All [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. Here is an [example using Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
-* [ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html) is the default cache in Spring Boot and Spring.
+
+
+* Eine Instanze vom [Cache Interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html) wird benötigt. [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. These provide the cache interface. Here is an example using [Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java) <span style="color:#ff0000;font-weight:bold;">(@Todo Example for 2.0.0.)</span>.
+
 
 ### Example
 
-* Default language is `en`.
+* Default locale is `en`.
 * The Xliff files are stored in `src/main/resources/translations`.
 * A cache for caching translations fallback mechanism.
 
@@ -127,6 +129,7 @@ public class MessageConfig {
     * Documentation
       identifier: [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment)
       and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
+* All attributes in the `<file/>` tag are ignored.  
 * For performance reasons, there is no validation of XLIFF files with an XMLSchema. SAX parser errors are handled by
   an [ErrorHandler](https://docs.oracle.com/en/java/javase/17/docs/api/java.xml/org/xml/sax/ErrorHandler.html) and can
   be caught with
@@ -370,11 +373,6 @@ With the implementation and use of the MessageSource interface, the translations
 in [Thymeleaf](#a5.1), as [Service (Dependency Injection)](#a5.2)
 and [Custom Validation Messages](#a5.3). Also in
 packages and implementations that use the MessageSource.
-
-> [!NOTE]
-> Translations in the default domain can be selected using the ```id``` or ```domain.id```.
-> Translations in other domains can only be selected using the ```otherdomain.id```. See the examples
-> below.
 
 
 <a name="a5.1"></a>
