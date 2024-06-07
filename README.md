@@ -19,15 +19,15 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 <a name="a1"></a>
 ## 1. Versions
 
-| Version          | Description                                                                               |
-|:-----------------|:------------------------------------------------------------------------------------------|
+| Version            | Description                                                                               |
+|:-------------------|:------------------------------------------------------------------------------------------|
 | 2.0.0.rc1-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |
-| 1.2.1            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.1) |
-| 1.2.0            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.0) |
-| 1.1.2            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
-| 1.1.1            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
-| 1.1.0            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
-| 1.0.0            | First public version                                                                      |
+| 1.2.1              | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.1) |
+| 1.2.0              | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.0) |
+| 1.1.2              | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
+| 1.1.1              | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
+| 1.1.0              | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
+| 1.0.0              | First public version                                                                      |
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.2.1)
 
@@ -64,18 +64,13 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
   * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
   * Files with the extension `xliff` and `xlf` are filtered from the result list.
 
-
 `defaultDomain(String defaultDomain)`
 
-* Defines the default domain. Default is `messages`. For more information,
-  see [XlIFF Translations Files](#a4).
+* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a4).
 
-`withCache(org.springframework.cache.Cache cache)` (***recommended***)
+`withCache(Cache cache)` (***recommended***)
 
-[//]: # (* [org.springframework.cache.Cache]&#40;https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html&#41;)
-
-
-* Eine Instanze vom [Cache Interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html) wird benötigt. [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. These provide the cache interface. Here is an example using [Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java) <span style="color:#ff0000;font-weight:bold;">(@Todo Example for 2.0.0.)</span>.
+* An instance of the [Cache Interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html) is required. [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. These provide this Cache Interface. Here is an example using [Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java) <span style="color:#ff0000;font-weight:bold;">(@Todo Example for 2.0.0.)</span>.
 
 
 ### Example
@@ -468,7 +463,7 @@ The article [Custom Validation MessageSource in Spring Boot](https://www.baeldun
 
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
 
-Repository: https://github.com/alaugks/spring-messagesource-xliff-example-spring-boot<br>
+Repository: https://github.com/alaugks/spring-messagesource-xliff-example<br>
 Website: https://spring-boot-xliff-example.alaugks.dev
 
 <a name="a7"></a>
