@@ -17,8 +17,9 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 
 
 /**
- * Order(100) -> getMessage(code, args, defaultMessage, locale) Order(200) -> getMessage(code, args, locale) Order(300)
- * -> getMessage(resolvable, locale)
+ * Order(100) -> getMessage(code, args, defaultMessage, locale)
+ * Order(200) -> getMessage(code, args, locale)
+ * Order(300) -> getMessage(resolvable, locale)
  */
 @TestMethodOrder(OrderAnnotation.class)
 class XliffTranslationMessageSourceTest {
@@ -71,7 +72,7 @@ class XliffTranslationMessageSourceTest {
 
     @Test
     @Order(100)
-    void test_getMessage_Args_and_Default__messageNotExists_defaultIsNull() {
+    void test_getMessage_Args_and_Default_messageNotExists_defaultIsNull() {
         assertNull(messageSource.getMessage(
             "not_exists",
             null,
@@ -121,24 +122,6 @@ class XliffTranslationMessageSourceTest {
             "not_exists",
             args,
             "{0} and {1} as default",
-            Locale.forLanguageTag("de")
-        ));
-    }
-
-    @Test
-    @Order(199)
-    void test_getMessage_Args_and_Default_Nullable() {
-        assertNull(messageSource.getMessage(
-            "not_exists",
-            null,
-            null,
-            Locale.forLanguageTag("en")
-        ));
-
-        assertNull(messageSource.getMessage(
-            "not_exists",
-            null,
-            null,
             Locale.forLanguageTag("de")
         ));
     }
