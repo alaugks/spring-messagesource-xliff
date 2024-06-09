@@ -1,8 +1,8 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.base.BaseTranslationMessageSource;
-import io.github.alaugks.spring.messagesource.base.catalog.CatalogCache;
-import io.github.alaugks.spring.messagesource.base.catalog.CatalogHandler;
+import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSource;
+import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogBuilder;
+import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
@@ -18,10 +18,10 @@ import org.springframework.lang.Nullable;
 
 public class XliffTranslationMessageSource implements MessageSource {
 
-    private final MessageSource messageSourceDelegate;
+    private final MessageSource messageSource;
 
-    private XliffTranslationMessageSource(MessageSource messageSourceDelegate) {
-        this.messageSourceDelegate = messageSourceDelegate;
+    private XliffTranslationMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
     public static Builder builder(Locale defaultLocale, String basename) {
@@ -71,22 +71,23 @@ public class XliffTranslationMessageSource implements MessageSource {
         }
 
         public XliffTranslationMessageSource build() {
-            CatalogHandler.Builder catalogHandler = CatalogHandler.builder(
-                new XliffCatalog(
-                    this.basenames,
-                    this.fileExtensions,
-                    this.defaultDomain,
-                    this.defaultLocale,
-                    this.identifier
-                ).createCatalog()
-            );
+            CatalogBuilder.Builder catalogBuilder = CatalogBuilder.builder(
+                    new XliffCatalog(
+                        this.basenames,
+                        this.fileExtensions,
+                        this.defaultLocale,
+                        this.identifier
+                    ).getTransUnits(),
+                    this.defaultLocale
+                )
+                .defaultDomain(this.defaultDomain);
 
             if (this.cache != null) {
-                catalogHandler.catalogCache(new CatalogCache(this.cache));
+                catalogBuilder.catalogCache(new CatalogCache(this.cache));
             }
 
             return new XliffTranslationMessageSource(
-                new BaseTranslationMessageSource(catalogHandler.build())
+                new CatalogMessageSource(catalogBuilder.build())
             );
         }
     }
@@ -94,16 +95,16 @@ public class XliffTranslationMessageSource implements MessageSource {
     @Nullable
     @Override
     public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale) {
-        return this.messageSourceDelegate.getMessage(code, args, defaultMessage, locale);
+        return this.messageSource.getMessage(code, args, defaultMessage, locale);
     }
 
     @Override
     public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-        return this.messageSourceDelegate.getMessage(code, args, locale);
+        return this.messageSource.getMessage(code, args, locale);
     }
 
     @Override
     public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
-        return this.messageSourceDelegate.getMessage(resolvable, locale);
+        return this.messageSource.getMessage(resolvable, locale);
     }
 }

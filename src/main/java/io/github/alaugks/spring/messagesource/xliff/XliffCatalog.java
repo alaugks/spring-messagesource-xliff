@@ -1,9 +1,8 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.base.catalog.Catalog;
-import io.github.alaugks.spring.messagesource.base.records.Translation;
-import io.github.alaugks.spring.messagesource.base.records.TranslationFile;
-import io.github.alaugks.spring.messagesource.base.ressources.ResourcesLoader;
+import io.github.alaugks.spring.messagesource.catalog.records.TransUnit;
+import io.github.alaugks.spring.messagesource.catalog.records.TranslationFile;
+import io.github.alaugks.spring.messagesource.catalog.ressources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
@@ -24,9 +23,8 @@ import org.xml.sax.SAXException;
 
 public final class XliffCatalog {
 
-    private final String defaultDomain;
     private final Locale defaultLocale;
-    private final List<Translation> translations;
+    private final List<TransUnit> translations;
     private final List<String> fileExtensions;
     private final Set<String> basenames;
     private final List<XliffIdentifierInterface> identifiers;
@@ -39,24 +37,21 @@ public final class XliffCatalog {
     public XliffCatalog(
         Set<String> basenames,
         List<String> fileExtensions,
-        String defaultDomain,
         Locale defaultLocale,
         List<XliffIdentifierInterface> identifiers
     ) {
         Assert.notNull(basenames, "Basename(s) cant not be null");
         Assert.notNull(fileExtensions, "FileExtensions cant not be null");
-        Assert.notNull(defaultDomain, "Default domain cant not be null");
         Assert.notNull(defaultLocale, "Default locale  cant not be null");
 
         this.basenames = basenames;
-        this.defaultDomain = defaultDomain;
         this.defaultLocale = defaultLocale;
         this.fileExtensions = fileExtensions;
         this.translations = new ArrayList<>();
         this.identifiers = identifiers == null ? List.of() : identifiers;
     }
 
-    public Catalog createCatalog() {
+    public List<TransUnit> getTransUnits() {
         try {
             ResourcesLoader resourcesLoader = new ResourcesLoader(
                 this.defaultLocale,
@@ -65,7 +60,7 @@ public final class XliffCatalog {
             );
 
             this.parseXliffDocuments(resourcesLoader.getTranslationFiles());
-            return new Catalog(this.translations, this.defaultLocale, this.defaultDomain);
+            return this.translations;
         } catch (ParserConfigurationException | IOException e) {
             throw new FatalError(e);
         }
@@ -106,12 +101,11 @@ public final class XliffCatalog {
                 xliffDocument.getTransUnits(
                     xliffVersionObject.getTransUnitName(),
                     this.resolveIdentifiers(this.identifiers, xliffVersionObject).list()
-                ).forEach(
-                    transUnit -> this.translations.add(
-                        new Translation(
+                ).forEach((code, value) -> this.translations.add(
+                    new TransUnit(
                             xliffFile.locale(),
-                            transUnit.code(),
-                            transUnit.value(),
+                        code,
+                        value,
                             xliffFile.domain()
                         )
                     )

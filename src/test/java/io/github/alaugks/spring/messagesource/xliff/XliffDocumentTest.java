@@ -38,12 +38,9 @@ class XliffDocumentTest {
     @Test
     void test_getElementValue_getCharacterDataFromElement_TextNode()
         throws ParserConfigurationException, IOException, SAXException {
-        Map<Object, Object> transUnits = new HashMap<>();
 
         var xliffDocument = new XliffDocument(this.getDocument("fixtures/xliff-value-test.xliff"));
-        xliffDocument.getTransUnits("segment", List.of("id")).forEach(
-            transUnit -> transUnits.put(transUnit.code(), transUnit.value())
-        );
+        Map<Object, Object> transUnits = new HashMap<>(xliffDocument.getTransUnits("segment", List.of("id")));
 
         assertEquals("value", transUnits.get("element"));
         assertEquals("value", transUnits.get("element-newline"));

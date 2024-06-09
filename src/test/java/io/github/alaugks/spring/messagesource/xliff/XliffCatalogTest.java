@@ -3,13 +3,13 @@ package io.github.alaugks.spring.messagesource.xliff;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.alaugks.spring.messagesource.catalog.records.TransUnit;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -23,21 +23,19 @@ import org.junit.jupiter.params.provider.MethodSource;
 class XliffCatalogTest {
 
     @Test
-    void test_createCatalog() {
-        var catalog = new XliffCatalog(
+    void test_getTransUnits() {
+        var transUnits = new XliffCatalog(
             new HashSet<>(List.of("translations/messages.xliff", "translations/messages_de.xliff")),
             List.of("xlf", "xliff"),
-            "messages",
             Locale.forLanguageTag("en"),
             List.of(
                 new Xliff12Identifier(List.of("resname", "id")),
                 new Xliff2xIdentifier(List.of("id"))
             )
-        ).createCatalog();
-        catalog.build();
+        ).getTransUnits();
 
-        assertEquals("Hello World (messages / en)", catalog.get(Locale.forLanguageTag("en"), "messages.hello_world"));
-        assertEquals("Hallo Welt (messages / de)", catalog.get(Locale.forLanguageTag("de"), "messages.hello_world"));
+        assertEquals("Hello World (messages / en)", this.findInTransUnits(transUnits, "en", "hello_world"));
+        assertEquals("Hallo Welt (messages / de)", this.findInTransUnits(transUnits, "de", "hello_world"));
     }
 
     @Test
@@ -49,25 +47,24 @@ class XliffCatalogTest {
         );
 
         assertThrows(
-            XliffMessageSourceSAXParseException.class, xliffCatalogBuilder::createCatalog
+            XliffMessageSourceSAXParseException.class, xliffCatalogBuilder::getTransUnits
         );
 
         assertThrows(
-            FatalError.class, xliffCatalogBuilder::createCatalog
+            FatalError.class, xliffCatalogBuilder::getTransUnits
         );
     }
 
     @Test
     void test_noXliffDocument() {
-        var catalog = new XliffCatalog(
+        var transUnits = new XliffCatalog(
             new HashSet<>(List.of("fixtures/no-xliff.xml")),
             List.of("xml"),
-            "message",
             Locale.forLanguageTag("en"),
             null
-        ).createCatalog();
+        ).getTransUnits();
 
-        assertEquals(new HashMap<>(), catalog.getAll());
+        assertEquals(List.of(), transUnits);
     }
 
     @Test
@@ -79,7 +76,7 @@ class XliffCatalogTest {
         );
 
         XliffMessageSourceVersionSupportException exception = assertThrows(
-            XliffMessageSourceVersionSupportException.class, xliffCatalogBuilder::createCatalog
+            XliffMessageSourceVersionSupportException.class, xliffCatalogBuilder::getTransUnits
         );
         assertEquals("XLIFF version \"1.0\" not supported.", exception.getMessage());
     }
@@ -88,17 +85,15 @@ class XliffCatalogTest {
     @ParameterizedTest
     @MethodSource("dataProvider_loadVersions")
     void test_versionSupported(String ressourcePath, String domain, String expected) {
-        var xliffCatalogBuilder = this.getXliffCatalogBuilder(
+        var transUnits = this.getXliffCatalogBuilder(
             new HashSet<>(List.of(ressourcePath)),
             Locale.forLanguageTag("en"),
             domain
-        );
-        var catalog = xliffCatalogBuilder.createCatalog();
-        catalog.build();
+        ).getTransUnits();
 
         assertEquals(
             expected,
-            catalog.get(Locale.forLanguageTag("en"), domain + ".code-1")
+            this.findInTransUnits(transUnits, "en", "code-1")
         );
     }
 
@@ -114,7 +109,6 @@ class XliffCatalogTest {
         return new XliffCatalog(
             files,
             List.of("xlf", "xliff"),
-            domain,
             locale,
             List.of(
                 new Xliff12Identifier(List.of("resname", "id")),
@@ -211,5 +205,13 @@ class XliffCatalogTest {
                 "Target C"
             )
         );
+    }
+
+    private String findInTransUnits(List<TransUnit> transUnits, String locale, String code) {
+        return transUnits
+            .stream()
+            .filter(t -> t.locale().toString().equals(locale) && t.code().equals(code))
+            .findFirst()
+            .get().value();
     }
 }

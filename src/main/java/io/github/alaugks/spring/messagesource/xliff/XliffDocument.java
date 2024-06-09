@@ -1,10 +1,10 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,7 +24,7 @@ public final class XliffDocument {
         this.root = document.getDocumentElement();
     }
 
-    public Set<TransUnit> getTransUnits(String transUnitName, List<String> transUnitIdentifiers) {
+    public Map<String, String> getTransUnits(String transUnitName, List<String> transUnitIdentifiers) {
         this.nodeList = this.root.getElementsByTagName(transUnitName);
         this.transUnitIdentifiers = transUnitIdentifiers;
         return this.getNodes();
@@ -41,8 +41,8 @@ public final class XliffDocument {
         );
     }
 
-    private Set<TransUnit> getNodes() {
-        Set<TransUnit> transUnits = new HashSet<>();
+    private Map<String, String> getNodes() {
+        Map<String, String> transUnits = new HashMap<>();
 
         for (int item = 0; item < nodeList.getLength(); item++) {
             Element node = (Element) nodeList.item(item);
@@ -51,12 +51,10 @@ public final class XliffDocument {
                     node.getAttributes().getNamedItem(value.toString())
                 ))
                 .filter(Objects::nonNull)
-                .findFirst().ifPresent(code -> transUnits.add(
-                    new TransUnit(
-                        code,
-                        getCharacterDataFromElement(
-                            node.getElementsByTagName("target").item(0).getFirstChild()
-                        )
+                .findFirst().ifPresent(code -> transUnits.put(
+                    code,
+                    getCharacterDataFromElement(
+                        node.getElementsByTagName("target").item(0).getFirstChild()
                     )
                 ));
         }
@@ -76,9 +74,5 @@ public final class XliffDocument {
             return node.getNodeValue();
         }
         return null;
-    }
-
-    public record TransUnit(String code, String value) {
-
     }
 }
