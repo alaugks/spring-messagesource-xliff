@@ -68,16 +68,11 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 
 * Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a4).
 
-`withCache(Cache cache)` (***recommended***)
-
-* An instance of the [Cache Interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/Cache.html) is required. [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. These provide this Cache Interface. Here is an example using [Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java) (**@Todo Example for 2.0.0**).
-
 
 ### Example
 
 * Default locale is `en`.
 * The Xliff files are stored in `src/main/resources/translations`.
-* A cache for caching translations fallback mechanism.
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.XliffTranslationMessageSource;
@@ -98,7 +93,6 @@ public class MessageConfig {
                    Locale.forLanguageTag("en"),
                    "translations/*"
                )
-               .withCache(new ConcurrentMapCache('xliff-messagesource'))
                .build();
     }
 
