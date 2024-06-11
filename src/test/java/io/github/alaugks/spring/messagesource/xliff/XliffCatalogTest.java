@@ -42,8 +42,7 @@ class XliffCatalogTest {
     void test_parseError() {
         var xliffCatalogBuilder = this.getXliffCatalogBuilder(
             new HashSet<>(List.of("fixtures/parse_error.xliff")),
-            Locale.forLanguageTag("en"),
-            "message"
+            Locale.forLanguageTag("en")
         );
 
         assertThrows(
@@ -71,8 +70,7 @@ class XliffCatalogTest {
     void test_versionNotSupported() {
         var xliffCatalogBuilder = this.getXliffCatalogBuilder(
             new HashSet<>(List.of("fixtures/xliff10.xliff")),
-            Locale.forLanguageTag("en"),
-            "message"
+            Locale.forLanguageTag("en")
         );
 
         XliffMessageSourceVersionSupportException exception = assertThrows(
@@ -87,8 +85,7 @@ class XliffCatalogTest {
     void test_versionSupported(String ressourcePath, String domain, String expected) {
         var transUnits = this.getXliffCatalogBuilder(
             new HashSet<>(List.of(ressourcePath)),
-            Locale.forLanguageTag("en"),
-            domain
+            Locale.forLanguageTag("en")
         ).getTransUnits();
 
         assertEquals(
@@ -105,7 +102,7 @@ class XliffCatalogTest {
         );
     }
 
-    private XliffCatalog getXliffCatalogBuilder(Set<String> files, Locale locale, String domain) {
+    private XliffCatalog getXliffCatalogBuilder(Set<String> files, Locale locale) {
         return new XliffCatalog(
             files,
             List.of("xlf", "xliff"),
