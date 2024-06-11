@@ -21,7 +21,7 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 
 | Version          | Description                                                                               |
 |:-----------------|:------------------------------------------------------------------------------------------|
-| 2.0.0.2-SNAPSHOT |                                                                                           |
+| 2.0.0.3-SNAPSHOT |                                                                                           |
 | 1.2.1            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.1) |
 | 1.2.0            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.0) |
 | 1.1.2            | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
@@ -41,14 +41,14 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>2.0.0.2-SNAPSHOT</version>
+    <version>2.0.0.3-SNAPSHOT</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0.2-SNAPSHOT'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0.3-SNAPSHOT'
 ```
 
 

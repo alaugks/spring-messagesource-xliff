@@ -2,7 +2,6 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSource;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogBuilder;
-import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
@@ -10,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import org.springframework.cache.Cache;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -38,7 +36,6 @@ public class XliffTranslationMessageSource implements MessageSource {
         private final Set<String> basenames;
         private String defaultDomain = "messages";
         private List<String> fileExtensions = List.of("xlf", "xliff");
-        private Cache cache;
         private List<XliffIdentifierInterface> identifier = List.of(
             new Xliff12Identifier(List.of("resname", "id")),
             new Xliff2xIdentifier(List.of("id"))
@@ -55,11 +52,6 @@ public class XliffTranslationMessageSource implements MessageSource {
             return this;
         }
 
-        public Builder withCache(Cache cache) {
-            this.cache = cache;
-            return this;
-        }
-
         public Builder fileExtensions(List<String> fileExtensions) {
             this.fileExtensions = fileExtensions;
             return this;
@@ -71,23 +63,17 @@ public class XliffTranslationMessageSource implements MessageSource {
         }
 
         public XliffTranslationMessageSource build() {
-            CatalogBuilder.Builder catalogBuilder = CatalogBuilder.builder(
-                    new XliffCatalog(
-                        this.basenames,
-                        this.fileExtensions,
-                        this.defaultLocale,
-                        this.identifier
-                    ).getTransUnits(),
-                    this.defaultLocale
-                )
-                .defaultDomain(this.defaultDomain);
-
-            if (this.cache != null) {
-                catalogBuilder.catalogCache(new CatalogCache(this.cache));
-            }
-
             return new XliffTranslationMessageSource(
-                new CatalogMessageSource(catalogBuilder.build())
+                new CatalogMessageSource(CatalogBuilder.builder(
+                        new XliffCatalog(
+                            this.basenames,
+                            this.fileExtensions,
+                            this.defaultLocale,
+                            this.identifier
+                        ).getTransUnits(),
+                        this.defaultLocale
+                    )
+                    .defaultDomain(this.defaultDomain).build())
             );
         }
     }

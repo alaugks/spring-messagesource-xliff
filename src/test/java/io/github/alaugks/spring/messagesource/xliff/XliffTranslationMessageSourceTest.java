@@ -10,7 +10,6 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -30,7 +29,6 @@ class XliffTranslationMessageSourceTest {
     static void beforeAll() {
         messageSource = XliffTranslationMessageSource
             .builder(Locale.forLanguageTag("en"), "translations/*")
-            .withCache(new ConcurrentMapCache("test-cache"))
             .build();
     }
 
