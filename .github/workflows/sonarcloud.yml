@@ -1,9 +1,13 @@
 name: "SonarCloud Analyze"
 run-name: SonarCloud Analyze [${{ github.ref_name }}]
 on:
-  #  push:
-  #    branches:
-  #      - master
+  push:
+    branches:
+      - main
+      - stage
+      - dev
+      - snapshot/*
+      - release/*
   #  pull_request:
   #    types: [opened, synchronize, reopened]
   workflow_dispatch:
