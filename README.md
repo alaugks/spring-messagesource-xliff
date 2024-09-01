@@ -7,19 +7,18 @@ This package provides a **MessageSource** for using translations from XLIFF file
 1. [Version](#a1)
 2. [Dependency](#a2)
 3. [MessageSource Configuration](#a3)
-4. [CacheManager Configuration](#a4)
-6. [Cache warming with an ApplicationRunner (recommended)](#a5)
-7. [XLIFF Translation Files](#a6)
-8. [Using the MessageSource](#a7)
-9. [Full Example](#a8)
-10. [Support](#a9)
-11. [More Information](#a10)
+4. [XLIFF Translation Files](#a4)
+5. [Using the MessageSource](#a5)
+6. [Full Example](#a6)
+7. [Support](#a7)
+8. [More Information](#a8)
 
 <a name="a1"></a>
 ## 1. Versions
 
 | Version        | Description                                                                               |
 |:---------------|:------------------------------------------------------------------------------------------|
+| 1.3.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.3.0) |
 | 1.2.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.1) |
 | 1.2.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.0) |
 | 1.1.2          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
@@ -33,7 +32,7 @@ This package provides a **MessageSource** for using translations from XLIFF file
 | 2.0.0-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |                                                                 |
 
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.2.1)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.3.0)
 
 
 <a name="a2"></a>
@@ -44,13 +43,13 @@ This package provides a **MessageSource** for using translations from XLIFF file
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>1.2.1</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
 **Gradle**
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.2.1'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.3.0'
 ```
 
 
@@ -71,9 +70,7 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 * Defines the default language.
 
 `setDefaultDomain(String defaultDomain)`
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a6).
-
-> Please note the [CacheManager Configuration](#a4).
+* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a4).
 
 ```java
 import de.alaugks.spring.XliffTranslationMessageSource;
@@ -87,8 +84,8 @@ import java.util.Locale;
 @Configuration
 public class MessageConfig {
     
-    public MessageSource messageSource(CacheManager cacheManager) {
-        XliffTranslationMessageSource messageSource =  new XliffTranslationMessageSource(cacheManager);
+    public MessageSource messageSource() {
+        XliffTranslationMessageSource messageSource = new XliffTranslationMessageSource();
         messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
         messageSource.setBasenamePattern("translations/*");
         return messageSource;
@@ -97,75 +94,7 @@ public class MessageConfig {
 }
 ```
 
-
 <a name="a4"></a>
-## 4. CacheManager Configuration
-
-You may already have an existing CacheManager configuration. If not, the following minimum CacheManager configuration is required. All [Supported Cache Providers](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#io.caching.provider) can also be used. Here is an [example using Caffeine](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/CacheConfig.java).
-                                                                                                                                   
-
-
-The CacheName must be set with the constant `CatalogCache.CACHE_NAME`. The specific cache identifier is stored in the constant.
-
-[ConcurrentMapCacheManager](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/concurrent/ConcurrentMapCacheManager.html) is the default cache in Spring Boot and Spring.
-
-### CacheConfig with ConcurrentMapCacheManager
-
-```java
-import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
-
-@Configuration
-@EnableCaching
-public class CacheConfig {
-    
-    @Bean
-    public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager(CatalogCache.CACHE_NAME);
-    }
-    
-}    
-```
-
-<a name="a5"></a>
-## 5. Cache warming with an ApplicationRunner (recommended)
-
-In the following example, the cache of translations is warmed up after the application starts.
-
-```java
-import io.github.alaugks.spring.messagesource.xliff.XliffMessageSourcePatternResolver;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Component;
-
-@Component
-public class MessageSourceCacheWarmUp implements ApplicationRunner {
-
-  private final MessageSource messageSource;
-
-  public AppStartupRunner(MessageSource messageSource) {
-    this.messageSource = messageSource;
-  }
-
-  @Override
-  public void run(ApplicationArguments args) {
-    if (this.messageSource instanceof XliffTranslationMessageSource) {
-      ((XliffTranslationMessageSource) this.messageSource).initCache();
-    }
-  }
-    
-}
-```
-
-
-<a name="a6"></a>
 ## 6. XLIFF Translation Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
@@ -411,15 +340,15 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 > ***There is no translation for Japanese (`jp`). The default locale translations (`en`) are selected.
 
 
-<a name="a7"></a>
+<a name="a5"></a>
 ## 7. Using the MessageSource
 
-With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](#a7.1), as [Service (Dependency Injection)](#a7.2) and [Custom Validation Messages](#a7.3). Also in packages and implementations that use the MessageSource.
+With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](#a5.1), as [Service (Dependency Injection)](#a5.2) and [Custom Validation Messages](#a5.3). Also in packages and implementations that use the MessageSource.
 
-<a name="a7.1"></a>
+<a name="a5.1"></a>
 ### Thymeleaf
 
-With the configured MessageSource, the translations are available in Thymeleaf. See the example in the [Full Example](#a8).
+With the configured MessageSource, the translations are available in Thymeleaf. See the example in the [Full Example](#a6).
 
 ```html
 <!-- Default domain: messages -->
@@ -450,10 +379,10 @@ With the configured MessageSource, the translations are available in Thymeleaf. 
 <strong th:text="#{payment.expiry_date}"/>
 ```
 
-<a name="a7.2"></a>
+<a name="a5.2"></a>
 ### Service (Dependency Injection)
 
-The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a8).
+The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a6).
 
 ```java
 import org.springframework.context.MessageSource;
@@ -496,14 +425,14 @@ this.messageSource.getMessage("payment.headline", null, locale);
 this.messageSource.getMessage("payment.expiry-date", null, locale);
 ```
 
-<a name="a7.3"></a>
+<a name="a5.3"></a>
 ### Custom Validation Messages
 
 The article [Custom Validation MessageSource in Spring Boot](https://www.baeldung.com/spring-custom-validation-message-source) describes how to use custom validation messages.
 
 
 
-<a name="a8"></a>
+<a name="a6"></a>
 ## 8. Full Example
 
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
@@ -512,13 +441,13 @@ Repository: https://github.com/alaugks/spring-messagesource-xliff-example<br>
 Website: https://spring-boot-xliff-example.alaugks.dev
 
 
-<a name="a9"></a>
+<a name="a7"></a>
 ## 9. Support
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
 
 
-<a name="a10"></a>
+<a name="a8"></a>
 ## 10. More Information
 
 ### MessageSource, Internationalization and Thymeleaf
