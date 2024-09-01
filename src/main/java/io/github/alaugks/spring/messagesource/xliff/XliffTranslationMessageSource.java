@@ -1,14 +1,17 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.catalog.Catalog;
+import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogCache;
 import io.github.alaugks.spring.messagesource.xliff.catalog.CatalogWrapper;
 import io.github.alaugks.spring.messagesource.xliff.catalog.xliff.XliffCatalogBuilder;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.ressources.ResourcesLoaderInterface;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -21,6 +24,14 @@ public class XliffTranslationMessageSource implements MessageSource {
     private final CatalogWrapper catalogWrapper;
     private final ResourcesLoaderInterface resourcesLoader = new ResourcesLoader();
     private final XliffCatalogBuilder xliffCatalogBuilder = new XliffCatalogBuilder();
+
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "2.0.0")
+    public XliffTranslationMessageSource() {
+        this(new ConcurrentMapCacheManager(CatalogCache.CACHE_NAME));
+    }
 
     /**
      * @deprecated
@@ -135,7 +146,10 @@ public class XliffTranslationMessageSource implements MessageSource {
     }
 
     public void initCache() {
-        this.catalogWrapper.initCache();
+        if (this.resourcesLoader.getDefaultLocale() == null || this.resourcesLoader.getDefaultLocale().toString().isEmpty()) {
+            throw new XliffMessageSourceRuntimeException("Default language is not set or empty.");
+        }
+        //this.catalogWrapper.initCache();
     }
 
     private String format(@Nullable String message, @Nullable Object[] args, Locale locale) {
