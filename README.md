@@ -1,44 +1,13 @@
-# XLIFF Translation Support for Spring Boot and Spring
+# XLIFF Translation Support for Spring and Spring Boot
 
-This package provides a **MessageSource** for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
+This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
-**Table of content**
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.3.0)
 
-1. [Version](#a1)
-2. [Dependency](#a2)
-3. [MessageSource Configuration](#a3)
-4. [XLIFF Translation Files](#a4)
-5. [Using the MessageSource](#a5)
-6. [Full Example](#a6)
-7. [Support](#a7)
-8. [More Information](#a8)
+## Dependency
 
-<a name="a1"></a>
-## 1. Versions
-
-| Version        | Description                                                                               |
-|:---------------|:------------------------------------------------------------------------------------------|
-| 1.3.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.3.0) |
-| 1.2.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.1) |
-| 1.2.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.2.0) |
-| 1.1.2          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.2) |
-| 1.1.1          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.1) |
-| 1.1.0          | [Release notes](https://github.com/alaugks/spring-messagesource-xliff/releases/tag/1.1.0) |
-| 1.0.0          | First public version                                                                      |
-
-### Snapshots
-| Version        | Description                                                                               |
-|:---------------|:------------------------------------------------------------------------------------------|
-| 2.0.0-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |                                                                 |
-
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation) [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/1.3.0)
-
-
-<a name="a2"></a>
-## 2. Dependency
-
-**Maven**
+### Maven
 ```xml
 <dependency>
     <groupId>io.github.alaugks</groupId>
@@ -47,16 +16,22 @@ This package provides a **MessageSource** for using translations from XLIFF file
 </dependency>
 ```
 
-**Gradle**
+### Gradle 
+
 ```text
 implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '1.3.0'
 ```
 
+### Snapshots
 
-<a name="a3"></a>
-## 3. MessageSource Configuration
+| Version        | Description                                                                               |
+|:---------------|:------------------------------------------------------------------------------------------|
+| 2.0.0-SNAPSHOT | [SNAPSHOT](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/2.0.0)     |                                                                 |
 
-The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface. An instance of the [CacheManager](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider) is required for caching the translations.
+
+## MessageSource Configuration
+
+The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface.
 
 ### XliffTranslationMessageSource
 
@@ -70,7 +45,7 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 * Defines the default language.
 
 `setDefaultDomain(String defaultDomain)`
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#a4).
+* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#xliff).
 
 ```java
 import de.alaugks.spring.XliffTranslationMessageSource;
@@ -94,8 +69,7 @@ public class MessageConfig {
 }
 ```
 
-<a name="a4"></a>
-## 6. XLIFF Translation Files
+## XLIFF Translation Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
@@ -122,12 +96,11 @@ public class MessageConfig {
 <domain>[-_]<language>[-_]<region>.xlf
 ```
 
-
 ### Example with Translations Files
 
 * Default domain is `messages`.
 * Default locale is `en` without region.
-* Translations are provided for the locale `de` (without region) and `en-US`.
+* Translations are provided for the locale `en`, `de` and `en-US`.
 
 ```
 [resources]
@@ -145,6 +118,7 @@ public class MessageConfig {
 Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 2.1.
 
 ##### messages.xliff
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2"
@@ -174,6 +148,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 ```
 
 ##### messages_de.xliff
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2"
@@ -203,6 +178,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 ```
 
 ##### messages_en-US.xliff
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2"
@@ -220,6 +196,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 ```
 
 ##### payment.xliff
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.1" version="2.1"
@@ -240,6 +217,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 ```
 
 ##### payment_de.xliff
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.1" version="2.1"
@@ -260,6 +238,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 ```
 
 ##### payment_en-US.xliff
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:2.1" version="2.1"
@@ -275,12 +254,14 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 </xliff>
 ```
 
-##### Target value
+#### Target value
+
+The behaviour of resolving the target value based on the code is equivalent to the ResourceBundleMessageSource or ReloadableResourceBundleMessageSource.
 
 <table>
   <thead>
   <tr>
-    <th>id</th>
+    <th>id (code)</th>
     <th>en</th>
     <th>en-US</th>
     <th>de</th>
@@ -339,122 +320,13 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 > 
 > ***There is no translation for Japanese (`jp`). The default locale translations (`en`) are selected.
 
-
-<a name="a5"></a>
-## 7. Using the MessageSource
-
-With the implementation and use of the MessageSource interface, the translations are also available in [Thymeleaf](#a5.1), as [Service (Dependency Injection)](#a5.2) and [Custom Validation Messages](#a5.3). Also in packages and implementations that use the MessageSource.
-
-<a name="a5.1"></a>
-### Thymeleaf
-
-With the configured MessageSource, the translations are available in Thymeleaf. See the example in the [Full Example](#a6).
-
-```html
-<!-- Default domain: messages -->
-
-<!-- "Headline" -->
-<h1 th:text="#{headline}"/>
-<h1 th:text="#{messages.headline}"/>
-
-<!-- "Postcode" -->
-<label th:text="#{postcode}"/>
-<label th:text="#{messages.postcode}"/>
-
-<!-- "Your email john.doe@example.com has been registered." -->
-<span th:text="#{email-notice('john.doe@example.com')}"/>
-<span th:text="#{messages.email-notice('john.doe@example.com')}"/>
-
-<!-- "This is a default message." -->
-<span th:text="${#messages.msgOrNull('not-exists-id')} ?: #{default-message}"/>
-<span th:text="${#messages.msgOrNull('not-exists-id')} ?: #{messages.default-message}"/>
-
-
-<!-- Domain: payment -->
-
-<!-- "Payment" -->
-<h2 th:text="#{payment.headline}"/>
-
-<!-- "Expiry date" -->
-<strong th:text="#{payment.expiry_date}"/>
-```
-
-<a name="a5.2"></a>
-### Service (Dependency Injection)
-
-The MessageSource can be set via Autowire to access the translations. See the example in the [Full Example](#a6).
-
-```java
-import org.springframework.context.MessageSource;
-
-private final MessageSource messageSource;
-
-// Autowire MessageSource
-public MyClass(MessageSource messageSource) {
-    this.messageSource = messageSource;
-}
-
-
-// Default domain: messages
-
-// "Headline"
-this.messageSource.getMessage("headline", null, locale);
-this.messageSource.getMessage("messages.headline", null, locale);
-
-// "Postcode"
-this.messageSource.getMessage("postcode", null, locale);
-this.messageSource.getMessage("messages.postcode", null, locale);
-
-// "Your email john.doe@example.com has been registered."
-Object[] args = {"john.doe@example.com"};
-this.messageSource.getMessage("email-notice", args, locale);
-this.messageSource.getMessage("messages.email-notice", args, locale);
-
-// "This is a default message."
-//String defaultMessage = this.messageSource.getMessage("default-message", null, locale);
-String defaultMessage = this.messageSource.getMessage("messages.default-message", null, locale);
-this.messageSource.getMessage("not-exists-id", null, defaultMessage, locale);
-
-
-// Domain: payment
-
-// "Payment"
-this.messageSource.getMessage("payment.headline", null, locale);
-
-// "Expiry date"
-this.messageSource.getMessage("payment.expiry-date", null, locale);
-```
-
-<a name="a5.3"></a>
-### Custom Validation Messages
-
-The article [Custom Validation MessageSource in Spring Boot](https://www.baeldung.com/spring-custom-validation-message-source) describes how to use custom validation messages.
-
-
-
-<a name="a6"></a>
-## 8. Full Example
+## Full Example
 
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
 
 Repository: https://github.com/alaugks/spring-messagesource-xliff-example<br>
 Website: https://spring-boot-xliff-example.alaugks.dev
 
-
-<a name="a7"></a>
-## 9. Support
+## Support
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
-
-
-<a name="a8"></a>
-## 10. More Information
-
-### MessageSource, Internationalization and Thymeleaf
-* [Guide to Internationalization in Spring Boot](https://www.baeldung.com/spring-boot-internationalization)
-* [How to Internationalize a Spring Boot Application](https://reflectoring.io/spring-boot-internationalization/)
-* [Spring Boot internationalization i18n: Step-by-step with examples](https://lokalise.com/blog/spring-boot-internationalization/)
-
-### Caching
-* [A Guide To Caching in Spring](https://www.baeldung.com/spring-cache-tutorial)
-* [Implementing a Cache with Spring Boot](https://reflectoring.io/spring-boot-cache/)
