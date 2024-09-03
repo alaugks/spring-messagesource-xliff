@@ -49,7 +49,6 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 
 ```java
 import de.alaugks.spring.XliffTranslationMessageSource;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
