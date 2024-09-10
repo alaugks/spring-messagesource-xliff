@@ -9,12 +9,8 @@
           target-language="de">
         <body>
             <trans-unit id="code-1" resname="code-1">
-                <source>Hello, world!</source>
-                <target>Hallo, Welt!</target>
-            </trans-unit>
-            <trans-unit id="code-2">
-                <source>This is another sentence.</source>
-                <target>Dies ist ein weiterer Satz.</target>
+                <source>Postcode (Xliff Version 1.2)</source>
+                <target>Postcode (Xliff Version 1.2)</target>
             </trans-unit>
         </body>
     </file>

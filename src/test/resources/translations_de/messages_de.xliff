@@ -6,6 +6,14 @@
           source-language="en"
           target-language="de">
         <body>
+            <trans-unit id="postcode" resname="postcode">
+                <source>
+                    Postcode
+                </source>
+                <target>
+                    Postleitzahl
+                </target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

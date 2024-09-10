@@ -4,14 +4,14 @@
     <file original="global"
           datatype="plaintext"
           source-language="en"
-          target-language="en-US">
+          target-language="de">
         <body>
-            <trans-unit resname="postcode">
+            <trans-unit resname="expiry_date">
                 <source>
-                  Postcode
+                  Expiry date
                 </source>
                 <target>
-                  Zip code
+                  Ablaufdatum
                 </target>
             </trans-unit>
         </body>

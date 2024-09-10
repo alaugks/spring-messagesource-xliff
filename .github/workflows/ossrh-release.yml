@@ -1,6 +1,9 @@
 name: "OSSRH Release"
 run-name: OSSRH Release [${{ github.ref_name }}]
 on:
+#  push:
+#    branches:
+#      - snapshot/*
   workflow_dispatch:
 jobs:
   release:
@@ -36,4 +39,3 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-
