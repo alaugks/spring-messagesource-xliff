@@ -13,8 +13,6 @@ import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifi
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
 
-import org.springframework.context.MessageSource;
-
 public class XliffResourceMessageSource {
 
 	private XliffResourceMessageSource() {
@@ -64,7 +62,7 @@ public class XliffResourceMessageSource {
 			return this;
 		}
 
-		public MessageSource build() {
+		public CatalogMessageSourceBuilder build() {
 			ResourcesLoader resourcesLoader = new ResourcesLoader(
 					this.defaultLocale,
 					this.locationPatterns,
