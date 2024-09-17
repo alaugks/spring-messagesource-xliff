@@ -23,7 +23,6 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 ```
 
 
-
 ## MessageSource Configuration
 
 The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface.
@@ -82,7 +81,8 @@ public class MessageConfig {
     * The attribute `id` is optional by standard in XLIFF 2.*. However, this package requires the `id` on a translation unit.
     * Documentation identifier: [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment) and [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
 * All attributes in the `<file/>` tag are ignored.  
-* For performance reasons, there is no validation of XLIFF files with an XMLSchema. SAX parser errors are handled by an [ErrorHandler](https://docs.oracle.com/en/java/javase/17/docs/api/java.xml/org/xml/sax/ErrorHandler.html) and can be caught with the [XliffMessageSourceSAXParse-Exceptions](https://github.com/alaugks/spring-messagesource-xliff/tree/main/src/main/java/io/github/alaugks/spring/messagesource/xliff/exception).
+* For performance reasons, there is no validation of XLIFF files with an XMLSchema.
+* SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
 
 ### Structure of the Translation Filename
 
@@ -135,14 +135,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
                 <source>Postcode</source>
                 <target>Postcode</target>
             </trans-unit>
-            <trans-unit id="email-notice">
-                <source>Your email {0} has been registered.</source>
-                <target>Your email {0} has been registered.</target>
-            </trans-unit>
-            <trans-unit id="default-message">
-                <source>This is a default message.</source>
-                <target>This is a default message.</target>
-            </trans-unit>
         </body>
     </file>
 </xliff>
@@ -164,14 +156,6 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
             <trans-unit id="postcode">
                 <source>Postcode</source>
                 <target>Postleitzahl</target>
-            </trans-unit>
-            <trans-unit id="email-notice">
-                <source>Your email {0} has been registered.</source>
-                <target>Ihre E-Mail {0} wurde registriert.</target>
-            </trans-unit>
-            <trans-unit id="default-message">
-                <source>This is a default message.</source>
-                <target>Das ist ein Standardtext.</target>
             </trans-unit>
         </body>
     </file>
@@ -283,20 +267,6 @@ The behaviour of resolving the target value based on the code is equivalent to t
     <td>Zip code</td>
     <td>Postleitzahl</td>
     <td>Postcode</td>
-  </tr>
-  <tr>
-    <td>email-notice*<br>messages.email-notice</td>
-    <td>Your email {0} has been registered.</td>
-    <td>Your email {0} has been registered.**</td>
-    <td>Ihre E-Mail {0} wurde registriert.</td>
-    <td>Your email {0} has been registered.</td>
-  </tr>
-  <tr>
-    <td>default-message*<br>messages.default-message</td>
-    <td>This is a default message.</td>
-    <td>This is a default message.**</td>
-    <td>Das ist ein Standardtext.</td>
-    <td>This is a default message.</td>
   </tr>
   <tr>
     <td>payment.headline</td>
