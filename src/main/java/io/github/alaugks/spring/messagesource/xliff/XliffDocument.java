@@ -53,7 +53,7 @@ public final class XliffDocument {
                 .filter(Objects::nonNull)
                 .findFirst().ifPresent(code -> transUnits.put(
                     code,
-                    getCharacterDataFromElement(
+                    this.getCharacterDataFromElement(
                         node.getElementsByTagName("target").item(0).getFirstChild()
                     )
                 ));
