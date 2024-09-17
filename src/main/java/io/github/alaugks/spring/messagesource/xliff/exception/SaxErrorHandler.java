@@ -8,18 +8,18 @@ import org.xml.sax.SAXParseException;
 
 public class SaxErrorHandler implements ErrorHandler {
 
-    @Override
-    public void warning(SAXParseException exception) {
-        throw new Warning(exception);
-    }
+	@Override
+	public void warning(SAXParseException exception) {
+		throw new Warning(exception);
+	}
 
-    @Override
-    public void error(SAXParseException exception) {
-        throw new Error(exception);
-    }
+	@Override
+	public void error(SAXParseException exception) {
+		throw new Error(exception);
+	}
 
-    @Override
-    public void fatalError(SAXParseException exception) {
-        throw new FatalError(exception);
-    }
+	@Override
+	public void fatalError(SAXParseException exception) {
+		throw new FatalError(exception);
+	}
 }

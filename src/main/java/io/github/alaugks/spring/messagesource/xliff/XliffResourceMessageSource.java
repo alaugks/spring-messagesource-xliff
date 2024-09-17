@@ -1,5 +1,10 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
@@ -7,10 +12,7 @@ import io.github.alaugks.spring.messagesource.catalog.ressources.ResourcesLoader
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+
 import org.springframework.context.MessageSource;
 
 public class XliffResourceMessageSource {
@@ -30,12 +32,16 @@ public class XliffResourceMessageSource {
 	public static final class Builder {
 
 		private final Locale defaultLocale;
+
 		private final Set<String> locationPatterns;
+
 		private String defaultDomain = Catalog.DEFAULT_DOMAIN;
+
 		private List<String> fileExtensions = List.of("xlf", "xliff");
+
 		private List<XliffIdentifierInterface> identifier = List.of(
-			new Xliff12Identifier(List.of("resname", "id")),
-			new Xliff2xIdentifier(List.of("id"))
+				new Xliff12Identifier(List.of("resname", "id")),
+				new Xliff2xIdentifier(List.of("id"))
 		);
 
 		public Builder(Locale defaultLocale, List<String> locationPatterns) {
@@ -60,20 +66,20 @@ public class XliffResourceMessageSource {
 
 		public MessageSource build() {
 			ResourcesLoader resourcesLoader = new ResourcesLoader(
-				this.defaultLocale,
-				this.locationPatterns,
-				this.fileExtensions
+					this.defaultLocale,
+					this.locationPatterns,
+					this.fileExtensions
 			);
 
 			CatalogInterface xliffCatalog = new XliffCatalog(
-				resourcesLoader.getTranslationFiles(),
-				this.identifier
+					resourcesLoader.getTranslationFiles(),
+					this.identifier
 			);
 
 			return CatalogMessageSourceBuilder
-				.builder(xliffCatalog, this.defaultLocale)
-				.defaultDomain(this.defaultDomain)
-				.build();
+					.builder(xliffCatalog, this.defaultLocale)
+					.defaultDomain(this.defaultDomain)
+					.build();
 		}
 	}
 }
