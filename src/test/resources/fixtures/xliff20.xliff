@@ -5,13 +5,9 @@
        xsi:schemaLocation="urn:oasis:names:tc:xliff:document:2.0 xliff-core-2.0.xsd">
     <file srcLang="en" trgLang="de">
         <unit id="1">
-            <segment id="code-1" name="code-1">
-                <source>Hello, world!</source>
-                <target>Hallo, Welt!</target>
-            </segment>
-            <segment id="code-2">
-                <source>This is another sentence.</source>
-                <target>Dies ist ein weiterer Satz.</target>
+            <segment id="code-1">
+                <source>Postcode (Xliff Version 2.0)</source>
+                <target>Postcode (Xliff Version 2.0)</target>
             </segment>
         </unit>
     </file>

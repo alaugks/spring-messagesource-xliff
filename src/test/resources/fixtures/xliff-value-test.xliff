@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="2.1"
+       xmlns="urn:oasis:names:tc:xliff:document:2.1"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="urn:oasis:names:tc:xliff:document:2.1 xliff-core-2.1.xsd">
+    <file datatype="plaintext" srcLang="en" trgLang="de">
+        <unit id="1">
+            <segment id="element">
+                <source>value</source>
+                <target>value</target>
+            </segment>
+            <segment id="element-newline">
+                <source>
+                    value
+                </source>
+                <target>
+                    value
+                </target>
+            </segment>
+            <segment id="element-with-cdata">
+                <source><![CDATA[value]]></source>
+                <target><![CDATA[value]]></target>
+            </segment>
+            <segment id="element-with-cdata-newline">
+                <source>
+                    <![CDATA[
+                            value
+                        ]]>
+                </source>
+                <target>
+                    <![CDATA[
+                            value
+                        ]]>
+                </target>
+            </segment>
+        </unit>
+    </file>
+</xliff>

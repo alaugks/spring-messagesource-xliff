@@ -6,36 +6,12 @@
           source-language="en"
           target-language="en">
         <body>
-            <trans-unit id="hello_language" resname="hello_language">
+            <trans-unit resname="postcode">
                 <source>
-                    Hello EN (messages)
+                  Postcode
                 </source>
                 <target>
-                    Hello EN (messages)
-                </target>
-            </trans-unit>
-            <trans-unit id="roadrunner">
-                <source>
-                    {0} and {1}
-                </source>
-                <target>
-                    {0} and {1}
-                </target>
-            </trans-unit>
-            <trans-unit id="code-id-a" resname="code-resname-a">
-                <source>
-                    Source
-                </source>
-                <target>
-                    Target
-                </target>
-            </trans-unit>
-            <trans-unit id="code-id-b">
-                <source>
-                    Source
-                </source>
-                <target>
-                    Target
+                  Postcode
                 </target>
             </trans-unit>
             <trans-unit id="format_choice">

@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - main
-      - stage
-      - dev
       - snapshot/*
       - release/*
-  #  pull_request:
-  #    types: [opened, synchronize, reopened]
-  workflow_dispatch:
+#    workflow_dispatch:
 jobs:
   build:
     name: Build and analyze
@@ -58,4 +54,4 @@ jobs:
             -Dsonar.exclusions=${{ vars.SONAR_EXCLUSIONS }} \
             -Dsonar.java.binaries=${{ vars.SONAR_JAVA_BINARIES }} \
             -Dsonar.coverage.exclusions=${{ vars.SONAR_COVERAGE_EXCLUSIONS }} \
-            -Dsonar.java.source=${{ vars.SONAR_JAVA_SOURCE }}
+            -Dsonar.java.source=17
