@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 
 public final class XliffCatalog extends CatalogAbstract {
 
-	private final List<TransUnit> translations;
+	private final List<TransUnit> transUnits;
 
 	private final List<XliffIdentifierInterface> identifiers;
 
@@ -38,13 +38,13 @@ public final class XliffCatalog extends CatalogAbstract {
 			List<XliffIdentifierInterface> identifiers
 	) {
 		this.translationFiles = translationFiles;
-		this.translations = new ArrayList<>();
+		this.transUnits = new ArrayList<>();
 		this.identifiers = identifiers == null ? List.of() : identifiers;
 	}
 
 	@Override
 	public List<TransUnit> getTransUnits() {
-		return this.translations;
+		return this.transUnits;
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public final class XliffCatalog extends CatalogAbstract {
 				xliffDocument.getTransUnits(
 						xliffVersionObject.getTransUnitName(),
 						this.resolveIdentifiers(this.identifiers, xliffVersionObject).list()
-				).forEach((code, value) -> this.translations.add(
+				).forEach((code, value) -> this.transUnits.add(
 								new TransUnit(
 										xliffFile.locale(),
 										code,
