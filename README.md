@@ -1,4 +1,4 @@
-# XLIFF Translation Support for Spring and Spring Boot
+# Provides a Spring MessageSource for XLIFF files
 
 This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
