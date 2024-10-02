@@ -113,7 +113,7 @@ public class MessageSourceConfig {
 
 ```
 # Default language
-<domain>.xlf
+<domain>.xlf    // <domain>_<language>.xlf also works.
 
 # Domain + Language
 <domain>[-_]<language>.xlf
@@ -131,10 +131,10 @@ public class MessageSourceConfig {
 ```
 [resources]
      |-[translations]
-             |-messages.xliff           // Default domain and default language
+             |-messages.xliff           // Default domain and default language. messages_en.xliff also works.
              |-messages_de.xliff
              |-messages_en-US.xliff
-             |-payment.xliff            // Default language
+             |-payment.xliff            // Default language. payment_en.xliff also works.
              |-payment_de.xliff
              |-payment_en-US.xliff     
 ```  
