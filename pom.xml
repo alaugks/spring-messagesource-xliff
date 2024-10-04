@@ -15,7 +15,7 @@
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Provides a Spring MessageSource for XLIFF files</description>
+    <description>XLIFF MessageSource for Spring</description>
     <url>https://github.com/alaugks/spring-messagesource-xliff</url>
 
     <licenses>
