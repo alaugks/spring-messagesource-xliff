@@ -45,7 +45,7 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 * Default locale is `en`.
 * The XLIFF files are stored in `src/main/resources/translations`.
 
-#### Version >= 2.0.0
+#### Version &gt;= 2.0.0
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
@@ -70,7 +70,7 @@ public class MessageSourceConfig {
 }
 ```
 
-#### Version <= 1.3.0
+#### Version &lt;= 1.3.0
 
 ```java
 import de.alaugks.spring.XliffTranslationMessageSource;
