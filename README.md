@@ -82,7 +82,8 @@ import java.util.Locale;
 
 @Configuration
 public class MessageSourceConfig {
-    
+
+    @Bean
     public MessageSource messageSource() {
         XliffTranslationMessageSource messageSource = new XliffTranslationMessageSource();
         messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
