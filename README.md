@@ -37,13 +37,13 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 
 `defaultDomain(String defaultDomain)`
 
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#xliff-translation-files).
+* Defines the default domain. Default is `messages`. For more information, see [XLIFF Files](#xliff-files).
 
 
 ### Example
 
 * Default locale is `en`.
-* The Xliff files are stored in `src/main/resources/translations`.
+* The XLIFF files are stored in `src/main/resources/translations`.
 
 #### Version >= 2.0.0
 
@@ -94,7 +94,7 @@ public class MessageSourceConfig {
 }
 ```
 
-## XLIFF Translation Files
+## XLIFF Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
@@ -123,7 +123,7 @@ public class MessageSourceConfig {
 <domain>[-_]<language>[-_]<region>.xlf
 ```
 
-### Example with Translations Files
+### Example with XLIFF Files
 
 * Default domain is `messages`.
 * Default locale is `en` without region.
@@ -140,7 +140,7 @@ public class MessageSourceConfig {
              |-payment_en-US.xliff     
 ```  
 
-#### Translations files
+#### XLIFF Files
 
 Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 2.1.
 
