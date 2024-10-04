@@ -1,4 +1,4 @@
-# Provides a Spring MessageSource for XLIFF files
+# XLIFF MessageSource for Spring
 
 This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
@@ -37,13 +37,13 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 
 `defaultDomain(String defaultDomain)`
 
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#xliff-translation-files).
+* Defines the default domain. Default is `messages`. For more information, see [XLIFF Files](#xliff-files).
 
 
 ### Example
 
 * Default locale is `en`.
-* The Xliff files are stored in `src/main/resources/translations`.
+* The XLIFF files are stored in `src/main/resources/translations`.
 
 #### Version >= 2.0.0
 
@@ -82,7 +82,8 @@ import java.util.Locale;
 
 @Configuration
 public class MessageSourceConfig {
-    
+
+    @Bean
     public MessageSource messageSource() {
         XliffTranslationMessageSource messageSource = new XliffTranslationMessageSource();
         messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
@@ -93,7 +94,7 @@ public class MessageSourceConfig {
 }
 ```
 
-## XLIFF Translation Files
+## XLIFF Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
@@ -113,7 +114,7 @@ public class MessageSourceConfig {
 
 ```
 # Default language
-<domain>.xlf
+<domain>.xlf    // <domain>_<language>.xlf also works.
 
 # Domain + Language
 <domain>[-_]<language>.xlf
@@ -122,7 +123,7 @@ public class MessageSourceConfig {
 <domain>[-_]<language>[-_]<region>.xlf
 ```
 
-### Example with Translations Files
+### Example with XLIFF Files
 
 * Default domain is `messages`.
 * Default locale is `en` without region.
@@ -131,15 +132,15 @@ public class MessageSourceConfig {
 ```
 [resources]
      |-[translations]
-             |-messages.xliff           // Default domain and default language
+             |-messages.xliff           // Default domain and default language. messages_en.xliff also works.
              |-messages_de.xliff
              |-messages_en-US.xliff
-             |-payment.xliff            // Default language
+             |-payment.xliff            // Default language. payment_en.xliff also works.
              |-payment_de.xliff
              |-payment_en-US.xliff     
 ```  
 
-#### Translations files
+#### XLIFF Files
 
 Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 2.1.
 
