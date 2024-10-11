@@ -15,10 +15,6 @@ public final class XliffDocument {
 
 	private final Element root;
 
-	private List<String> transUnitIdentifiers;
-
-	private NodeList nodeList;
-
 	public XliffDocument(Element root) {
 		this.root = root;
 	}
@@ -28,28 +24,37 @@ public final class XliffDocument {
 	}
 
 	public Map<String, String> getTransUnits(String transUnitName, List<String> transUnitIdentifiers) {
-		this.nodeList = this.root.getElementsByTagName(transUnitName);
-		this.transUnitIdentifiers = transUnitIdentifiers;
-		return this.getNodes();
+		if (this.isXliffDocument()) {
+			return this.getNodes(
+					this.root.getElementsByTagName(transUnitName),
+					transUnitIdentifiers
+			);
+		}
+
+		return new HashMap<>();
 	}
 
-	public boolean isXliffDocument() {
+	public String getXliffVersion() {
+		if (this.isXliffDocument()) {
+			return this.getAttributeValue(
+					root.getAttributes().getNamedItem("version")
+			);
+		}
+
+		return null;
+	}
+
+	private boolean isXliffDocument() {
 		// Simple test: Filter if root element <xliff>
 		return root.getNodeName().equals("xliff");
 	}
 
-	public String getXliffVersion() {
-		return this.getAttributeValue(
-				root.getAttributes().getNamedItem("version")
-		);
-	}
-
-	private Map<String, String> getNodes() {
+	private Map<String, String> getNodes(NodeList nodeList, List<String> transUnitIdentifiers) {
 		Map<String, String> transUnits = new HashMap<>();
 
 		for (int item = 0; item < nodeList.getLength(); item++) {
 			var node = (Element) nodeList.item(item);
-			Arrays.stream(this.transUnitIdentifiers.toArray())
+			Arrays.stream(transUnitIdentifiers.toArray())
 					.map(value -> this.getAttributeValue(
 							node.getAttributes().getNamedItem(value.toString())
 					))

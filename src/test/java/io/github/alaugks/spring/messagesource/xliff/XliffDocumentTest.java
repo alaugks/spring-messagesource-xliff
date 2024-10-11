@@ -15,9 +15,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class XliffDocumentTest {
 
@@ -25,15 +23,14 @@ class XliffDocumentTest {
 	void test_getXliffVersion() throws ParserConfigurationException, IOException, SAXException {
 		var xliffDocument = new XliffDocument(this.getDocument("fixtures/xliff21.xliff"));
 
-		assertTrue(xliffDocument.isXliffDocument());
 		assertEquals("2.1", xliffDocument.getXliffVersion());
 	}
 
 	@Test
-	void test_fail() throws ParserConfigurationException, IOException, SAXException {
-		var xliffDocument = new XliffDocument(this.getDocument("fixtures/xliff-fail.xliff"));
+	void test_noXliffFile() throws ParserConfigurationException, IOException, SAXException {
+		var xliffDocument = new XliffDocument(this.getDocument("fixtures/no-xliff.xml"));
 
-		assertFalse(xliffDocument.isXliffDocument());
+		assertEquals(new HashMap<>(), xliffDocument.getTransUnits("segment", List.of("id")));
 		assertNull(xliffDocument.getXliffVersion());
 	}
 

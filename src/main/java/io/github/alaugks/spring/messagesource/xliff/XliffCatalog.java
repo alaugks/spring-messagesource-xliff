@@ -78,10 +78,6 @@ public final class XliffCatalog extends AbstractCatalog {
 			Element root = document.getDocumentElement();
 			XliffDocument xliffDocument = new XliffDocument(root);
 
-			if (!xliffDocument.isXliffDocument()) {
-				continue;
-			}
-
 			var version = xliffDocument.getXliffVersion();
 
 			XliffVersionInterface xliffVersionObject = this.supportedVersions
