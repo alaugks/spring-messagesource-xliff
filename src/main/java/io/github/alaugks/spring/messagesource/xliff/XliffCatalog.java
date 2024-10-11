@@ -9,8 +9,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogAbstract;
+import io.github.alaugks.spring.messagesource.catalog.catalog.AbstractCatalog;
 import io.github.alaugks.spring.messagesource.catalog.records.TransUnit;
+import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
 import io.github.alaugks.spring.messagesource.catalog.records.TranslationFile;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
@@ -20,9 +21,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-public final class XliffCatalog extends CatalogAbstract {
+public final class XliffCatalog extends AbstractCatalog {
 
-	private final List<TransUnit> transUnits;
+	private final List<TransUnitInterface> transUnits;
 
 	private final List<XliffIdentifierInterface> identifiers;
 
@@ -43,7 +44,7 @@ public final class XliffCatalog extends CatalogAbstract {
 	}
 
 	@Override
-	public List<TransUnit> getTransUnits() {
+	public List<TransUnitInterface> getTransUnits() {
 		return this.transUnits;
 	}
 

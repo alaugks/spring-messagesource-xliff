@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnit;
+import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
 import io.github.alaugks.spring.messagesource.catalog.ressources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
@@ -129,7 +129,7 @@ class XliffCatalogTest {
 		);
 	}
 
-	private String findInTransUnits(List<TransUnit> transUnits, String locale, String code) {
+	private String findInTransUnits(List<TransUnitInterface> transUnits, String locale, String code) {
 		return transUnits
 				.stream()
 				.filter(t -> t.locale().toString().equals(locale) && t.code().equals(code))
