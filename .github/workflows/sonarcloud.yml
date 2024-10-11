@@ -3,7 +3,8 @@ run-name: SonarCloud Analyze [${{ github.ref_name }}]
 on:
   push:
     branches:
-      - *
+      - 2.*
+      - dev
   workflow_dispatch:
 jobs:
   build:
