@@ -82,7 +82,7 @@ public final class XliffCatalog extends AbstractCatalog {
 
 			XliffVersionInterface xliffVersionObject = this.supportedVersions
 					.stream()
-					.filter(o -> o.support(xliffDocument.getXliffVersion()))
+					.filter(o -> o.support(version))
 					.findFirst()
 					.orElse(null);
 
