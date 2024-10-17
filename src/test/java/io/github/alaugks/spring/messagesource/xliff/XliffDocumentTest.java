@@ -30,7 +30,7 @@ class XliffDocumentTest {
 	void test_noXliffFile() throws ParserConfigurationException, IOException, SAXException {
 		var xliffDocument = new XliffDocument(this.getDocument("fixtures/no-xliff.xml"));
 
-		assertEquals(new HashMap<>(), xliffDocument.getTransUnits("segment", List.of("id")));
+		assertEquals(new HashMap<>(), xliffDocument.getTransUnitsMap("segment", List.of("id")));
 		assertNull(xliffDocument.getXliffVersion());
 	}
 
@@ -39,7 +39,7 @@ class XliffDocumentTest {
 			throws ParserConfigurationException, IOException, SAXException {
 
 		var xliffDocument = new XliffDocument(this.getDocument("fixtures/xliff-value-test.xliff"));
-		Map<Object, Object> transUnits = new HashMap<>(xliffDocument.getTransUnits("segment", List.of("id")));
+		Map<Object, Object> transUnits = new HashMap<>(xliffDocument.getTransUnitsMap("segment", List.of("id")));
 
 		assertEquals("value", transUnits.get("element"));
 		assertEquals("value", transUnits.get("element-newline"));

@@ -87,7 +87,7 @@ public final class XliffCatalog extends AbstractCatalog {
 					.orElse(null);
 
 			if (xliffVersionObject != null) {
-				xliffDocument.getTransUnits(
+				xliffDocument.getTransUnitsMap(
 						xliffVersionObject.getTransUnitName(),
 						this.resolveIdentifiers(this.identifiers, xliffVersionObject).list()
 				).forEach((code, value) -> this.transUnits.add(

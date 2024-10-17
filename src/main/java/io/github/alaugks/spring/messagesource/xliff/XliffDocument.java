@@ -22,7 +22,7 @@ public final class XliffDocument {
 		this.root = document.getDocumentElement();
 	}
 
-	public Map<String, String> getTransUnits(String transUnitName, List<String> transUnitIdentifiers) {
+	public Map<String, String> getTransUnitsMap(String transUnitName, List<String> transUnitIdentifiers) {
 		if (this.isXliffDocument()) {
 			return this.getNodes(
 					this.root.getElementsByTagName(transUnitName),
