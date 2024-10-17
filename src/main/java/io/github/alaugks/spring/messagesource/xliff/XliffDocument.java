@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,16 +49,17 @@ public final class XliffDocument {
 	}
 
 	private Map<String, String> getNodes(NodeList nodeList, List<String> transUnitIdentifiers) {
-		Map<String, String> transUnits = new HashMap<>();
+		Map<String, String> transUnitMap = new HashMap<>();
 
 		for (int item = 0; item < nodeList.getLength(); item++) {
-			var node = (Element) nodeList.item(item);
+			Element node = (Element) nodeList.item(item);
 			Arrays.stream(transUnitIdentifiers.toArray())
-					.map(value -> this.getAttributeValue(
-							node.getAttributes().getNamedItem(value.toString())
+					.map(attributeName -> this.getAttributeValue(
+							node.getAttributes().getNamedItem(attributeName.toString())
 					))
-					.filter(Objects::nonNull)
-					.findFirst().ifPresent(code -> transUnits.put(
+					.filter(code -> (code != null && !code.isEmpty()))
+					.findFirst()
+					.ifPresent(code -> transUnitMap.put(
 							code,
 							this.getCharacterDataFromElement(
 									node.getElementsByTagName("target").item(0).getFirstChild()
@@ -67,7 +67,7 @@ public final class XliffDocument {
 					));
 		}
 
-		return transUnits;
+		return transUnitMap;
 	}
 
 	private String getCharacterDataFromElement(Node child) {
