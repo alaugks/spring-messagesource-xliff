@@ -23,14 +23,29 @@ public final class XliffDocument {
 	}
 
 	public Map<String, String> getTransUnitsMap(String transUnitName, List<String> transUnitIdentifiers) {
+		Map<String, String> transUnitMap = new HashMap<>();
+
 		if (this.isXliffDocument()) {
-			return this.getNodes(
-					this.root.getElementsByTagName(transUnitName),
-					transUnitIdentifiers
-			);
+			NodeList nodeList = this.root.getElementsByTagName(transUnitName);
+
+			for (int item = 0; item < nodeList.getLength(); item++) {
+				Element node = (Element) nodeList.item(item);
+				Arrays.stream(transUnitIdentifiers.toArray())
+						.map(attributeName -> this.getAttributeValue(
+								node.getAttributes().getNamedItem(attributeName.toString())
+						))
+						.filter(code -> (code != null && !code.isEmpty()))
+						.findFirst()
+						.ifPresent(code -> transUnitMap.put(
+								code,
+								this.getCharacterDataFromElement(
+										node.getElementsByTagName("target").item(0).getFirstChild()
+								)
+						));
+			}
 		}
 
-		return new HashMap<>();
+		return transUnitMap;
 	}
 
 	public String getXliffVersion() {
@@ -46,28 +61,6 @@ public final class XliffDocument {
 	private boolean isXliffDocument() {
 		// Simple test: Filter if root element <xliff>
 		return root.getNodeName().equals("xliff");
-	}
-
-	private Map<String, String> getNodes(NodeList nodeList, List<String> transUnitIdentifiers) {
-		Map<String, String> transUnitMap = new HashMap<>();
-
-		for (int item = 0; item < nodeList.getLength(); item++) {
-			Element node = (Element) nodeList.item(item);
-			Arrays.stream(transUnitIdentifiers.toArray())
-					.map(attributeName -> this.getAttributeValue(
-							node.getAttributes().getNamedItem(attributeName.toString())
-					))
-					.filter(code -> (code != null && !code.isEmpty()))
-					.findFirst()
-					.ifPresent(code -> transUnitMap.put(
-							code,
-							this.getCharacterDataFromElement(
-									node.getElementsByTagName("target").item(0).getFirstChild()
-							)
-					));
-		}
-
-		return transUnitMap;
 	}
 
 	private String getCharacterDataFromElement(Node child) {
