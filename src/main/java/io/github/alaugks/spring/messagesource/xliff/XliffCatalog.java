@@ -80,16 +80,16 @@ public final class XliffCatalog extends AbstractCatalog {
 
 			var version = xliffDocument.getXliffVersion();
 
-			XliffVersionInterface xliffVersionObject = this.supportedVersions
+			XliffVersionInterface xliffVersion = this.supportedVersions
 					.stream()
 					.filter(o -> o.support(version))
 					.findFirst()
 					.orElse(null);
 
-			if (xliffVersionObject != null) {
+			if (xliffVersion != null) {
 				xliffDocument.getTransUnitsMap(
-						xliffVersionObject.getTransUnitName(),
-						this.resolveIdentifiers(this.identifiers, xliffVersionObject).list()
+						xliffVersion.getTransUnitName(),
+						this.resolveIdentifiers(this.identifiers, xliffVersion).list()
 				).forEach((code, value) -> this.transUnits.add(
 								new TransUnit(
 										xliffFile.locale(),
