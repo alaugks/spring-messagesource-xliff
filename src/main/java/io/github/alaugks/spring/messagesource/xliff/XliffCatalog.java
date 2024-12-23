@@ -21,7 +21,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-public final class XliffCatalog extends AbstractCatalog {
+public class XliffCatalog extends AbstractCatalog {
 
 	private final List<TransUnitInterface> transUnits;
 

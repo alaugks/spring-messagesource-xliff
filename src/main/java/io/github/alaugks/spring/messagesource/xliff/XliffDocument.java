@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public final class XliffDocument {
+public  class XliffDocument {
 
 	private final Element root;
 
