@@ -299,3 +299,8 @@ Website: https://spring-boot-xliff-example.alaugks.dev
 ## Support
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
+
+## Related MessageSources 
+
+* [spring-messagesource-db-example](https://github.com/alaugks/spring-messagesource-db-example): Example custom Spring MessageSource from database
+* [spring-messagesource-json-example](https://github.com/alaugks/spring-messagesource-json-example): Example custom Spring MessageSource from JSON
