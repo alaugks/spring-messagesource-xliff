@@ -302,5 +302,8 @@ If you have questions, comments or feature requests please use the [Discussions]
 
 ## Related MessageSources 
 
-* [spring-messagesource-db-example](https://github.com/alaugks/spring-messagesource-db-example): Example custom Spring MessageSource from database
-* [spring-messagesource-json-example](https://github.com/alaugks/spring-messagesource-json-example): Example custom Spring MessageSource from JSON
+## Related MessageSources and Examples
+
+* [JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json)
+* [Example: JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json-example)
+* [Example: Custom Database Spring MessageSource](https://github.com/alaugks/spring-messagesource-db-example)
