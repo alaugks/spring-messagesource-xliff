@@ -300,7 +300,6 @@ Website: https://spring-boot-xliff-example.alaugks.dev
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
 
-## Related MessageSources 
 
 ## Related MessageSources and Examples
 
