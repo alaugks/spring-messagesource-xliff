@@ -16,19 +16,17 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
-import io.github.alaugks.spring.messagesource.catalog.ressources.ResourcesLoader;
+import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
+import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,7 +42,7 @@ class XliffCatalogTest {
 
 		var ressourceLoader = new ResourcesLoader(
 				Locale.forLanguageTag("en"),
-				new HashSet<>(List.of("translations/messages.xliff", "translations/messages_de.xliff")),
+				new LocationPattern(List.of("translations/messages.xliff", "translations/messages_de.xliff")),
 				List.of("xlf", "xliff")
 		);
 
@@ -65,7 +63,7 @@ class XliffCatalogTest {
 	@Test
 	void test_parseError() {
 		var xliffCatalogBuilder = this.getXliffCatalogBuilder(
-				new HashSet<>(List.of("fixtures/parse_error.xliff")),
+				new LocationPattern(List.of("fixtures/parse_error.xliff")),
 				Locale.forLanguageTag("en")
 		);
 
@@ -83,7 +81,7 @@ class XliffCatalogTest {
 
 		var ressourceLoader = new ResourcesLoader(
 				Locale.forLanguageTag("en"),
-				new HashSet<>(List.of("fixtures/no-xliff.xml")),
+				new LocationPattern(List.of("fixtures/no-xliff.xml")),
 				List.of("xml")
 		);
 
@@ -98,7 +96,7 @@ class XliffCatalogTest {
 	@Test
 	void test_versionNotSupported() {
 		var xliffCatalogBuilder = this.getXliffCatalogBuilder(
-				new HashSet<>(List.of("fixtures/xliff10.xliff")),
+				new LocationPattern(List.of("fixtures/xliff10.xliff")),
 				Locale.forLanguageTag("en")
 		);
 
@@ -113,7 +111,7 @@ class XliffCatalogTest {
 	@MethodSource("dataProvider_loadVersions")
 	void test_versionSupported(String ressourcePath, String domain, String expected) {
 		var catalog = this.getXliffCatalogBuilder(
-				new HashSet<>(List.of(ressourcePath)),
+				new LocationPattern(List.of(ressourcePath)),
 				Locale.forLanguageTag("en")
 		);
 		catalog.build();
@@ -132,7 +130,7 @@ class XliffCatalogTest {
 		);
 	}
 
-	private XliffCatalog getXliffCatalogBuilder(Set<String> files, Locale locale) {
+	private XliffCatalog getXliffCatalogBuilder(LocationPattern files, Locale locale) {
 
 		var ressourceLoader = new ResourcesLoader(locale, files, List.of("xlf", "xliff"));
 

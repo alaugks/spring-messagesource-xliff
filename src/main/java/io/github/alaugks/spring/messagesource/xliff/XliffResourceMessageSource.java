@@ -16,18 +16,16 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
-import io.github.alaugks.spring.messagesource.catalog.ressources.ResourcesLoader;
+import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
+import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
+import java.util.List;
+import java.util.Locale;
 
 public class XliffResourceMessageSource {
 
@@ -35,19 +33,31 @@ public class XliffResourceMessageSource {
 		throw new IllegalStateException(XliffResourceMessageSource.class.toString());
 	}
 
-	public static Builder builder(Locale defaultLocale, String locationPattern) {
-		return new Builder(defaultLocale, List.of(locationPattern));
+	public static Builder builder(Locale defaultLocale, LocationPattern locationPattern) {
+		return new Builder(defaultLocale, locationPattern);
 	}
 
+	/**
+	 * @deprecated Use this instead: {@link #builder(Locale defaultLocale, LocationPattern locationPattern)}.
+	 */
+	@Deprecated(since = "2.1.0")
+	public static Builder builder(Locale defaultLocale, String locationPattern) {
+		return builder(defaultLocale, new LocationPattern(locationPattern));
+	}
+
+	/**
+	 * @deprecated Use this instead: {@link #builder(Locale defaultLocale, LocationPattern locationPattern)}.
+	 */
+	@Deprecated(since = "2.1.0")
 	public static Builder builder(Locale defaultLocale, List<String> locationPatterns) {
-		return new Builder(defaultLocale, locationPatterns);
+		return builder(defaultLocale, new LocationPattern(locationPatterns));
 	}
 
 	public static final class Builder {
 
 		private final Locale defaultLocale;
 
-		private final Set<String> locationPatterns;
+		private final LocationPattern locationPattern;
 
 		private String defaultDomain = Catalog.DEFAULT_DOMAIN;
 
@@ -58,9 +68,9 @@ public class XliffResourceMessageSource {
 				new Xliff2xIdentifier(List.of("id"))
 		);
 
-		public Builder(Locale defaultLocale, List<String> locationPatterns) {
+		public Builder(Locale defaultLocale, LocationPattern locationPattern) {
 			this.defaultLocale = defaultLocale;
-			this.locationPatterns = new HashSet<>(locationPatterns);
+			this.locationPattern = locationPattern;
 		}
 
 		public Builder defaultDomain(String defaultDomain) {
@@ -81,7 +91,7 @@ public class XliffResourceMessageSource {
 		public CatalogMessageSourceBuilder build() {
 			ResourcesLoader resourcesLoader = new ResourcesLoader(
 					this.defaultLocale,
-					this.locationPatterns,
+					this.locationPattern,
 					this.fileExtensions
 			);
 

@@ -16,6 +16,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -34,6 +35,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class XliffResourceMessageSourceTest {
+
+	@Test
+	void test_getMessage_code_args_locale_with_LocationPattern() {
+		var messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.build();
+
+		assertEquals("Postcode", messageSource.getMessage(
+			"postcode",
+			null,
+			Locale.forLanguageTag("en")
+		));
+	}
 
 	@Test
 	void test_getMessage_code_args_locale() {
