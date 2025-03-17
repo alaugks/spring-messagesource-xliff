@@ -3,7 +3,7 @@
 This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/2.0.0)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/2.0.1-SNAPSHOT)
 
 ## Dependency
 
@@ -12,24 +12,23 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.1-SNAPSHOT'
 ```
 
 
 ## MessageSource Configuration
 
-`builder(Locale defaultLocale, String locationPattern)` or<br>
-`builder(Locale defaultLocale, List<String> locationPatterns)` (***required***)
+`builder(Locale defaultLocale, LocationPattern locationPatterns)` (***required***)
 * Argument `Locale locale`: Defines the default locale.
-* Argument `String locationPattern` | `List<String> locationPatterns`:
-  * Defines the pattern used to select the XLIFF files.
+* Argument `LocationPattern locationPatterns`:
+  * Defines the pattern used to select the XLIFF files (`String` or `List<String>`).
   * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
   * Files with the extension `xliff` and `xlf` are filtered from the result list.
 
