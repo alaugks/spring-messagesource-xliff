@@ -25,17 +25,21 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 
 ## MessageSource Configuration
 
-`builder(Locale defaultLocale, LocationPattern locationPatterns)` (***required***)
-* Argument `Locale locale`: Defines the default locale.
-* Argument `LocationPattern locationPatterns`:
-  * Defines the pattern used to select the XLIFF files (`String` or `List<String>`).
-  * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
-  * Files with the extension `xliff` and `xlf` are filtered from the result list.
+* `builder(Locale defaultLocale, LocationPattern locationPatterns)` (***required***)
+  * Argument `Locale locale`: Defines the default locale.
+  * Argument `LocationPattern locationPatterns`:
+    * Defines the pattern used to select the XLIFF files (`String` or `List<String>`).
+    * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
+    * Files with the extension `xliff` and `xlf` are filtered from the result list.
 
-`defaultDomain(String defaultDomain)`
+* `defaultDomain(String defaultDomain)`
+  * Defines the default domain. Default is `messages`. For more information, see [XLIFF Files](#xliff-files).
 
-* Defines the default domain. Default is `messages`. For more information, see [XLIFF Files](#xliff-files).
+* `fileExtensions(List<String> fileExtensions)`
+  * Default is: `List.of("xlf", "xliff")`
 
+* `identifier(List<XliffIdentifierInterface> identifier)`
+  * Default is: `List.of(new Xliff12Identifier(List.of("resname", "id")), new Xliff2xIdentifier(List.of("id")))`
 
 ### Example
 
