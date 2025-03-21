@@ -1,4 +1,4 @@
-# XLIFF Translation Support for Spring and Spring Boot
+# XLIFF MessageSource for Spring
 
 This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
@@ -25,8 +25,6 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 
 ## MessageSource Configuration
 
-The class XliffTranslationMessageSource implements the [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) interface.
-
 `builder(Locale defaultLocale, String locationPattern)` or<br>
 `builder(Locale defaultLocale, List<String> locationPatterns)` (***required***)
 * Argument `Locale locale`: Defines the default locale.
@@ -37,13 +35,13 @@ The class XliffTranslationMessageSource implements the [MessageSource](https://d
 
 `defaultDomain(String defaultDomain)`
 
-* Defines the default domain. Default is `messages`. For more information, see [XlIFF Translations Files](#xliff-translation-files).
+* Defines the default domain. Default is `messages`. For more information, see [XLIFF Files](#xliff-files).
 
 
 ### Example
 
 * Default locale is `en`.
-* The Xliff files are stored in `src/main/resources/translations`.
+* The XLIFF files are stored in `src/main/resources/translations`.
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
@@ -53,7 +51,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Locale;
 
 @Configuration
-public class MessageConfig {
+public class MessageSourceConfig {
 
     @Bean
     public MessageSource messageSource() {
@@ -68,7 +66,7 @@ public class MessageConfig {
 }
 ```
 
-## XLIFF Translation Files
+## XLIFF Files
 
 * Translations can be separated into different files (domains). The default domain is `messages`.
 * The default domain can be defined.
@@ -88,7 +86,7 @@ public class MessageConfig {
 
 ```
 # Default language
-<domain>.xlf
+<domain>.xlf    // <domain>_<language>.xlf also works.
 
 # Domain + Language
 <domain>[-_]<language>.xlf
@@ -97,7 +95,7 @@ public class MessageConfig {
 <domain>[-_]<language>[-_]<region>.xlf
 ```
 
-### Example with Translations Files
+### Example with XLIFF Files
 
 * Default domain is `messages`.
 * Default locale is `en` without region.
@@ -106,15 +104,15 @@ public class MessageConfig {
 ```
 [resources]
      |-[translations]
-             |-messages.xliff           // Default domain and default language
+             |-messages.xliff           // Default domain and default language. messages_en.xliff also works.
              |-messages_de.xliff
              |-messages_en-US.xliff
-             |-payment.xliff            // Default language
+             |-payment.xliff            // Default language. payment_en.xliff also works.
              |-payment_de.xliff
              |-payment_en-US.xliff     
 ```  
 
-#### Translations files
+#### XLIFF Files
 
 Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 2.1.
 
@@ -301,3 +299,10 @@ Website: https://spring-boot-xliff-example.alaugks.dev
 ## Support
 
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
+
+
+## Related MessageSources and Examples
+
+* [JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json)
+* [Example: JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json-example)
+* [Example: Custom Database Spring MessageSource](https://github.com/alaugks/spring-messagesource-db-example)
