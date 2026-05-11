@@ -16,24 +16,36 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifier;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
-
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
 import org.springframework.context.NoSuchMessageException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class XliffResourceMessageSourceTest {
+
+	@Test
+	void test_getMessage_code_args_locale_with_LocationPattern() {
+		var messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.build();
+
+		assertEquals("Postcode", messageSource.getMessage(
+			"postcode",
+			null,
+			Locale.forLanguageTag("en")
+		));
+	}
 
 	@Test
 	void test_getMessage_code_args_locale() {
@@ -122,7 +134,7 @@ class XliffResourceMessageSourceTest {
 	@ParameterizedTest()
 	@MethodSource("dataProvider_setTranslationUnitIdentifiersOrdering")
 	void test_identifier(
-			List<XliffIdentifierInterface> translationUnitIdentifiers,
+			List<XliffIdentifier> translationUnitIdentifiers,
 			String code,
 			String expected
 	) {

@@ -16,15 +16,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import io.github.alaugks.spring.messagesource.catalog.catalog.AbstractCatalog;
 import io.github.alaugks.spring.messagesource.catalog.records.TransUnit;
 import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
@@ -33,59 +24,69 @@ import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 public class XliffCatalog extends AbstractCatalog {
 
-	private final List<TransUnitInterface> transUnits;
-
-	private final List<XliffIdentifierInterface> identifiers;
-
-	private final List<TranslationFile> translationFiles;
-
-	List<XliffVersionInterface> supportedVersions = List.of(
+	private static final List<XliffVersion> SUPPORTED_VERSIONS = List.of(
 			new XliffVersion12(),
 			new XliffVersion2x()
 	);
 
+	private final List<XliffIdentifier> identifiers;
+
+	private final List<TranslationFile> translationFiles;
+
+	private List<TransUnitInterface> cachedTransUnits;
+
 	public XliffCatalog(
 			List<TranslationFile> translationFiles,
-			List<XliffIdentifierInterface> identifiers
+			List<XliffIdentifier> identifiers
 	) {
 		this.translationFiles = translationFiles;
-		this.transUnits = new ArrayList<>();
 		this.identifiers = identifiers == null ? List.of() : identifiers;
 	}
 
 	@Override
 	public List<TransUnitInterface> getTransUnits() {
-		return this.transUnits;
-	}
-
-	@Override
-	public void build() {
+		if (this.cachedTransUnits != null) {
+			return this.cachedTransUnits;
+		}
 		try {
-			this.parseXliffDocuments(this.translationFiles);
+			this.cachedTransUnits = this.parseXliffDocuments(this.translationFiles);
+			return this.cachedTransUnits;
 		}
 		catch (ParserConfigurationException | IOException e) {
 			throw new FatalError(e);
 		}
 	}
 
-	private void parseXliffDocuments(List<TranslationFile> xliffFiles)
-			throws ParserConfigurationException, IOException {
+	private List<TransUnitInterface> parseXliffDocuments(List<TranslationFile> xliffFiles)
+		throws ParserConfigurationException, IOException {
+
+		List<TransUnitInterface> transUnits = new ArrayList<>();
+
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
 		for (TranslationFile xliffFile : xliffFiles) {
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 			documentBuilder.setErrorHandler(new SaxErrorHandler());
 			Document document;
 			try {
-				document = documentBuilder.parse(xliffFile.inputStream());
+				document = documentBuilder.parse(new ByteArrayInputStream(xliffFile.content()));
 			}
 			catch (SAXException e) {
 				throw new XliffMessageSourceRuntimeException(e);
@@ -96,7 +97,11 @@ public class XliffCatalog extends AbstractCatalog {
 
 			var version = xliffDocument.getXliffVersion();
 
-			XliffVersionInterface xliffVersion = this.supportedVersions
+			if (version == null) {
+				continue;
+			}
+
+			XliffVersion xliffVersion = SUPPORTED_VERSIONS
 					.stream()
 					.filter(o -> o.support(version))
 					.findFirst()
@@ -105,8 +110,8 @@ public class XliffCatalog extends AbstractCatalog {
 			if (xliffVersion != null) {
 				xliffDocument.getTransUnitsMap(
 						xliffVersion.getTransUnitName(),
-						this.resolveIdentifiers(this.identifiers, xliffVersion).list()
-				).forEach((code, value) -> this.transUnits.add(
+						this.resolveIdentifiers(this.identifiers, xliffVersion).attributes()
+				).forEach((code, value) -> transUnits.add(
 								new TransUnit(
 										xliffFile.locale(),
 										code,
@@ -122,11 +127,13 @@ public class XliffCatalog extends AbstractCatalog {
 				);
 			}
 		}
+
+		return transUnits;
 	}
 
-	public XliffIdentifierInterface resolveIdentifiers(
-			List<XliffIdentifierInterface> identifiers,
-			XliffVersionInterface xliffVersionObject
+	private XliffIdentifier resolveIdentifiers(
+			List<XliffIdentifier> identifiers,
+			XliffVersion xliffVersionObject
 	) {
 		return identifiers
 				.stream()
@@ -135,7 +142,7 @@ public class XliffCatalog extends AbstractCatalog {
 				.orElse(xliffVersionObject.getDefaultIdentifier());
 	}
 
-	public static final class XliffVersion12 implements XliffVersionInterface {
+	public static final class XliffVersion12 implements XliffVersion {
 
 		@Override
 		public boolean support(String version) {
@@ -148,12 +155,12 @@ public class XliffCatalog extends AbstractCatalog {
 		}
 
 		@Override
-		public XliffIdentifierInterface getDefaultIdentifier() {
+		public XliffIdentifier getDefaultIdentifier() {
 			return new Xliff12Identifier(List.of());
 		}
 	}
 
-	public static final class XliffVersion2x implements XliffVersionInterface {
+	public static final class XliffVersion2x implements XliffVersion {
 
 		@Override
 		public boolean support(String version) {
@@ -166,30 +173,30 @@ public class XliffCatalog extends AbstractCatalog {
 		}
 
 		@Override
-		public XliffIdentifierInterface getDefaultIdentifier() {
+		public XliffIdentifier getDefaultIdentifier() {
 			return new Xliff2xIdentifier(List.of());
 		}
 	}
 
-	public interface XliffVersionInterface {
+	public interface XliffVersion {
 
 		boolean support(String version);
 
 		String getTransUnitName();
 
-		XliffIdentifierInterface getDefaultIdentifier();
+		XliffIdentifier getDefaultIdentifier();
 	}
 
-	record Xliff12Identifier(List<String> list) implements XliffIdentifierInterface {
-
-	}
-
-	record Xliff2xIdentifier(List<String> list) implements XliffIdentifierInterface {
+	public record Xliff12Identifier(List<String> attributes) implements XliffIdentifier {
 
 	}
 
-	public interface XliffIdentifierInterface {
+	public record Xliff2xIdentifier(List<String> attributes) implements XliffIdentifier {
 
-		List<String> list();
+	}
+
+	public interface XliffIdentifier {
+
+		List<String> attributes();
 	}
 }

@@ -16,51 +16,87 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
-import io.github.alaugks.spring.messagesource.catalog.catalog.Catalog;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
-import io.github.alaugks.spring.messagesource.catalog.ressources.ResourcesLoader;
+import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
+import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
 import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifierInterface;
+import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifier;
+import java.util.List;
+import java.util.Locale;
 
 public class XliffResourceMessageSource {
 
 	private XliffResourceMessageSource() {
-		throw new IllegalStateException(XliffResourceMessageSource.class.toString());
+		throw new IllegalStateException("Utility class");
 	}
 
+	/**
+	 * <p>Before (Deprecated):</p>
+	 *
+	 * <pre>{@code
+	 *	return XliffResourceMessageSource
+	 *		.builder(
+	 *			Locale.forLanguageTag("en"),
+	 *			"translations/*"
+	 *		)
+	 *		.build();
+	 *}
+	 * </pre>
+	 *
+	 * <p>Now:</p>
+	 *
+	 * <pre>{@code
+	 *	import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
+	 *
+	 *	return XliffResourceMessageSource
+	 *		.builder(
+	 *			Locale.forLanguageTag("en"),
+	 *			new LocationPattern("translations/*")
+	 *		)
+	 *		.build();
+	 * }
+	 * </pre>
+	 */
+	public static Builder builder(Locale defaultLocale, LocationPattern locationPattern) {
+		return new Builder(defaultLocale, locationPattern);
+	}
+
+	/**
+	 * @deprecated Use this instead: {@link #builder(Locale defaultLocale, LocationPattern locationPattern)}.
+	 */
+	@Deprecated(since = "2.1.0")
 	public static Builder builder(Locale defaultLocale, String locationPattern) {
-		return new Builder(defaultLocale, List.of(locationPattern));
+		return builder(defaultLocale, new LocationPattern(locationPattern));
 	}
 
+	/**
+	 * @deprecated Use this instead: {@link #builder(Locale defaultLocale, LocationPattern locationPattern)}.
+	 */
+	@Deprecated(since = "2.1.0")
 	public static Builder builder(Locale defaultLocale, List<String> locationPatterns) {
-		return new Builder(defaultLocale, locationPatterns);
+		return builder(defaultLocale, new LocationPattern(locationPatterns));
 	}
 
 	public static final class Builder {
 
 		private final Locale defaultLocale;
 
-		private final Set<String> locationPatterns;
+		private final LocationPattern locationPattern;
 
-		private String defaultDomain = Catalog.DEFAULT_DOMAIN;
+		private String defaultDomain = CatalogMessageSourceBuilder.DEFAULT_DOMAIN;
 
 		private List<String> fileExtensions = List.of("xlf", "xliff");
 
-		private List<XliffIdentifierInterface> identifier = List.of(
+		private List<XliffIdentifier> identifier = List.of(
 				new Xliff12Identifier(List.of("resname", "id")),
 				new Xliff2xIdentifier(List.of("id"))
 		);
 
-		public Builder(Locale defaultLocale, List<String> locationPatterns) {
+		public Builder(Locale defaultLocale, LocationPattern locationPattern) {
 			this.defaultLocale = defaultLocale;
-			this.locationPatterns = new HashSet<>(locationPatterns);
+			this.locationPattern = locationPattern;
 		}
 
 		public Builder defaultDomain(String defaultDomain) {
@@ -73,7 +109,7 @@ public class XliffResourceMessageSource {
 			return this;
 		}
 
-		public Builder identifier(List<XliffIdentifierInterface> identifier) {
+		public Builder identifier(List<XliffIdentifier> identifier) {
 			this.identifier = identifier;
 			return this;
 		}
@@ -81,7 +117,7 @@ public class XliffResourceMessageSource {
 		public CatalogMessageSourceBuilder build() {
 			ResourcesLoader resourcesLoader = new ResourcesLoader(
 					this.defaultLocale,
-					this.locationPatterns,
+					this.locationPattern,
 					this.fileExtensions
 			);
 
