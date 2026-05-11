@@ -28,11 +28,19 @@ import java.util.Locale;
 
 public class XliffResourceMessageSource {
 
+	/**
+	 * Utility class — not intended to be instantiated.
+	 *
+	 * @throws IllegalStateException always.
+	 */
 	private XliffResourceMessageSource() {
 		throw new IllegalStateException("Utility class");
 	}
 
 	/**
+	 * Creates a new {@link Builder} for assembling an XLIFF-backed Spring
+	 * {@code MessageSource}.
+	 *
 	 * <p>Before (Deprecated):</p>
 	 *
 	 * <pre>{@code
@@ -58,12 +66,25 @@ public class XliffResourceMessageSource {
 	 *		.build();
 	 * }
 	 * </pre>
+	 *
+	 * @param defaultLocale   the locale to fall back to when a translation is
+	 *                        not available in the requested locale.
+	 * @param locationPattern Spring resource pattern(s) describing where the
+	 *                        XLIFF files are located.
+	 * @return a new builder pre-configured with the given defaults.
 	 */
 	public static Builder builder(Locale defaultLocale, LocationPattern locationPattern) {
 		return new Builder(defaultLocale, locationPattern);
 	}
 
 	/**
+	 * Creates a new {@link Builder} using a plain location pattern string.
+	 *
+	 * @param defaultLocale   the locale to fall back to when a translation is
+	 *                        not available in the requested locale.
+	 * @param locationPattern Spring resource pattern describing where the
+	 *                        XLIFF files are located.
+	 * @return a new builder pre-configured with the given defaults.
 	 * @deprecated Use this instead: {@link #builder(Locale defaultLocale, LocationPattern locationPattern)}.
 	 */
 	@Deprecated(since = "2.1.0")
@@ -72,6 +93,14 @@ public class XliffResourceMessageSource {
 	}
 
 	/**
+	 * Creates a new {@link Builder} using a list of plain location pattern
+	 * strings.
+	 *
+	 * @param defaultLocale    the locale to fall back to when a translation is
+	 *                         not available in the requested locale.
+	 * @param locationPatterns Spring resource patterns describing where the
+	 *                         XLIFF files are located.
+	 * @return a new builder pre-configured with the given defaults.
 	 * @deprecated Use this instead: {@link #builder(Locale defaultLocale, LocationPattern locationPattern)}.
 	 */
 	@Deprecated(since = "2.1.0")
@@ -94,26 +123,70 @@ public class XliffResourceMessageSource {
 				new Xliff2xIdentifier(List.of("id"))
 		);
 
+		/**
+		 * Creates a new builder with the given default locale and XLIFF file
+		 * location pattern.
+		 *
+		 * @param defaultLocale   the locale to fall back to when a translation
+		 *                        is not available in the requested locale.
+		 * @param locationPattern Spring resource pattern(s) describing where
+		 *                        the XLIFF files are located.
+		 */
 		public Builder(Locale defaultLocale, LocationPattern locationPattern) {
 			this.defaultLocale = defaultLocale;
 			this.locationPattern = locationPattern;
 		}
 
+		/**
+		 * Sets the default domain on the underlying
+		 * {@link CatalogMessageSourceBuilder}. Codes whose domain matches this
+		 * value are accessible by their bare code; codes from other domains
+		 * must be looked up as {@code <domain>.<code>}.
+		 * <p>The domain itself is always parsed from the XLIFF file name; this
+		 * setting only controls which domain is treated as "default" when
+		 * resolving codes.
+		 *
+		 * @param defaultDomain the new default domain.
+		 * @return this builder for chaining.
+		 */
 		public Builder defaultDomain(String defaultDomain) {
 			this.defaultDomain = defaultDomain;
 			return this;
 		}
 
+		/**
+		 * Overrides the list of file extensions that are recognised as XLIFF
+		 * files.
+		 * <p>The defaults are {@code xlf} and {@code xliff}.
+		 *
+		 * @param fileExtensions the file extensions to consider (without the
+		 *                       leading dot).
+		 * @return this builder for chaining.
+		 */
 		public Builder fileExtensions(List<String> fileExtensions) {
 			this.fileExtensions = fileExtensions;
 			return this;
 		}
 
+		/**
+		 * Overrides the per-version identifier strategies used to resolve the
+		 * key of each translation unit.
+		 *
+		 * @param identifier the identifier strategies to use.
+		 * @return this builder for chaining.
+		 */
 		public Builder identifier(List<XliffIdentifier> identifier) {
 			this.identifier = identifier;
 			return this;
 		}
 
+		/**
+		 * Assembles the configured {@link CatalogMessageSourceBuilder} backed
+		 * by an {@link XliffCatalog} loaded from the configured location
+		 * pattern.
+		 *
+		 * @return the configured message source builder.
+		 */
 		public CatalogMessageSourceBuilder build() {
 			ResourcesLoader resourcesLoader = new ResourcesLoader(
 					this.defaultLocale,
