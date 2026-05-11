@@ -27,7 +27,6 @@ import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSource
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
