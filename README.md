@@ -310,10 +310,6 @@ A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation fil
 Repository: https://github.com/alaugks/spring-messagesource-xliff-example<br>
 Website: https://spring-boot-xliff-example.alaugks.dev
 
-## Support
-
-If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
-
 
 ## Related MessageSources and Examples  
   
@@ -322,3 +318,8 @@ If you have questions, comments or feature requests please use the [Discussions]
 * [Example: XLIFF MessageSource for Spring](https://github.com/alaugks/spring-messagesource-xliff-example)    
 * [Example: JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json-example)  
 * [Example: Custom Database Spring MessageSource](https://github.com/alaugks/spring-messagesource-db-example)
+
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
