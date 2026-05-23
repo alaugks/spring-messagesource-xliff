@@ -2,8 +2,8 @@
 
 This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-xliff-translation&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-xliff-translation)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/2.0.0)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/2.0.1)
 
 ## Dependency
 
@@ -14,29 +14,42 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
     <artifactId>spring-messagesource-xliff</artifactId>
     <version>2.0.0</version>
 </dependency>
+
+<dependency>
+    <groupId>io.github.alaugks</groupId>
+    <artifactId>spring-messagesource-xliff</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
+</dependency>
 ```
 
 ### Gradle 
 
 ```text
 implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0'
+
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.1-SNAPSHOT'
 ```
 
 
 ## MessageSource Configuration
 
-`builder(Locale defaultLocale, String locationPattern)` or<br>
-`builder(Locale defaultLocale, List<String> locationPatterns)` (***required***)
-* Argument `Locale locale`: Defines the default locale.
-* Argument `String locationPattern` | `List<String> locationPatterns`:
-  * Defines the pattern used to select the XLIFF files.
-  * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
-  * Files with the extension `xliff` and `xlf` are filtered from the result list.
+* `builder(Locale defaultLocale, LocationPattern locationPatterns)` (***required***)
+  * Argument `Locale locale`: Defines the default locale.
+  * Argument `LocationPattern locationPatterns`:
+    * Defines the pattern used to select the XLIFF files (`String` or `List<String>`).
+    * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
+    * Files with the extension `xliff` and `xlf` are filtered from the result list.
 
-`defaultDomain(String defaultDomain)`
+* `defaultDomain(String defaultDomain)`
+  * Defines the default domain.
+  * Default is `messages`.
+  * For more information, see [XLIFF Files](#xliff-files).
 
-* Defines the default domain. Default is `messages`. For more information, see [XLIFF Files](#xliff-files).
+* `fileExtensions(List<String> fileExtensions)`
+  * Default is: `List.of("xlf", "xliff")`
 
+* `identifier(List<XliffIdentifierInterface> identifier)`
+  * Default is: `List.of(new Xliff12Identifier(List.of("resname", "id")), new Xliff2xIdentifier(List.of("id")))`
 
 ### Example
 
@@ -44,6 +57,7 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 * The XLIFF files are stored in `src/main/resources/translations`.
 
 ```java
+import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -56,11 +70,11 @@ public class MessageSourceConfig {
     @Bean
     public MessageSource messageSource() {
        return XliffResourceMessageSource
-               .builder(
-                   Locale.forLanguageTag("en"),
-                   "translations/*"
-               )
-               .build();
+           .builder(
+               Locale.forLanguageTag("en"),
+               new LocationPattern("translations/*")
+           )
+           .build();
     }
 
 }
@@ -301,8 +315,10 @@ Website: https://spring-boot-xliff-example.alaugks.dev
 If you have questions, comments or feature requests please use the [Discussions](https://github.com/alaugks/spring-xliff-translation/discussions) section.
 
 
-## Related MessageSources and Examples
-
+## Related MessageSources and Examples  
+  
+* [XLIFF MessageSource for Spring](https://github.com/alaugks/spring-messagesource-xliff)  
 * [JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json)
-* [Example: JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json-example)
+* [Example: XLIFF MessageSource for Spring](https://github.com/alaugks/spring-messagesource-xliff-example)    
+* [Example: JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json-example)  
 * [Example: Custom Database Spring MessageSource](https://github.com/alaugks/spring-messagesource-db-example)

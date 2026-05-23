@@ -16,12 +16,12 @@
 
 package io.github.alaugks.spring.messagesource.xliff.exception;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+
 import org.junit.jupiter.api.Test;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 class SaxErrorHandlerTest {
 
