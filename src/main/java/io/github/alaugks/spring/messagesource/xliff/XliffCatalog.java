@@ -1,18 +1,5 @@
-/*
- * Copyright 2023-2025 André Laugks <alaugks@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2023 André Laugks <alaugks@gmail.com>
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -28,7 +15,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,8 +33,6 @@ public class XliffCatalog extends AbstractCatalog {
 	private final List<XliffIdentifier> identifiers;
 
 	private final List<TranslationFile> translationFiles;
-
-	private List<TransUnitInterface> cachedTransUnits;
 
 	/**
 	 * Creates a new catalog that lazily parses the given XLIFF translation
@@ -86,12 +70,8 @@ public class XliffCatalog extends AbstractCatalog {
 	 */
 	@Override
 	public List<TransUnitInterface> getTransUnits() {
-		if (this.cachedTransUnits != null) {
-			return this.cachedTransUnits;
-		}
 		try {
-			this.cachedTransUnits = this.parseXliffDocuments(this.translationFiles);
-			return this.cachedTransUnits;
+			return this.parseXliffDocuments(this.translationFiles);
 		}
 		catch (ParserConfigurationException | IOException e) {
 			throw new FatalError(e);
