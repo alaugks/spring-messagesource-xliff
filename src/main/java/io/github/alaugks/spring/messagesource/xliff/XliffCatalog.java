@@ -15,7 +15,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,8 +33,6 @@ public class XliffCatalog extends AbstractCatalog {
 	private final List<XliffIdentifier> identifiers;
 
 	private final List<TranslationFile> translationFiles;
-
-	private List<TransUnitInterface> cachedTransUnits;
 
 	/**
 	 * Creates a new catalog that lazily parses the given XLIFF translation
@@ -73,12 +70,8 @@ public class XliffCatalog extends AbstractCatalog {
 	 */
 	@Override
 	public List<TransUnitInterface> getTransUnits() {
-		if (this.cachedTransUnits != null) {
-			return this.cachedTransUnits;
-		}
 		try {
-			this.cachedTransUnits = this.parseXliffDocuments(this.translationFiles);
-			return this.cachedTransUnits;
+			return this.parseXliffDocuments(this.translationFiles);
 		}
 		catch (ParserConfigurationException | IOException e) {
 			throw new FatalError(e);
