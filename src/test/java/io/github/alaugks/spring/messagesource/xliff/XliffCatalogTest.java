@@ -102,7 +102,7 @@ class XliffCatalogTest {
 		XliffMessageSourceVersionSupportException exception = assertThrows(
 				XliffMessageSourceVersionSupportException.class, xliffCatalogBuilder::getTransUnits
 		);
-		assertEquals("XLIFF version \"1.0\" not supported.", exception.getMessage());
+		assertEquals("XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0 and 2.1", exception.getMessage());
 	}
 
 
