@@ -319,7 +319,6 @@ Website: https://spring-boot-xliff-example.alaugks.dev
 * [Example: JSON MessageSource for Spring](https://github.com/alaugks/spring-messagesource-json-example)  
 * [Example: Custom Database Spring MessageSource](https://github.com/alaugks/spring-messagesource-db-example)
 
-
 ## License
 
 Licensed under the [Apache License, Version 2.0](LICENSE).
