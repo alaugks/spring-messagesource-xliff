@@ -2,6 +2,10 @@ name: "Central Release"
 run-name: Central Release [${{ github.ref_name }}]
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   release:
     name: Release
