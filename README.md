@@ -18,7 +18,7 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
@@ -27,7 +27,7 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 ```text
 implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.0'
 
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.1-SNAPSHOT'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '2.0.1'
 ```
 
 
