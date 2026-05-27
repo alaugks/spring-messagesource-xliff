@@ -300,8 +300,6 @@ The behaviour of resolving the target value based on the code is equivalent to t
 A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
 
 Repository: https://github.com/alaugks/spring-messagesource-xliff-example<br>
-Website: https://spring-boot-xliff-example.alaugks.dev
-
 
 ## Related MessageSources and Examples  
   
