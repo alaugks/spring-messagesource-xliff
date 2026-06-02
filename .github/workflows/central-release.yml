@@ -21,7 +21,6 @@ jobs:
           server-username: 'CENTRAL_USERNAME'
           server-password: 'CENTRAL_TOKEN'
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: 'GPG_PRIVATE_KEY_PASSPHRASE'
           cache: 'maven'
 
       - name: Run Tests
@@ -32,6 +31,6 @@ jobs:
         run: |
           mvn -U -B clean deploy -P release
         env:
-          GPG_PRIVATE_KEY_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
