@@ -202,8 +202,8 @@ Not supported, relative to the XLIFF 1.2 and 2.0/2.1 specifications (a `—` mea
 | Grouping & context | `<group/>`, `restype`, `<context-group/>`, `<count-group/>` | `<group/>` | Structural metadata ignored. |
 | Binary content | `<bin-unit/>`, `<bin-source/>`, `<bin-target/>` | — | Not read. |
 | XLIFF 2.x modules | — | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed. |
-| Segment ordering | — | `<target order="N"/>` | **Ignored** — document order. _Planned for [3.1.0](/alaugks/spring-messagesource-xliff/tree/snapshot/3.1.0)._ |
-| Version | — | XLIFF 2.2 | Not supported (only 2.0 / 2.1). _Planned for [3.1.0](/alaugks/spring-messagesource-xliff/tree/snapshot/3.1.0)._ |
+| Segment ordering | — | `<target order="N"/>` | **Ignored** — document order. _Planned for [3.1.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.1.0)._ |
+| Version | — | XLIFF 2.2 | Not supported (only 2.0 / 2.1). _Planned for [3.1.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.1.0)._ |
 
 ### Structure of the Translation Filename
 
