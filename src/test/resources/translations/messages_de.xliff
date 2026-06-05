@@ -6,7 +6,7 @@
           source-language="en"
           target-language="de">
         <body>
-            <trans-unit resname="postcode">
+            <trans-unit id="postcode" resname="postcode">
                 <source>
                   Postcode
                 </source>

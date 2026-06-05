@@ -3,16 +3,15 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import java.util.List;
 import java.util.Locale;
@@ -33,32 +32,26 @@ class XliffCatalogTest {
 				List.of("xlf", "xliff")
 		);
 
-		var catalog = new XliffCatalog(
-				ressourceLoader.getTranslationFiles(),
-				List.of(
-						new Xliff12Identifier(List.of("resname", "id")),
-						new Xliff2xIdentifier(List.of("id"))
-				)
-		);
+		var catalog = new XliffCatalog(ressourceLoader.getTranslationFiles(), true);
 		var transUnits = catalog.getTransUnits();
 
-		assertEquals("Postcode", this.findInTransUnits(transUnits, "en", "postcode"));
-		assertEquals("Postleitzahl", this.findInTransUnits(transUnits, "de", "postcode"));
+		assertEquals("Postcode", TestHelper.findInTransUnits(transUnits, "en", "postcode"));
+		assertEquals("Postleitzahl", TestHelper.findInTransUnits(transUnits, "de", "postcode"));
 	}
 
 	@Test
 	void test_parseError() {
-		var xliffCatalogBuilder = this.getXliffCatalogBuilder(
+		var xliffCatalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of("fixtures/parse_error.xliff")),
 				Locale.forLanguageTag("en")
 		);
 
 		assertThrows(
-				XliffMessageSourceSAXParseException.class, xliffCatalogBuilder::getTransUnits
+				XliffMessageSourceSAXParseException.class, xliffCatalog::getTransUnits
 		);
 
 		assertThrows(
-				FatalError.class, xliffCatalogBuilder::getTransUnits
+				FatalError.class, xliffCatalog::getTransUnits
 		);
 	}
 
@@ -73,7 +66,7 @@ class XliffCatalogTest {
 
 		var transUnits = new XliffCatalog(
 				ressourceLoader.getTranslationFiles(),
-				null
+				true
 		).getTransUnits();
 
 		assertEquals(List.of(), transUnits);
@@ -81,58 +74,95 @@ class XliffCatalogTest {
 
 	@Test
 	void test_versionNotSupported() {
-		var xliffCatalogBuilder = this.getXliffCatalogBuilder(
+		var xliffCatalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of("fixtures/xliff10.xliff")),
-				Locale.forLanguageTag("en")
+				Locale.forLanguageTag("en"),
+				false
 		);
 
 		XliffMessageSourceVersionSupportException exception = assertThrows(
-				XliffMessageSourceVersionSupportException.class, xliffCatalogBuilder::getTransUnits
+				XliffMessageSourceVersionSupportException.class, xliffCatalog::getTransUnits
 		);
-		assertEquals("XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0 and 2.1", exception.getMessage());
+		assertEquals(
+				"XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0 and 2.1",
+				exception.getMessage()
+		);
 	}
-
 
 	@ParameterizedTest
 	@MethodSource("dataProvider_loadVersions")
-	void test_versionSupported(String ressourcePath, String domain, String expected) {
-		var catalog = this.getXliffCatalogBuilder(
+	void test_versionSupported(String ressourcePath, String expected) {
+		var catalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of(ressourcePath)),
 				Locale.forLanguageTag("en")
 		);
 
 		assertEquals(
 				expected,
-				this.findInTransUnits(catalog.getTransUnits(), "en", "code-1")
+				TestHelper.findInTransUnits(catalog.getTransUnits(), "en", "code-1")
 		);
 	}
 
 	private static Stream<Arguments> dataProvider_loadVersions() {
 		return Stream.of(
-				Arguments.of("fixtures/xliff12.xliff", "xliff12", "Postcode (Xliff Version 1.2)"),
-				Arguments.of("fixtures/xliff20.xliff", "xliff20", "Postcode (Xliff Version 2.0)"),
-				Arguments.of("fixtures/xliff21.xliff", "xliff21", "Postcode (Xliff Version 2.1)")
+				Arguments.of("fixtures/xliff12.xliff", "Postcode (Xliff Version 1.2)"),
+				Arguments.of("fixtures/xliff20.xliff", "Postcode (Xliff Version 2.0)"),
+				Arguments.of("fixtures/xliff21.xliff", "Postcode (Xliff Version 2.1)")
 		);
 	}
 
-	private XliffCatalog getXliffCatalogBuilder(LocationPattern files, Locale locale) {
+	@Test
+	void test_schemaValidation_invalidThrows() {
+		var xliffCatalog = TestHelper.getXliffCatalog(
+				new LocationPattern(List.of("fixtures/schemainvalid.xliff")),
+				Locale.forLanguageTag("en")
+		);
 
-		var ressourceLoader = new ResourcesLoader(locale, files, List.of("xlf", "xliff"));
-
-		return new XliffCatalog(
-				ressourceLoader.getTranslationFiles(),
-				List.of(
-						new Xliff12Identifier(List.of("resname", "id")),
-						new Xliff2xIdentifier(List.of("id"))
-				)
+		assertThrows(
+				XliffMessageSourceValidationException.class, xliffCatalog::getTransUnits
 		);
 	}
 
-	private String findInTransUnits(List<TransUnitInterface> transUnits, String locale, String code) {
-		return transUnits
-				.stream()
-				.filter(t -> t.locale().toString().equals(locale) && t.code().equals(code))
-				.findFirst()
-				.get().value();
+	@Test
+	void test_schemaValidation_disabledSkipsValidation() {
+		var ressourceLoader = new ResourcesLoader(
+				Locale.forLanguageTag("en"),
+				new LocationPattern(List.of("fixtures/schemainvalid.xliff")),
+				List.of("xlf", "xliff")
+		);
+
+		var transUnits = new XliffCatalog(ressourceLoader.getTranslationFiles(), false).getTransUnits();
+
+		assertEquals("Target", TestHelper.findInTransUnits(transUnits, "en", "novalid"));
 	}
+
+	@ParameterizedTest
+	@MethodSource("dataProvider_standardCompliantFixtures")
+	void test_fixturesAreSchemaValid(String resourcePath) {
+		var catalog = TestHelper.getXliffCatalog(
+				new LocationPattern(List.of(resourcePath)),
+				Locale.forLanguageTag("en")
+		);
+
+		assertDoesNotThrow(catalog::getTransUnits);
+	}
+
+	private static Stream<Arguments> dataProvider_standardCompliantFixtures() {
+		return Stream.of(
+				Arguments.of("fixtures/xliff12.xliff"),
+				Arguments.of("fixtures/xliff20.xliff"),
+				Arguments.of("fixtures/xliff21.xliff"),
+				Arguments.of("translations/messages.xliff"),
+				Arguments.of("translations/messages_de.xliff"),
+				Arguments.of("translations/messages_en_US.xliff"),
+				Arguments.of("translations/payment.xlf"),
+				Arguments.of("translations/payment_de.xlf"),
+				Arguments.of("translations_en/messages.xliff"),
+				Arguments.of("translations_en/payment.xlf"),
+				Arguments.of("translations_de/messages_de.xliff"),
+				Arguments.of("translations_de/payment_de.xlf"),
+				Arguments.of("translations_en_US/messages_en_US.xliff")
+		);
+	}
+
 }

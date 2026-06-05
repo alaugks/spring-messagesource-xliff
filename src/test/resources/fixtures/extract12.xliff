@@ -4,19 +4,22 @@
     <file original="global"
           datatype="plaintext"
           source-language="en"
-          target-language="en">
+          target-language="de">
         <body>
-            <trans-unit id="code-id-a" resname="code-resname-a">
+            <trans-unit id="id_a" resname="resname_a_key">
                 <source>Source A</source>
                 <target>Target A</target>
             </trans-unit>
-            <trans-unit id="code-id-b">
+            <trans-unit id="id_b">
                 <source>Source B</source>
-                <target>Target B</target>
             </trans-unit>
-            <trans-unit resname="code-resname-c">
-                <source>Source C</source>
-                <target>Target C</target>
+            <trans-unit resname="resname_only">
+                <source>Source D</source>
+                <target>Target D</target>
+            </trans-unit>
+            <trans-unit>
+                <source>Source E</source>
+                <target>Target E</target>
             </trans-unit>
         </body>
     </file>

@@ -3,155 +3,184 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import javax.xml.XMLConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-public class XliffDocument {
+/**
+ * Abstract base for reading translation units from a parsed XLIFF document.
+ *
+ * <p>Subclasses implement version-specific extraction; this class provides the
+ * shared utilities (key derivation helpers, text extraction, node traversal)
+ * and the {@link #readVersion(Element)} factory helper used before the correct
+ * subclass can be chosen.
+ */
+public abstract class XliffDocument {
 
-	private final Element root;
+	protected static final String SOURCE = "source";
+
+	protected static final String TARGET = "target";
+
+	protected final Element root;
 
 	/**
-	 * Creates a new wrapper around the root {@code <xliff>} element of an
-	 * already parsed XLIFF document.
+	 * Creates a document reader for the given root element.
 	 *
-	 * @param root the root element of the XLIFF document.
+	 * @param root the root element of the parsed XLIFF document.
 	 */
-	public XliffDocument(Element root) {
+	protected XliffDocument(Element root) {
 		this.root = root;
 	}
 
 	/**
-	 * Creates a new wrapper by extracting the root element from the given
-	 * parsed XLIFF {@link Document}.
+	 * Creates a document reader for the given parsed document.
 	 *
 	 * @param document the parsed XLIFF document.
 	 */
-	public XliffDocument(Document document) {
+	protected XliffDocument(Document document) {
 		this.root = document.getDocumentElement();
 	}
 
 	/**
-	 * Returns a mapping of translation identifiers to their target text for the
-	 * given trans-unit element name.
-	 * <p>The identifier of each entry is resolved by inspecting the attributes
-	 * named in {@code transUnitIdentifiers} in order; the first non-empty value
-	 * is used as the map key. Entries whose target text cannot be resolved
-	 * (no {@code <target>} element or no text content) are skipped.
+	 * Reads the XLIFF version from the root element without requiring a
+	 * concrete subclass instance. Returns {@code null} when the element is not
+	 * an XLIFF document or declares no {@code version} attribute.
 	 *
-	 * @param transUnitName        the element name carrying the translation
-	 *                             (e.g. {@code trans-unit} for XLIFF 1.2 or
-	 *                             {@code segment} for XLIFF 2.x).
-	 * @param transUnitIdentifiers ordered list of attribute names to probe for
-	 *                             the translation identifier.
-	 * @return map of identifier to translated target text; empty if the
-	 *         document is not a recognised XLIFF document.
+	 * @param root the root element of a parsed XML document.
+	 * @return the declared XLIFF version string, or {@code null}.
 	 */
-	public Map<String, String> getTransUnitsMap(String transUnitName, List<String> transUnitIdentifiers) {
-		Map<String, String> transUnitMap = new HashMap<>();
-
-		if (this.isXliffDocument()) {
-			NodeList nodeList = this.root.getElementsByTagName(transUnitName);
-
-			for (int item = 0; item < nodeList.getLength(); item++) {
-				Element node = (Element) nodeList.item(item);
-				String targetText = this.getTargetText(node);
-				if (targetText == null) {
-					continue;
-				}
-				transUnitIdentifiers.stream()
-						.map(attributeName -> this.getAttributeValue(
-								node.getAttributes().getNamedItem(attributeName)
-						))
-						.filter(code -> (code != null && !code.isEmpty()))
-						.findFirst()
-						.ifPresent(code -> transUnitMap.put(code, targetText));
-			}
+	public static String readVersion(Element root) {
+		String localName = root.getLocalName();
+		String name = localName != null ? localName : root.getNodeName();
+		if (!"xliff".equals(name)) {
+			return null;
 		}
-
-		return transUnitMap;
+		String version = root.getAttribute("version");
+		return version.isEmpty() ? null : version;
 	}
 
 	/**
-	 * Returns the target text for the given trans-unit element.
-	 * <p>The first {@code <target>} descendant returned by
-	 * {@link Element#getElementsByTagName(String)} is consulted, and its first
-	 * child is passed to {@link #getCharacterDataFromElement(Node)}.
+	 * Returns the XLIFF version declared on the root element, or {@code null}
+	 * when absent or when this is not an XLIFF document.
 	 *
-	 * @param node the trans-unit element.
-	 * @return the trimmed target text, or {@code null} if no {@code <target>}
-	 *         is present or its first child is missing.
-	 */
-	private String getTargetText(Element node) {
-		NodeList targets = node.getElementsByTagName("target");
-		if (targets.getLength() == 0) {
-			return null;
-		}
-		Node firstChild = targets.item(0).getFirstChild();
-		if (firstChild == null) {
-			return null;
-		}
-		return this.getCharacterDataFromElement(firstChild);
-	}
-
-	/**
-	 * Returns the value of the {@code version} attribute on the root element.
-	 *
-	 * @return the XLIFF version (e.g. {@code "1.2"}, {@code "2.0"}, {@code "2.1"}),
-	 *         or {@code null} if the document is not an XLIFF document.
+	 * @return the declared XLIFF version string, or {@code null}.
 	 */
 	public String getXliffVersion() {
-		if (this.isXliffDocument()) {
-			return this.getAttributeValue(
-					root.getAttributes().getNamedItem("version")
-			);
+		return readVersion(this.root);
+	}
+
+	/**
+	 * Returns whether the root element is an {@code <xliff>} element.
+	 *
+	 * @return {@code true} if the root is an XLIFF document element.
+	 */
+	protected boolean isXliffDocument() {
+		return "xliff".equals(this.elementName(this.root));
+	}
+
+	/**
+	 * Returns the first non-null, non-empty value.
+	 *
+	 * @param values the candidate values, in priority order.
+	 * @return the first non-empty value, or {@code ""} if none qualifies.
+	 */
+	protected String firstNonEmpty(String... values) {
+		for (String value : values) {
+			if (value != null && !value.isEmpty()) {
+				return value;
+			}
 		}
-
-		return null;
+		return "";
 	}
 
 	/**
-	 * Tests whether the wrapped element is an XLIFF document root.
+	 * Returns the first direct child element with the given local name.
 	 *
-	 * @return {@code true} if the root element is named {@code xliff}.
+	 * @param parent    the element whose children are searched.
+	 * @param localName the local name to match.
+	 * @return the first matching child element, or {@code null} if none.
 	 */
-	private boolean isXliffDocument() {
-		// Simple test: Filter if root element <xliff>
-		return root.getNodeName().equals("xliff");
-	}
-
-	/**
-	 * Extracts trimmed character data from the given DOM node.
-	 * <p>If the node has a next sibling, the trimmed
-	 * {@link Node#getTextContent() text content} of that sibling is returned.
-	 * Otherwise the trimmed {@link Node#getNodeValue() node value} of
-	 * {@code child} itself is returned.
-	 *
-	 * @param child the DOM node to read from.
-	 * @return the trimmed character data.
-	 */
-	private String getCharacterDataFromElement(Node child) {
-		if (child.getNextSibling() != null) {
-			return child.getNextSibling().getTextContent().trim();
-		}
-		return child.getNodeValue().trim();
-	}
-
-	/**
-	 * Returns the value of the given attribute node.
-	 *
-	 * @param node the attribute node, may be {@code null}.
-	 * @return the attribute value, or {@code null} if the node is {@code null}.
-	 */
-	private String getAttributeValue(Node node) {
-		if (node != null) {
-			return node.getNodeValue();
+	protected Element firstChildElement(Element parent, String localName) {
+		Node child = parent.getFirstChild();
+		while (child != null) {
+			if (child.getNodeType() == Node.ELEMENT_NODE && localName.equals(this.elementName(child))) {
+				return (Element) child;
+			}
+			child = child.getNextSibling();
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the node's local name, falling back to its node name when no
+	 * namespace-aware local name is available.
+	 *
+	 * @param node the node to name.
+	 * @return the local name, or the node name as fallback.
+	 */
+	protected String elementName(Node node) {
+		String localName = node.getLocalName();
+		return localName != null ? localName : node.getNodeName();
+	}
+
+	/**
+	 * Returns the element's text content as the displayable value: trimmed
+	 * unless the element's effective {@code xml:space} is {@code "preserve"}.
+	 *
+	 * @param element the source/target element; may be {@code null}.
+	 * @return the (conditionally trimmed) text content; {@code ""} when
+	 *         {@code element} is {@code null}.
+	 */
+	protected String value(Element element) {
+		String raw = this.rawValue(element);
+		return element != null && this.isPreserveSpace(element) ? raw : raw.trim();
+	}
+
+	/**
+	 * Returns the element's raw text content without trimming.
+	 *
+	 * @param element the element to read; may be {@code null}.
+	 * @return the text content, or {@code ""} when {@code element} is
+	 *         {@code null}.
+	 */
+	protected String rawValue(Element element) {
+		if (element == null) {
+			return "";
+		}
+		String content = element.getTextContent();
+		return content != null ? content : "";
+	}
+
+	/**
+	 * Returns whether whitespace in the element's content is significant, i.e.
+	 * the nearest {@code xml:space} declaration on the element or one of its
+	 * ancestors is {@code "preserve"}. When no ancestor declares
+	 * {@code xml:space}, whitespace is not preserved (the XML default).
+	 *
+	 * @param element the element whose effective {@code xml:space} is resolved;
+	 *                may be {@code null}.
+	 * @return {@code true} if the effective {@code xml:space} is
+	 *         {@code "preserve"}.
+	 */
+	protected boolean isPreserveSpace(Element element) {
+		Node node = element;
+		while (node instanceof Element current) {
+			String space = this.xmlSpace(current);
+			if (!space.isEmpty()) {
+				return "preserve".equals(space);
+			}
+			node = current.getParentNode();
+		}
+		return false;
+	}
+
+	/**
+	 * Reads the element's xml:space attribute (XML-namespaced, with
+	 * prefixed-name fallback).
+	 */
+	private String xmlSpace(Element element) {
+		String space = element.getAttributeNS(XMLConstants.XML_NS_URI, "space");
+		return space.isEmpty() ? element.getAttribute("xml:space") : space;
 	}
 }

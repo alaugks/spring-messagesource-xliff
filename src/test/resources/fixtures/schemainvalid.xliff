@@ -6,13 +6,9 @@
           source-language="en"
           target-language="de">
         <body>
-            <trans-unit id="expiry_date" resname="expiry_date">
-                <source>
-                  Expiry date
-                </source>
-                <target>
-                  Ablaufdatum
-                </target>
+            <trans-unit resname="novalid">
+                <source>Source</source>
+                <target>Target</target>
             </trans-unit>
         </body>
     </file>

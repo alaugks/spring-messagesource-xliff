@@ -6,7 +6,7 @@
           source-language="en"
           target-language="en">
         <body>
-            <trans-unit resname="postcode">
+            <trans-unit id="postcode" resname="postcode">
                 <source>
                   Postcode
                 </source>
@@ -20,7 +20,7 @@
                 <target>
                     <![CDATA[There {0,choice,0#are no files|1#is one file|1<are {0,number,integer} files}.]]></target>
             </trans-unit>
-            <trans-unit resname="">
+            <trans-unit id="empty_code" resname="">
                 <source>
                     Empty Code
                 </source>

@@ -7,9 +7,6 @@ import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilde
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifier;
 import java.util.List;
 import java.util.Locale;
 
@@ -17,8 +14,6 @@ public class XliffResourceMessageSource {
 
 	/**
 	 * Utility class — not intended to be instantiated.
-	 *
-	 * @throws IllegalStateException always.
 	 */
 	private XliffResourceMessageSource() {
 		throw new IllegalStateException("Utility class");
@@ -27,20 +22,6 @@ public class XliffResourceMessageSource {
 	/**
 	 * Creates a new {@link Builder} for assembling an XLIFF-backed Spring
 	 * {@code MessageSource}.
-	 *
-	 * <p>Before (Deprecated):</p>
-	 *
-	 * <pre>{@code
-	 *	return XliffResourceMessageSource
-	 *		.builder(
-	 *			Locale.forLanguageTag("en"),
-	 *			"translations/*"
-	 *		)
-	 *		.build();
-	 *}
-	 * </pre>
-	 *
-	 * <p>Now:</p>
 	 *
 	 * <pre>{@code
 	 *	import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
@@ -64,37 +45,6 @@ public class XliffResourceMessageSource {
 		return new Builder(defaultLocale, locationPattern);
 	}
 
-	/**
-	 * Creates a new {@link Builder} using a plain location pattern string.
-	 *
-	 * @param defaultLocale   the locale to fall back to when a translation is
-	 *                        not available in the requested locale.
-	 * @param locationPattern Spring resource pattern describing where the
-	 *                        XLIFF files are located.
-	 * @return a new builder pre-configured with the given defaults.
-	 * @deprecated Use this instead: {@link #builder(Locale defaultLocale, LocationPattern locationPattern)}.
-	 */
-	@Deprecated(since = "2.1.0")
-	public static Builder builder(Locale defaultLocale, String locationPattern) {
-		return builder(defaultLocale, new LocationPattern(locationPattern));
-	}
-
-	/**
-	 * Creates a new {@link Builder} using a list of plain location pattern
-	 * strings.
-	 *
-	 * @param defaultLocale    the locale to fall back to when a translation is
-	 *                         not available in the requested locale.
-	 * @param locationPatterns Spring resource patterns describing where the
-	 *                         XLIFF files are located.
-	 * @return a new builder pre-configured with the given defaults.
-	 * @deprecated Use this instead: {@link #builder(Locale defaultLocale, LocationPattern locationPattern)}.
-	 */
-	@Deprecated(since = "2.1.0")
-	public static Builder builder(Locale defaultLocale, List<String> locationPatterns) {
-		return builder(defaultLocale, new LocationPattern(locationPatterns));
-	}
-
 	public static final class Builder {
 
 		private final Locale defaultLocale;
@@ -105,10 +55,7 @@ public class XliffResourceMessageSource {
 
 		private List<String> fileExtensions = List.of("xlf", "xliff");
 
-		private List<XliffIdentifier> identifier = List.of(
-				new Xliff12Identifier(List.of("resname", "id")),
-				new Xliff2xIdentifier(List.of("id"))
-		);
+		private boolean validateSchema = false;
 
 		/**
 		 * Creates a new builder with the given default locale and XLIFF file
@@ -156,14 +103,19 @@ public class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Overrides the per-version identifier strategies used to resolve the
-		 * key of each translation unit.
+		 * Controls whether each XLIFF document is validated against its OASIS
+		 * XSD schema before its units are extracted.
+		 * <p>Validation is disabled by default. Enable it to reject documents
+		 * that do not conform to the schema; note that strict schemas reject
+		 * files that are otherwise readable (for example XLIFF 1.2 files whose
+		 * {@code <trans-unit>} elements omit the schema-required {@code id}
+		 * attribute).
 		 *
-		 * @param identifier the identifier strategies to use.
+		 * @param validateSchema {@code true} to validate against the schema.
 		 * @return this builder for chaining.
 		 */
-		public Builder identifier(List<XliffIdentifier> identifier) {
-			this.identifier = identifier;
+		public Builder validateSchema(boolean validateSchema) {
+			this.validateSchema = validateSchema;
 			return this;
 		}
 
@@ -183,7 +135,7 @@ public class XliffResourceMessageSource {
 
 			CatalogInterface xliffCatalog = new XliffCatalog(
 					resourcesLoader.getTranslationFiles(),
-					this.identifier
+					this.validateSchema
 			);
 
 			return CatalogMessageSourceBuilder

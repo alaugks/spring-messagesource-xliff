@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="2.0"
+       srcLang="en"
+       trgLang="de"
+       xmlns="urn:oasis:names:tc:xliff:document:2.0">
+    <file id="f1">
+        <unit id="unit_id_a" name="unit_name_a">
+            <segment>
+                <source>Source A</source>
+                <target>Target A</target>
+            </segment>
+        </unit>
+        <unit id="unit_id_b">
+            <segment>
+                <source>Source B</source>
+            </segment>
+        </unit>
+        <unit name="unit_name_c">
+            <segment>
+                <source>Source C</source>
+                <target>Target C</target>
+            </segment>
+        </unit>
+        <unit>
+            <segment>
+                <source>Source D</source>
+                <target>Target D</target>
+            </segment>
+        </unit>
+    </file>
+</xliff>

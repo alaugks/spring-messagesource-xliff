@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="2.1"
-       xmlns="urn:oasis:names:tc:xliff:document:2.1"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="urn:oasis:names:tc:xliff:document:2.1 xliff-core-2.1.xsd">
-    <file datatype="plaintext" srcLang="en" trgLang="de">
-        <unit id="1">
-            <segment id="element">
+       srcLang="en"
+       trgLang="de"
+       xmlns="urn:oasis:names:tc:xliff:document:2.0">
+    <file id="f1">
+        <unit id="element">
+            <segment>
                 <source>value</source>
                 <target>value</target>
             </segment>
-            <segment id="element-newline">
+        </unit>
+        <unit id="element-newline">
+            <segment>
                 <source>
                     value
                 </source>
@@ -17,11 +19,15 @@
                     value
                 </target>
             </segment>
-            <segment id="element-with-cdata">
+        </unit>
+        <unit id="element-with-cdata">
+            <segment>
                 <source><![CDATA[value]]></source>
                 <target><![CDATA[value]]></target>
             </segment>
-            <segment id="element-with-cdata-newline">
+        </unit>
+        <unit id="element-with-cdata-newline">
+            <segment>
                 <source>
                     <![CDATA[
                             value

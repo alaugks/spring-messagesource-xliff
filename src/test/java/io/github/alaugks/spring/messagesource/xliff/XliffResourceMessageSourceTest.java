@@ -7,16 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff12Identifier;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.Xliff2xIdentifier;
-import io.github.alaugks.spring.messagesource.xliff.XliffCatalog.XliffIdentifier;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.NoSuchMessageException;
 
 class XliffResourceMessageSourceTest {
@@ -37,7 +31,7 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_getMessage_code_args_locale() {
 		var messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), "translations/*")
+				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 				.build();
 
 		assertEquals("Postcode", messageSource.getMessage(
@@ -64,9 +58,11 @@ class XliffResourceMessageSourceTest {
 		var messageSource = XliffResourceMessageSource
 				.builder(
 						Locale.forLanguageTag("en"),
-						List.of(
-								"translations_en/*",
-								"translations_de/*"
+						new LocationPattern(
+								List.of(
+										"translations_en/*",
+										"translations_de/*"
+								)
 						)
 				)
 				.build();
@@ -92,7 +88,7 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_defaultDomain() {
 		var messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), "translations/*")
+				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 				.defaultDomain("payment")
 				.build();
 
@@ -106,7 +102,7 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_fileExtensions() {
 		var messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), "translations/*")
+				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 				.fileExtensions(List.of("xlf"))
 				.build();
 
@@ -118,94 +114,26 @@ class XliffResourceMessageSourceTest {
 		));
 	}
 
-	@ParameterizedTest()
-	@MethodSource("dataProvider_setTranslationUnitIdentifiersOrdering")
-	void test_identifier(
-			List<XliffIdentifier> translationUnitIdentifiers,
-			String code,
-			String expected
-	) {
+	@Test
+	void test_validateSchema_enabled_throws() {
+		var builder = XliffResourceMessageSource
+				.builder(Locale.forLanguageTag("en"), new LocationPattern("fixtures/schemainvalid.xliff"))
+				.validateSchema(true);
+
+		assertThrows(XliffMessageSourceValidationException.class, builder::build);
+	}
+
+	@Test
+	void test_validateSchema_disabledByDefault() {
 		var messageSource = XliffResourceMessageSource
-				.builder(
-						Locale.forLanguageTag("en"),
-						List.of(
-								"fixtures/identifierxliff12.xliff",
-								"fixtures/identifierxliff2x.xliff"
-						)
-				)
-				.identifier(translationUnitIdentifiers)
+				.builder(Locale.forLanguageTag("en"), new LocationPattern("fixtures/schemainvalid.xliff"))
+				.defaultDomain("schemainvalid")
 				.build();
 
-		String message = messageSource.getMessage(
-				code,
+		assertEquals("Target", messageSource.getMessage(
+				"novalid",
 				null,
 				Locale.forLanguageTag("en")
-		);
-		assertEquals(expected, message);
+		));
 	}
-
-	private static Stream<Arguments> dataProvider_setTranslationUnitIdentifiersOrdering() {
-		return Stream.of(
-				Arguments.of(
-						List.of(
-								new Xliff12Identifier(List.of("resname"))
-						),
-						"identifierxliff12.code-resname-a",
-						"Target A"
-				),
-				Arguments.of(
-						List.of(
-								new Xliff12Identifier(List.of("id"))
-						),
-						"identifierxliff12.code-id-a",
-						"Target A"
-				),
-
-				Arguments.of(
-						List.of(
-								new Xliff12Identifier(List.of("resname", "id"))
-						),
-						"identifierxliff12.code-id-b",
-						"Target B"
-				),
-				Arguments.of(
-						List.of(
-								new Xliff12Identifier(List.of("id", "resname"))
-						),
-						"identifierxliff12.code-resname-c",
-						"Target C"
-				),
-
-				Arguments.of(
-						List.of(
-								new Xliff2xIdentifier(List.of("resname"))
-						),
-						"identifierxliff2x.code-resname-a",
-						"Target A"
-				),
-				Arguments.of(
-						List.of(
-								new Xliff2xIdentifier(List.of("id"))
-						),
-						"identifierxliff2x.code-id-a",
-						"Target A"
-				),
-
-				Arguments.of(
-						List.of(
-								new Xliff2xIdentifier(List.of("resname", "id"))
-						),
-						"identifierxliff2x.code-id-b",
-						"Target B"
-				),
-				Arguments.of(
-						List.of(
-								new Xliff2xIdentifier(List.of("id", "resname"))
-						),
-						"identifierxliff2x.code-resname-c",
-						"Target C"
-				)
-		);
-	}
-
 }
