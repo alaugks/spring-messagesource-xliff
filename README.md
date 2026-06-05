@@ -49,23 +49,14 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 ## MessageSource Configuration
 
 * `builder(Locale defaultLocale, LocationPattern locationPatterns)` (***required***)
-  * Argument `Locale locale`: Defines the default locale.
-  * Argument `LocationPattern locationPatterns`:
-    * Defines the pattern used to select the XLIFF files (`String` or `List<String>`).
-    * The package uses the [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html) to select the XLIFF files. So you can use the supported patterns.
-    * Files with the extension `xliff` and `xlf` are filtered from the result list.
+  * `Locale defaultLocale`: the default locale.
+  * `LocationPattern locationPatterns`: pattern(s) selecting the XLIFF files (`String` or `List<String>`). Uses Spring's [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html), so all its patterns work. Only files ending in `xliff` or `xlf` are kept.
 
-* `defaultDomain(String defaultDomain)`
-  * Defines the default domain.
-  * Default is `messages`.
-  * For more information, see [XLIFF Files](#xliff-files).
+* `defaultDomain(String defaultDomain)` — the default domain (default `messages`); see [XLIFF Files](#xliff-files).
 
-* `fileExtensions(List<String> fileExtensions)`
-  * Default is: `List.of("xlf", "xliff")`
+* `fileExtensions(List<String> fileExtensions)` — default `List.of("xlf", "xliff")`.
 
-* `validateSchema(boolean validateSchema)`
-  * Validates each XLIFF file against its OASIS XSD schema before the translation units are read.
-  * Default is `false`. Enable it with `validateSchema(true)` to reject non-conforming files; note that strict schemas reject files that are otherwise readable (for example XLIFF 1.2 files whose `<trans-unit/>` omit the schema-required `id` attribute).
+* `validateSchema(boolean validateSchema)` — validate each file against its OASIS XSD before reading. Default `false`; `validateSchema(true)` rejects non-conforming files (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 `<trans-unit/>` without the required `id`).
 
 ### Example
 
@@ -98,29 +89,25 @@ public class MessageSourceConfig {
 
 ## XLIFF Files
 
-* Translations can be separated into different files (domains). The default domain is `messages`.
-* The default domain can be defined.
-* Translation files must be stored in the resource folder and have the extension `xliff` or `xlf`.
-* Supported XLIFF versions: `1.2`, `2.0` and `2.1`.
-* Optionally, each XLIFF file can be validated against its OASIS XSD schema (XLIFF 1.2 against `xliff-core-1.2-transitional.xsd`, XLIFF 2.0/2.1 against `xliff-core-2.0.xsd`). Validation is disabled by default; enable it with `validateSchema(true)`.
+* Translations can be split into files by domain (default domain `messages`, configurable via `defaultDomain`).
+* Files live in the resource folder with extension `xliff` or `xlf`.
+* Supported versions: `1.2`, `2.0` and `2.1`.
+* Each file can optionally be validated against its OASIS XSD (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`); off by default, enable with `validateSchema(true)`.
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
-* For each translation unit a **key** (the message code) and a **value** (the translated text) are derived. The key is always the resource name attribute (`resname` / `name`) — **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value) below.
+* Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`) — **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
 
 ### Translation Key
 
-The key is the application-facing resource name. The XLIFF standard separates the internal document identifier (`id`) from the original resource name (`resname` / `name`). The resource name is used as the key and the `id` serves only as fallback when no resource name is set.
+The key is the application-facing resource name. XLIFF separates the internal identifier (`id`) from the resource name (`resname` / `name`); the resource name is the key, with `id` as fallback when it is absent.
 
 | Version | Element | 1. Key from | 2. Fallback | Not used as key |
 |---|---|---|---|---|
 | **1.2** | `<trans-unit/>` | `resname` *(optional, resource name)* | `id` *(required, document identifier)* | — |
 | **2.0 / 2.1** | `<unit/>` | `name` *(optional, resource name)* | `id` *(required, document identifier)* | `segment/@id` |
 
-* **XLIFF 1.2:** `resname` &rarr; `id`. `resname` is the original resource name from the source format (e.g. the key used in a properties file) and is the preferred key. `id` is required and unique within the `<file/>` but serves as a document-internal identifier for tool tracking; it is only used as the key when `resname` is absent.
-  * Documentation: [XLIFF 1.2 – General Identifiers](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers)
-* **XLIFF 2.0 / 2.1:** `unit/@name` &rarr; `unit/@id`. `unit/@name` is the resource name associated with the unit (e.g. the key used in a resource file) and is the preferred key. `unit/@id` is required and unique within the `<file/>` but is a document-internal identifier; it is only used as the key when `unit/@name` is absent.
-  * The `segment/@id` is **never** used as the key — it is optional and only unique within its `<unit/>`.
-  * Documentation: [XLIFF 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment), [XLIFF 2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment)
-* A translation unit is **skipped** when it has neither attribute set (1.2: no `resname` and no `id`; 2.x: no `unit/@name` and no `unit/@id`).
+* **XLIFF 1.2:** `resname` &rarr; `id`. `resname` is the original resource name (e.g. a properties-file key) and is preferred; `id` is required and unique within the `<file/>` but is a tool-internal identifier, used as the key only when `resname` is absent. ([Docs: General Identifiers](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers))
+* **XLIFF 2.0 / 2.1:** `unit/@name` &rarr; `unit/@id`, analogous to 1.2. `segment/@id` is **never** the key (optional, only unique within its `<unit/>`). ([Docs: 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment), [2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment))
+* A unit is **skipped** when neither attribute is set (1.2: no `resname`/`id`; 2.x: no `name`/`id`).
 
 ### Translation Value
 
@@ -141,7 +128,7 @@ Result: `greeting` → `Hallo Welt`
 
 #### XLIFF 2.x — Segmentation
 
-A `<unit/>` contains one or more `<segment/>` elements (segmentation). A `<unit/>` with a single `<segment/>` is the standard case. When a `<unit/>` contains multiple `<segment/>` elements, the segments are reassembled into a single string for a reading application. Between segments, `<ignorable/>` holds content that is not translatable — typically whitespace.
+A `<unit/>` holds one or more `<segment/>` elements (a single segment is the common case). Multiple segments are reassembled into one string; `<ignorable/>` between them holds non-translatable content, typically whitespace.
 
 The reassembly rules are:
 * Each `<segment/>` contributes its `<target/>` text, falling back to `<source/>` when no `<target/>` is present.
@@ -168,9 +155,9 @@ Result: `disclaimer` → `Alle Preise inkl. MwSt. Irrtümer vorbehalten.`
 
 #### Markup
 
-Applies to both XLIFF 1.2 and 2.x. The value is the **text content** of the `<source/>` / `<target/>` element. Any embedded markup — for example HTML — is taken **verbatim**, whether it is wrapped in a `CDATA` section or escaped. XLIFF inline elements (`<g/>`, `<pc/>`, `<ph/>`, `<x/>`, …) are **not** interpreted; if you need markup or placeholders in the displayed value, put them into the text as `CDATA` or escaped characters.
+Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**; embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements (`<g/>`, `<pc/>`, `<ph/>`, `<x/>`, …) are **not** interpreted — put display markup into the text as `CDATA` or escaped characters.
 
-Inline elements that wrap text — most notably the annotation marker `<mrk/>` (XLIFF 1.2 and 2.x) — are not processed either, but their **text content is kept** as part of the value (the `<mrk/>` tag itself is dropped, the text it spans remains). For example `Hallo <mrk ...>Welt</mrk>!` yields `Hallo Welt!`.
+Text-wrapping inline elements — most notably the annotation marker `<mrk/>` — are not processed, but their **text is kept**: the tag is dropped, the spanned text remains. E.g. `Hallo <mrk ...>Welt</mrk>!` → `Hallo Welt!`.
 
 ```xml
 <unit id="1" name="teaser">
@@ -185,7 +172,7 @@ Result: `teaser` → `<strong>Mehr</strong> lesen`
 
 #### Whitespace
 
-Applies to both XLIFF 1.2 and 2.x. By default the value is trimmed of leading and trailing whitespace. To keep it, set [`xml:space="preserve"`](https://www.w3.org/TR/xml/#sec-white-space) on the `<source/>` / `<target/>` (or an ancestor); the value is then taken without trimming.
+Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="preserve"`](https://www.w3.org/TR/xml/#sec-white-space) on the `<source/>` / `<target/>` (or an ancestor) to keep leading and trailing whitespace.
 
 ```xml
 <unit id="1" name="separator">
@@ -199,9 +186,9 @@ Result: `separator` → `· ` (with the surrounding spaces preserved)
 
 ### Unsupported XLIFF Features
 
-This package focuses on **reading and displaying** translations (key → text) — not on editing XLIFF with translation tools. Everything that only matters for the translation/authoring round-trip is therefore intentionally **not** processed. A document that uses these features still loads; the features are simply ignored and only the resolved text value is returned.
+This package focuses on **reading and displaying** translations (key → text), not on editing XLIFF with translation tools. Features that only matter for the authoring round-trip are intentionally **not** processed: a document using them still loads, the features are ignored, and only the resolved text is returned.
 
-Not supported, relative to the XLIFF 1.2 and 2.0/2.1 specifications. A `—` means the version has no such concept.
+Not supported, relative to the XLIFF 1.2 and 2.0/2.1 specifications (a `—` means the version has no such concept):
 
 | Feature | XLIFF 1.2 | XLIFF 2.x | Behavior in 3.0.0 |
 |---|---|---|---|
@@ -250,7 +237,7 @@ Not supported, relative to the XLIFF 1.2 and 2.0/2.1 specifications. A `—` mea
 
 #### XLIFF Files
 
-Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 2.1.
+XLIFF versions can be mixed. Example using XLIFF 1.2 and 2.1:
 
 ##### messages.xliff
 
@@ -391,7 +378,7 @@ Mixing XLIFF versions is possible. Here is an example using XLIFF 1.2 and XLIFF 
 
 #### Target value
 
-The behaviour of resolving the target value based on the code is equivalent to the ResourceBundleMessageSource or ReloadableResourceBundleMessageSource.
+Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / `ReloadableResourceBundleMessageSource`.
 
 <table>
   <thead>
