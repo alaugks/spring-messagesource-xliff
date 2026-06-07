@@ -1,6 +1,8 @@
 # XLIFF MessageSource for Spring
 
-This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1.
+This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1. 
+
+XLIFF 2.2 is planned for version 3.2.0.
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.0.0)
@@ -202,8 +204,8 @@ Not supported, relative to the XLIFF 1.2 and 2.0/2.1 specifications (a `—` mea
 | Grouping & context | `<group/>`, `restype`, `<context-group/>`, `<count-group/>` | `<group/>` | Structural metadata ignored. |
 | Binary content | `<bin-unit/>`, `<bin-source/>`, `<bin-target/>` | — | Not read. |
 | XLIFF 2.x modules | — | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed. |
-| Segment ordering | — | `<target order="N"/>` | **Ignored** — document order. _Planned for [3.1.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.1.0)._ |
-| Version | — | XLIFF 2.2 | Not supported (only 2.0 / 2.1). _Planned for [3.1.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.1.0)._ |
+| Segment ordering | — | `<target order="N"/>` | **Ignored** — document order. **Planned for [3.1.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.1.0)**. |
+| Version | — | XLIFF 2.2 | Not supported (only 2.0 / 2.1). **Planned for 3.2.0**. |
 
 ### Structure of the Translation Filename
 
