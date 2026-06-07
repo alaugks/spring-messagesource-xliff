@@ -58,6 +58,20 @@ class XliffSchemaValidatorTest {
 				        </unit>
 				    </file>
 				</xliff>
+				"""),
+			Arguments.of("2.2", """
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.2">
+				    <file id="f1">
+				        <unit id="unit-id" name="unit-attr-name">
+				            <segment id="segment-id">
+				                <source><![CDATA[<span>source</span>]]></source>
+				                <target><![CDATA[<span>target</span>]]></target>
+				            </segment>
+				        </unit>
+				    </file>
+				</xliff>
 				""")
 		);
 	}

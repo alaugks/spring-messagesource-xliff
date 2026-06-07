@@ -70,10 +70,10 @@ public class Xliff12Document extends XliffDocument implements XliffDocumentInter
 			return;
 		}
 
-		Element target = this.firstChildElement(transUnit, TARGET);
+		Element target = firstChildElement(transUnit, TARGET);
 		Element valueElement = target != null
 				? target
-				: this.firstChildElement(transUnit, SOURCE);
+				: firstChildElement(transUnit, SOURCE);
 		transUnits.put(key, this.value(valueElement));
 	}
 }

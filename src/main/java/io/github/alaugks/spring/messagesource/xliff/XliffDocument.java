@@ -76,7 +76,7 @@ public abstract class XliffDocument {
 	 * @return {@code true} if the root is an XLIFF document element.
 	 */
 	protected boolean isXliffDocument() {
-		return "xliff".equals(this.elementName(this.root));
+		return "xliff".equals(elementName(this.root));
 	}
 
 	/**
@@ -101,10 +101,10 @@ public abstract class XliffDocument {
 	 * @param localName the local name to match.
 	 * @return the first matching child element, or {@code null} if none.
 	 */
-	protected Element firstChildElement(Element parent, String localName) {
+	protected static Element firstChildElement(Element parent, String localName) {
 		Node child = parent.getFirstChild();
 		while (child != null) {
-			if (child.getNodeType() == Node.ELEMENT_NODE && localName.equals(this.elementName(child))) {
+			if (child.getNodeType() == Node.ELEMENT_NODE && localName.equals(elementName(child))) {
 				return (Element) child;
 			}
 			child = child.getNextSibling();
@@ -119,7 +119,7 @@ public abstract class XliffDocument {
 	 * @param node the node to name.
 	 * @return the local name, or the node name as fallback.
 	 */
-	protected String elementName(Node node) {
+	protected static String elementName(Node node) {
 		String localName = node.getLocalName();
 		return localName != null ? localName : node.getNodeName();
 	}

@@ -13,7 +13,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Reads translation units from a parsed XLIFF 2.0/2.1 document.
+ * Reads translation units from a parsed XLIFF 2.0/2.1/2.2 document.
  *
  * <p>For each {@code <unit>}: the key is the first non-empty value of
  * {@code name}, then {@code id}; the value reconstructs the unit's translated
@@ -22,6 +22,10 @@ import org.w3c.dom.NodeList;
  * — as XLIFF prescribes for segmented content (Segmentation, Section 4.8).
  * Units that have neither a {@code name} nor an {@code id} are skipped.
  *
+ * <p>A unit carrying the XLIFF 2.2 Plural, Gender, and Select (PGS) Module
+ * (a {@code pgs:switch} attribute) is instead converted to an ICU MessageFormat
+ * pattern by {@link IcuPatternGenerator}; that pattern becomes the unit's value.
+ *
  * <p>Each element's text content is taken verbatim (embedded markup, e.g. HTML
  * in a CDATA section, is preserved; XLIFF inline elements are not interpreted).
  * The concatenated value is trimmed unless the unit, or one of its elements,
@@ -29,8 +33,13 @@ import org.w3c.dom.NodeList;
  */
 public class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
+	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
+	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
+
+	private final IcuPatternGenerator icuPatternGenerator = new IcuPatternGenerator();
+
 	/**
-	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
+	 * Creates a reader for the given XLIFF 2.0/2.1/2.2 root element.
 	 *
 	 * @param root the root element of the parsed XLIFF document.
 	 */
@@ -39,7 +48,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	}
 
 	/**
-	 * Creates a reader for the given parsed XLIFF 2.0/2.1 document.
+	 * Creates a reader for the given parsed XLIFF 2.0/2.1/2.2 document.
 	 *
 	 * @param document the parsed XLIFF document.
 	 */
@@ -48,7 +57,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	}
 
 	/**
-	 * Extracts the translation units from the XLIFF 2.0/2.1 document.
+	 * Extracts the translation units from the XLIFF 2.0/2.1/2.2 document.
 	 *
 	 * @return ordered map of key to translated text; empty if the document is
 	 *         not an XLIFF document.
@@ -67,11 +76,20 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 
 	/**
 	 * Adds the unit's key and value to the map, skipping it when it has no key
-	 * or no segments.
+	 * or no segments. PGS-annotated units are converted to an ICU pattern.
 	 */
 	private void addUnit(Element unit, Map<String, String> transUnits) {
 		String key = this.firstNonEmpty(unit.getAttribute("name"), unit.getAttribute("id"));
 		if (key.isEmpty()) {
+			return;
+		}
+
+		String pgsSwitch = unit.getAttributeNS(PGS_NS, "switch");
+		if (!pgsSwitch.isEmpty()) {
+			String icu = this.icuPatternGenerator.generate(unit, pgsSwitch);
+			if (!icu.isEmpty()) {
+				transUnits.put(key, icu);
+			}
 			return;
 		}
 
@@ -90,8 +108,8 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 */
 	private boolean isPreservesWhitespace(List<Element> elements) {
 		for (Element element : elements) {
-			if (this.isPreserveSpace(this.firstChildElement(element, TARGET))
-				|| this.isPreserveSpace(this.firstChildElement(element, SOURCE))
+			if (this.isPreserveSpace(firstChildElement(element, TARGET))
+				|| this.isPreserveSpace(firstChildElement(element, SOURCE))
 			) {
 				return true;
 			}
@@ -125,11 +143,11 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 		StringBuilder value = new StringBuilder();
 		for (Element element : elements) {
 			if (this.isSegment(element)) {
-				Element target = this.firstChildElement(element, TARGET);
-				value.append(this.rawValue(target != null ? target : this.firstChildElement(element, SOURCE)));
+				Element target = firstChildElement(element, TARGET);
+				value.append(this.rawValue(target != null ? target : firstChildElement(element, SOURCE)));
 			}
 			else {
-				value.append(this.rawValue(this.firstChildElement(element, SOURCE)));
+				value.append(this.rawValue(firstChildElement(element, SOURCE)));
 			}
 		}
 		return value.toString();
@@ -139,14 +157,13 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 * Returns whether the node is a <segment> element.
 	 */
 	private boolean isSegment(Node node) {
-		return "segment".equals(this.elementName(node));
+		return "segment".equals(elementName(node));
 	}
 
 	/**
 	 * Returns whether the node is a <segment> or <ignorable> element.
 	 */
 	private boolean isSegmentOrIgnorable(Node node) {
-		return this.isSegment(node) || "ignorable".equals(this.elementName(node));
+		return this.isSegment(node) || "ignorable".equals(elementName(node));
 	}
 }
-

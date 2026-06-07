@@ -4,6 +4,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -26,19 +27,22 @@ import org.xml.sax.SAXParseException;
  * Validates XLIFF documents against the bundled OASIS XSD schemas.
  *
  * <p>XLIFF 1.2 is validated against {@code xliff-core-1.2-transitional.xsd},
- * and XLIFF 2.0/2.1 against {@code xliff-core-2.0.xsd} (2.1 documents reuse the
- * 2.0 core namespace and schema). All schemas, including the {@code xml.xsd}
- * imported by the core schemas, are read only from the package; external access
- * is disabled so nothing is ever fetched from outside the classpath.
+ * XLIFF 2.0/2.1 against {@code xliff-core-2.0.xsd} (2.1 documents reuse the
+ * 2.0 core namespace and schema), and XLIFF 2.2 against
+ * {@code xliff-core-2.2.xsd} together with the {@code metadata.xsd} module it
+ * imports. All schemas, including the {@code xml.xsd} imported by the core
+ * schemas, are read only from the package; external access is disabled so
+ * nothing is ever fetched from outside the classpath.
  */
 final class XliffSchemaValidator {
 
 	private static final String SCHEMA_PATH = "schema/";
 
-	private static final Map<String, String> SCHEMA_BY_VERSION = Map.of(
-			"1.2", "xliff-core-1.2-transitional.xsd",
-			"2.0", "xliff-core-2.0.xsd",
-			"2.1", "xliff-core-2.0.xsd"
+	private static final Map<String, List<String>> SCHEMA_BY_VERSION = Map.of(
+			"1.2", List.of("xliff-core-1.2-transitional.xsd"),
+			"2.0", List.of("xliff-core-2.0.xsd"),
+			"2.1", List.of("xliff-core-2.0.xsd"),
+			"2.2", List.of("metadata.xsd", "xliff-core-2.2.xsd")
 	);
 
 	private final Map<String, Schema> schemaCache = new ConcurrentHashMap<>();
@@ -53,12 +57,12 @@ final class XliffSchemaValidator {
 	 *                                               document violates the schema.
 	 */
 	void validate(Document document, String version) {
-		String schemaResource = SCHEMA_BY_VERSION.get(version);
-		if (schemaResource == null) {
+		List<String> schemaResources = SCHEMA_BY_VERSION.get(version);
+		if (schemaResources == null) {
 			throw new XliffMessageSourceValidationException("No schema available for version '" + version + "'");
 		}
 
-		Schema schema = this.schemaCache.computeIfAbsent(schemaResource, this::loadSchema);
+		Schema schema = this.schemaCache.computeIfAbsent(version, key -> this.loadSchema(schemaResources));
 
 		CollectingErrorHandler errorHandler = new CollectingErrorHandler();
 		Validator validator = schema.newValidator();
@@ -79,25 +83,38 @@ final class XliffSchemaValidator {
 		}
 	}
 
-	/**
-	 * Loads and compiles the bundled core schema together with the bundled
-	 * xml.xsd, with external access disabled.
-	 */
-	private Schema loadSchema(String schemaResource) {
+	/** Loads and compiles all bundled schemas for the version (xml.xsd plus the core and any module it imports), with external access disabled. */
+	private Schema loadSchema(List<String> schemaResources) {
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		try (InputStream xmlSchema = openSchema("xml.xsd"); InputStream coreSchema = openSchema(schemaResource)) {
-			// Disable any external access and supply the bundled xml.xsd together
-			// with the core schema, so the schemas are read only from the package.
+		try {
+			// Disable any external access and supply every schema from the package, so
+			// imports are resolved only against the bundled sources (xml.xsd plus any
+			// module the core imports) and nothing is fetched from outside the package.
 			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			return factory.newSchema(new Source[] {
-					new StreamSource(xmlSchema),
-					new StreamSource(coreSchema)
-			});
+
+			List<Source> sources = new ArrayList<>();
+			sources.add(readSchema("xml.xsd"));
+			for (String schemaResource : schemaResources) {
+				sources.add(readSchema(schemaResource));
+			}
+			return factory.newSchema(sources.toArray(new Source[0]));
 		}
-		catch (SAXException | IOException e) {
+		catch (SAXException e) {
 			throw new XliffMessageSourceValidationException(
-					String.format("Unable to load XLIFF schema \"%s\": %s", schemaResource, e.getMessage())
+					String.format("Unable to load XLIFF schema %s: %s", schemaResources, e.getMessage())
+			);
+		}
+	}
+
+	/** Reads a bundled schema fully into memory so that no open stream outlives this method. */
+	private static Source readSchema(String name) {
+		try (InputStream in = openSchema(name)) {
+			return new StreamSource(new ByteArrayInputStream(in.readAllBytes()));
+		}
+		catch (IOException e) {
+			throw new XliffMessageSourceValidationException(
+					String.format("Unable to read bundled schema \"%s\": %s", name, e.getMessage())
 			);
 		}
 	}
