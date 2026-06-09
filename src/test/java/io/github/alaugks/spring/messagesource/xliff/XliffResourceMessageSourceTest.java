@@ -8,8 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.NoSuchMessageException;
 
@@ -50,6 +52,15 @@ class XliffResourceMessageSourceTest {
 				"postcode",
 				null,
 				Locale.forLanguageTag("de")
+		));
+
+		Map<String, Object> args = new HashMap<>();
+		args.put("file_count", 3);
+
+		assertEquals("Sie haben 3 Dateien gelöscht.", messageSource.getMessage(
+			"downloads.file_deleted",
+			new Object[]{args},
+			Locale.forLanguageTag("de")
 		));
 	}
 
