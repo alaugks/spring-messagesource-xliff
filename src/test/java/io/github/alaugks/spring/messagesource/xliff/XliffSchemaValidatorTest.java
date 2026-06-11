@@ -78,14 +78,14 @@ class XliffSchemaValidatorTest {
 
 	@ParameterizedTest()
 	@MethodSource("supportedDocuments")
-	void rest_validate_supported_version(String version, String xml) {
+	void test_validate_supported_version(String version, String xml) {
 		Document document = TestHelper.parseDocument(xml);
 		XliffSchemaValidator validator = new XliffSchemaValidator();
 		assertDoesNotThrow(() -> validator.validate(document, version));
 	}
 
 	@Test
-	void rest_validate_schema_not_supported() {
+	void test_validate_schema_not_supported() {
 		String xml = """
 			<?xml version="1.0" encoding="utf-8"?>
 			<xliff version="2.1" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">

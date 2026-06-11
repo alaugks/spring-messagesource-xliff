@@ -4,6 +4,8 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Reads translation units from a parsed XLIFF 2.0/2.1/2.2 document.
+ * Reads translation units from a parsed XLIFF 2.0/2.1 document.
  *
  * <p>For each {@code <unit>}: the key is the first non-empty value of
  * {@code name}, then {@code id}; the value reconstructs the unit's translated
@@ -21,10 +23,6 @@ import org.w3c.dom.NodeList;
  * back to {@code <source>}) of each {@code <segment>} and {@code <ignorable>}
  * — as XLIFF prescribes for segmented content (Segmentation, Section 4.8).
  * Units that have neither a {@code name} nor an {@code id} are skipped.
- *
- * <p>A unit carrying the XLIFF 2.2 Plural, Gender, and Select (PGS) Module
- * (a {@code pgs:switch} attribute) is instead converted to an ICU MessageFormat
- * pattern by {@link IcuPatternGenerator}; that pattern becomes the unit's value.
  *
  * <p>Each element's text content is taken verbatim (embedded markup, e.g. HTML
  * in a CDATA section, is preserved; XLIFF inline elements are not interpreted).
@@ -39,7 +37,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	private final IcuPatternGenerator icuPatternGenerator = new IcuPatternGenerator();
 
 	/**
-	 * Creates a reader for the given XLIFF 2.0/2.1/2.2 root element.
+	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
 	 *
 	 * @param root the root element of the parsed XLIFF document.
 	 */
@@ -48,7 +46,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	}
 
 	/**
-	 * Creates a reader for the given parsed XLIFF 2.0/2.1/2.2 document.
+	 * Creates a reader for the given parsed XLIFF 2.0/2.1 document.
 	 *
 	 * @param document the parsed XLIFF document.
 	 */
@@ -57,7 +55,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	}
 
 	/**
-	 * Extracts the translation units from the XLIFF 2.0/2.1/2.2 document.
+	 * Extracts the translation units from the XLIFF 2.0/2.1 document.
 	 *
 	 * @return ordered map of key to translated text; empty if the document is
 	 *         not an XLIFF document.
@@ -76,7 +74,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 
 	/**
 	 * Adds the unit's key and value to the map, skipping it when it has no key
-	 * or no segments. PGS-annotated units are converted to an ICU pattern.
+	 * or no segments.
 	 */
 	private void addUnit(Element unit, Map<String, String> transUnits) {
 		String key = this.firstNonEmpty(unit.getAttribute("name"), unit.getAttribute("id"));
@@ -108,8 +106,8 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 */
 	private boolean isPreservesWhitespace(List<Element> elements) {
 		for (Element element : elements) {
-			if (this.isPreserveSpace(firstChildElement(element, TARGET))
-				|| this.isPreserveSpace(firstChildElement(element, SOURCE))
+			if (this.isPreserveSpace(this.firstChildElement(element, TARGET))
+				|| this.isPreserveSpace(this.firstChildElement(element, SOURCE))
 			) {
 				return true;
 			}
@@ -140,30 +138,88 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 * ignorable's source text in document order.
 	 */
 	private String concatSegments(List<Element> elements) {
+		Iterator<Element> segments = this.orderedSegments(elements).iterator();
 		StringBuilder value = new StringBuilder();
 		for (Element element : elements) {
 			if (this.isSegment(element)) {
-				Element target = firstChildElement(element, TARGET);
-				value.append(this.rawValue(target != null ? target : firstChildElement(element, SOURCE)));
+				Element segment = segments.next();
+				Element target = this.firstChildElement(segment, TARGET);
+				value.append(this.rawValue(target != null ? target : this.firstChildElement(segment, SOURCE)));
 			}
 			else {
-				value.append(this.rawValue(firstChildElement(element, SOURCE)));
+				value.append(this.rawValue(this.firstChildElement(element, SOURCE)));
 			}
 		}
 		return value.toString();
 	}
 
 	/**
+	 * Returns the unit's segments in display order: as written when no target
+	 * declares an order attribute, otherwise sorted by that attribute
+	 * (XLIFF 2.x reordering, Section 4.8).
+	 */
+	private List<Element> orderedSegments(List<Element> elements) {
+		List<Element> segments = elements.stream()
+				.filter(this::isSegment)
+				.toList();
+
+		if (!this.hasTargetOrder(segments)) {
+			return segments;
+		}
+
+		return segments.stream()
+			.sorted(Comparator.comparingInt(this::targetOrder))
+			.toList();
+	}
+
+	/**
+	 * Returns whether any segment's target carries a non-blank order
+	 * attribute, signalling that the segments should be reordered.
+	 */
+	private boolean hasTargetOrder(List<Element> segments) {
+		for (Element segment : segments) {
+			Element target = this.firstChildElement(segment, TARGET);
+			if (target != null && !target.getAttribute("order").isBlank()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the sort key for a segment: its target's order attribute parsed as
+	 * an integer. Segments whose order is absent, empty, or not a valid number
+	 * sort after all explicitly ordered ones, keeping their document order among
+	 * each other (the sort is stable).
+	 */
+	private int targetOrder(Element segment) {
+		Element target = this.firstChildElement(segment, TARGET);
+		if (target != null) {
+			String order = target.getAttribute("order").trim();
+			if (!order.isEmpty()) {
+				try {
+					return Integer.parseInt(order);
+				}
+				catch (NumberFormatException e) {
+					// Not a number; sort after the explicitly ordered segments.
+				}
+			}
+		}
+		return Integer.MAX_VALUE;
+	}
+
+	/**
 	 * Returns whether the node is a <segment> element.
 	 */
 	private boolean isSegment(Node node) {
-		return "segment".equals(elementName(node));
+		return "segment".equals(this.elementName(node));
 	}
 
 	/**
 	 * Returns whether the node is a <segment> or <ignorable> element.
 	 */
 	private boolean isSegmentOrIgnorable(Node node) {
-		return this.isSegment(node) || "ignorable".equals(elementName(node));
+		return this.isSegment(node) || "ignorable".equals(this.elementName(node));
 	}
 }
+

@@ -24,7 +24,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 class XliffCatalogTest {
 
 	@Test
-	void test_getTransUnits() {
+	void test_get_trans_units() {
 
 		var ressourceLoader = new ResourcesLoader(
 				Locale.forLanguageTag("en"),
@@ -40,7 +40,7 @@ class XliffCatalogTest {
 	}
 
 	@Test
-	void test_parseError() {
+	void test_parse_error() {
 		var xliffCatalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of("fixtures/parse_error.xliff")),
 				Locale.forLanguageTag("en")
@@ -56,7 +56,7 @@ class XliffCatalogTest {
 	}
 
 	@Test
-	void test_noXliffDocument() {
+	void test_no_xliff_document() {
 
 		var ressourceLoader = new ResourcesLoader(
 				Locale.forLanguageTag("en"),
@@ -73,7 +73,7 @@ class XliffCatalogTest {
 	}
 
 	@Test
-	void test_versionNotSupported() {
+	void test_version_not_supported() {
 		var xliffCatalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of("fixtures/xliff10.xliff")),
 				Locale.forLanguageTag("en"),
@@ -91,7 +91,7 @@ class XliffCatalogTest {
 
 	@ParameterizedTest
 	@MethodSource("dataProvider_loadVersions")
-	void test_versionSupported(String ressourcePath, String expected) {
+	void test_version_supported(String ressourcePath, String expected) {
 		var catalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of(ressourcePath)),
 				Locale.forLanguageTag("en")
@@ -112,7 +112,7 @@ class XliffCatalogTest {
 	}
 
 	@Test
-	void test_schemaValidation_invalidThrows() {
+	void test_schema_validation_invalid_throws() {
 		var xliffCatalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of("fixtures/schemainvalid.xliff")),
 				Locale.forLanguageTag("en")
@@ -124,7 +124,7 @@ class XliffCatalogTest {
 	}
 
 	@Test
-	void test_schemaValidation_disabledSkipsValidation() {
+	void test_schema_validation_disabled_skips_validation() {
 		var ressourceLoader = new ResourcesLoader(
 				Locale.forLanguageTag("en"),
 				new LocationPattern(List.of("fixtures/schemainvalid.xliff")),
@@ -138,7 +138,7 @@ class XliffCatalogTest {
 
 	@ParameterizedTest
 	@MethodSource("dataProvider_standardCompliantFixtures")
-	void test_fixturesAreSchemaValid(String resourcePath) {
+	void test_fixtures_are_schema_valid(String resourcePath) {
 		var catalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of(resourcePath)),
 				Locale.forLanguageTag("en")

@@ -31,7 +31,7 @@ class SaxErrorHandlerTest {
 	}
 
 	@Test
-	void test_fatalError() {
+	void test_fatal_error() {
 		var handler = new SaxErrorHandler();
 		assertThrows(
 				XliffMessageSourceSAXParseException.FatalError.class,
