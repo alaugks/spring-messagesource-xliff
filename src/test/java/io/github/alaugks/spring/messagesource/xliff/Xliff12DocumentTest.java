@@ -13,7 +13,45 @@ import org.junit.jupiter.api.Test;
 class Xliff12DocumentTest {
 
 	@Test
-	void xliff12_keyFromResname_andResnameWinsOverId() {
+	void test_extract_key_resolution_and_source_fallback() {
+		Map<String, String> units = new Xliff12Document(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+				    <file original="global" datatype="plaintext" source-language="en" target-language="de">
+				        <body>
+				            <trans-unit id="id_a" resname="resname_a_key">
+				                <source>Source A</source>
+				                <target>Target A</target>
+				            </trans-unit>
+				            <trans-unit id="id_b">
+				                <source>Source B</source>
+				            </trans-unit>
+				            <trans-unit resname="resname_only">
+				                <source>Source D</source>
+				                <target>Target D</target>
+				            </trans-unit>
+				            <trans-unit>
+				                <source>Source E</source>
+				                <target>Target E</target>
+				            </trans-unit>
+				        </body>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		// resname takes precedence over id.
+		assertEquals("Target A", units.get("resname_a_key"));
+		assertFalse(units.containsKey("id_a"));
+		// No <target> => fall back to <source>.
+		assertEquals("Source B", units.get("id_b"));
+		// No id => fall back to resname.
+		assertEquals("Target D", units.get("resname_only"));
+		// No resname and no id => the unit is skipped.
+		assertFalse(units.containsKey("Source E"));
+	}
+
+	@Test
+	void test_key_from_resname_and_resname_wins_over_id() {
 		Map<String, String> units = new Xliff12Document(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
@@ -33,7 +71,7 @@ class Xliff12DocumentTest {
 	}
 
 	@Test
-	void xliff12_fallbackToId_whenResnameAbsent() {
+	void test_fallback_to_id_when_resname_absent() {
 		Map<String, String> units = new Xliff12Document(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
@@ -52,7 +90,7 @@ class Xliff12DocumentTest {
 	}
 
 	@Test
-	void xliff12_valueTrimmed_byDefault() {
+	void test_value_trimmed_by_default() {
 		Map<String, String> units = new Xliff12Document(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
@@ -71,7 +109,7 @@ class Xliff12DocumentTest {
 	}
 
 	@Test
-	void xliff12_valueNotTrimmed_whenXmlSpacePreserve() {
+	void test_value_not_trimmed_when_xml_space_preserve() {
 		Map<String, String> units = new Xliff12Document(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
@@ -90,7 +128,7 @@ class Xliff12DocumentTest {
 	}
 
 	@Test
-	void xliff12_mrkContentIsIncludedInValue() {
+	void test_mrk_content_is_included_in_value() {
 		Map<String, String> units = new Xliff12Document(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
@@ -110,7 +148,7 @@ class Xliff12DocumentTest {
 	}
 
 	@Test
-	void xliff12_skipped_whenNeitherIdNorResname() {
+	void test_skipped_when_neither_id_nor_resname() {
 		Map<String, String> units = new Xliff12Document(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">

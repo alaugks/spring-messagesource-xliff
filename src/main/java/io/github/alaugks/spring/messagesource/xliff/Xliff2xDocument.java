@@ -4,6 +4,8 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,17 +124,74 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 * ignorable's source text in document order.
 	 */
 	private String concatSegments(List<Element> elements) {
+		Iterator<Element> segments = this.orderedSegments(elements).iterator();
 		StringBuilder value = new StringBuilder();
 		for (Element element : elements) {
 			if (this.isSegment(element)) {
-				Element target = this.firstChildElement(element, TARGET);
-				value.append(this.rawValue(target != null ? target : this.firstChildElement(element, SOURCE)));
+				Element segment = segments.next();
+				Element target = this.firstChildElement(segment, TARGET);
+				value.append(this.rawValue(target != null ? target : this.firstChildElement(segment, SOURCE)));
 			}
 			else {
 				value.append(this.rawValue(this.firstChildElement(element, SOURCE)));
 			}
 		}
 		return value.toString();
+	}
+
+	/**
+	 * Returns the unit's segments in display order: as written when no target
+	 * declares an order attribute, otherwise sorted by that attribute
+	 * (XLIFF 2.x reordering, Section 4.8).
+	 */
+	private List<Element> orderedSegments(List<Element> elements) {
+		List<Element> segments = elements.stream()
+				.filter(this::isSegment)
+				.toList();
+
+		if (!this.hasTargetOrder(segments)) {
+			return segments;
+		}
+
+		return segments.stream()
+			.sorted(Comparator.comparingInt(this::targetOrder))
+			.toList();
+	}
+
+	/**
+	 * Returns whether any segment's target carries a non-blank order
+	 * attribute, signalling that the segments should be reordered.
+	 */
+	private boolean hasTargetOrder(List<Element> segments) {
+		for (Element segment : segments) {
+			Element target = this.firstChildElement(segment, TARGET);
+			if (target != null && !target.getAttribute("order").isBlank()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the sort key for a segment: its target's order attribute parsed as
+	 * an integer. Segments whose order is absent, empty, or not a valid number
+	 * sort after all explicitly ordered ones, keeping their document order among
+	 * each other (the sort is stable).
+	 */
+	private int targetOrder(Element segment) {
+		Element target = this.firstChildElement(segment, TARGET);
+		if (target != null) {
+			String order = target.getAttribute("order").trim();
+			if (!order.isEmpty()) {
+				try {
+					return Integer.parseInt(order);
+				}
+				catch (NumberFormatException e) {
+					// Not a number; sort after the explicitly ordered segments.
+				}
+			}
+		}
+		return Integer.MAX_VALUE;
 	}
 
 	/**

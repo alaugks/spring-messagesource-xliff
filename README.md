@@ -6,7 +6,7 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 > XLIFF 2.2 (PGS module (Plural, Gender and Select)) is planned for version 3.2.0.
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.0.0)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.1.0)
 
 ## Table of Contents
 
@@ -20,6 +20,7 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
   - [Translation Value](#translation-value)
     - [XLIFF 1.2](#xliff-12)
     - [XLIFF 2.x — Segmentation](#xliff-2x--segmentation)
+    - [XLIFF 2.x — Segments Order](#xliff-2x--segments-order)
     - [Markup](#markup)
     - [Whitespace](#whitespace)
   - [Unsupported XLIFF Features](#unsupported-xliff-features)
@@ -38,14 +39,14 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '3.0.0'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '3.1.0'
 ```
 
 
@@ -156,6 +157,28 @@ The reassembly rules are:
 
 Result: `disclaimer` → `Alle Preise inkl. MwSt. Irrtümer vorbehalten.`
 
+#### XLIFF 2.x — Segments Order
+
+The `order` attribute on `<target/>` defines the order in which target segments are composed. Segments are sorted ascending by their `order` value; `<ignorable/>` elements always keep their document position.
+
+```xml
+<unit id="1" name="example">
+    <segment>
+        <source>First</source>
+        <target order="2">Zweites</target>
+    </segment>
+    <ignorable>
+        <source> </source>
+    </ignorable>
+    <segment>
+        <source>Second</source>
+        <target order="1">Erstes</target>
+    </segment>
+</unit>
+```
+
+Result: `example` → `Erstes Zweites`
+
 #### Markup
 
 Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**; embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements (`<g/>`, `<pc/>`, `<ph/>`, `<x/>`, …) are **not** interpreted — put display markup into the text as `CDATA` or escaped characters.
@@ -205,7 +228,6 @@ Not supported, relative to the XLIFF 1.2 and 2.0/2.1 specifications (a `—` mea
 | Grouping & context | `<group/>`, `restype`, `<context-group/>`, `<count-group/>` | `<group/>` | Structural metadata ignored. |
 | Binary content | `<bin-unit/>`, `<bin-source/>`, `<bin-target/>` | — | Not read. |
 | XLIFF 2.x modules | — | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed. |
-| Segment ordering | — | `<target order="N"/>` | **Ignored** — document order. **Planned for [3.1.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.1.0)**. |
 | Version | — | XLIFF 2.2 | Not supported (only 2.0 / 2.1). **Planned for 3.2.0**. |
 
 ### Structure of the Translation Filename

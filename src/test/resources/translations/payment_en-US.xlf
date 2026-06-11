@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="global"
+          datatype="plaintext"
+          source-language="en"
+          target-language="de">
+        <body>
+            <trans-unit id="expiry_date" resname="expiry_date">
+                <source>
+                    Expiry date
+                </source>
+                <target>
+                    Expiration date
+                </target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

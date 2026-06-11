@@ -16,20 +16,7 @@ import org.springframework.context.NoSuchMessageException;
 class XliffResourceMessageSourceTest {
 
 	@Test
-	void test_getMessage_code_args_locale_with_LocationPattern() {
-		var messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
-			.build();
-
-		assertEquals("Postcode", messageSource.getMessage(
-			"postcode",
-			null,
-			Locale.forLanguageTag("en")
-		));
-	}
-
-	@Test
-	void test_getMessage_code_args_locale() {
+	void test_get_message() {
 		var messageSource = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 				.build();
@@ -51,10 +38,41 @@ class XliffResourceMessageSourceTest {
 				null,
 				Locale.forLanguageTag("de")
 		));
+
+		assertEquals("There are 1,000 files.", messageSource.getMessage(
+			"format_choice",
+			new Object[]{1000L},
+			Locale.forLanguageTag("en")
+		));
+
+		assertEquals("There are 1,000 files.", messageSource.getMessage(
+			"format_choice",
+			new Object[]{1000L},
+			Locale.forLanguageTag("en-US")
+		));
+
+		assertEquals("Es gibt 1.000 Dateien.", messageSource.getMessage(
+			"format_choice",
+			new Object[]{1000L},
+			Locale.forLanguageTag("de")
+		));
+
+		assertEquals(
+			"Expiry date",
+			messageSource.getMessage("payment.expiry_date", null, Locale.forLanguageTag("en"))
+		);
+		assertEquals(
+			"Expiration date",
+			messageSource.getMessage("payment.expiry_date", null, Locale.forLanguageTag("en-US"))
+		);
+		assertEquals(
+			"Ablaufdatum",
+			messageSource.getMessage("payment.expiry_date", null, Locale.forLanguageTag("de"))
+		);
 	}
 
 	@Test
-	void test_builder_withLocationPatterns() {
+	void test_builder_with_location_patterns() {
 		var messageSource = XliffResourceMessageSource
 				.builder(
 						Locale.forLanguageTag("en"),
@@ -86,13 +104,13 @@ class XliffResourceMessageSourceTest {
 	}
 
 	@Test
-	void test_defaultDomain() {
+	void test_default_domain() {
 		var messageSource = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 				.defaultDomain("payment")
 				.build();
 
-		assertEquals("Expiry date", messageSource.getMessage(
+		assertEquals("Expiration date", messageSource.getMessage(
 				"expiry_date",
 				null,
 				Locale.forLanguageTag("en-US")
@@ -100,7 +118,7 @@ class XliffResourceMessageSourceTest {
 	}
 
 	@Test
-	void test_fileExtensions() {
+	void test_file_extensions() {
 		var messageSource = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 				.fileExtensions(List.of("xlf"))
@@ -115,7 +133,7 @@ class XliffResourceMessageSourceTest {
 	}
 
 	@Test
-	void test_validateSchema_enabled_throws() {
+	void test_validate_schema_enabled_throws() {
 		var builder = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), new LocationPattern("fixtures/schemainvalid.xliff"))
 				.validateSchema(true);
@@ -124,7 +142,7 @@ class XliffResourceMessageSourceTest {
 	}
 
 	@Test
-	void test_validateSchema_disabledByDefault() {
+	void test_validate_schema_disabled_by_default() {
 		var messageSource = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), new LocationPattern("fixtures/schemainvalid.xliff"))
 				.defaultDomain("schemainvalid")
