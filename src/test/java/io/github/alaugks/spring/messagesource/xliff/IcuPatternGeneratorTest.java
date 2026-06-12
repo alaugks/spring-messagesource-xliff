@@ -6,11 +6,6 @@ package io.github.alaugks.spring.messagesource.xliff;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.ibm.icu.text.MessageFormat;
-import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnit;
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -19,13 +14,16 @@ class IcuPatternGeneratorTest {
 
 	@Test
 	void test_plural_to_icu_pattern() {
+
+		String icuPattern = "{count, plural, =0 {Sie haben keine Dateien gelöscht.} =1 {Sie haben eine Datei gelöscht.} other {Sie haben {count} Dateien gelöscht.}}";
+
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="2.2" srcLang="en" trgLang="de"
 				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
 				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
 				    <file id="f1">
-				        <unit id="tu1" name="file_deleted" pgs:switch="plural:file_count">
+				        <unit id="tu1" name="file_deleted" pgs:switch="plural:count">
 				            <segment pgs:case="0">
 				                <source>You deleted no files.</source>
 				                <target>Sie haben keine Dateien gelöscht.</target>
@@ -35,8 +33,8 @@ class IcuPatternGeneratorTest {
 				                <target>Sie haben eine Datei gelöscht.</target>
 				            </segment>
 				            <segment pgs:case="other">
-				                <source>You deleted <ph id="1" disp="file_count"/> files.</source>
-				                <target>Sie haben <ph id="1" disp="file_count"/> Dateien gelöscht.</target>
+				                <source>You deleted <ph id="1" disp="count"/> files.</source>
+				                <target>Sie haben <ph id="1" disp="count"/> Dateien gelöscht.</target>
 				            </segment>
 				        </unit>
 				    </file>
@@ -44,22 +42,14 @@ class IcuPatternGeneratorTest {
 				""")).getUnits();
 
 		assertEquals(
-			"{file_count, plural, =0 {Sie haben keine Dateien gelöscht.} =1 {Sie haben eine Datei gelöscht.} other {Sie haben {file_count} Dateien gelöscht.}}",
+			icuPattern,
 			units.get("file_deleted")
 		);
 
-		List<TransUnitInterface> transUnits = new ArrayList<>();
-		transUnits.add(new TransUnit(Locale.GERMAN, "file_deleted", units.get("file_deleted")));
 
-		CatalogMessageSourceBuilder messageSource = CatalogMessageSourceBuilder
-			.builder(transUnits, Locale.GERMAN)
-			.enableICU4j()
-			.build();
+		MessageFormat messageFormat = new MessageFormat(icuPattern, Locale.forLanguageTag("de"));
+		assertEquals("Sie haben 1.000 Dateien gelöscht.", messageFormat.format(Map.of("count", 1000L)));
 
-		assertEquals(
-			"Sie haben 5 Dateien gelöscht.",
-			messageSource.getMessage("file_deleted", new Object[]{Map.of("file_count", 5)}, Locale.GERMAN)
-		);
 	}
 
 	// Arabic (ar) is one of the languages that actually use all six CLDR plural

@@ -21,9 +21,9 @@ import org.w3c.dom.Node;
  * ICU-escaped and each {@code <ph disp="..."/>} placeholder becomes an ICU
  * argument {@code {disp}}.
  *
- * <p>Example: a {@code plural:file_count} switch with cases {@code 0}, {@code 1}
+ * <p>Example: a {@code plural:count} switch with cases {@code 0}, {@code 1}
  * and {@code other} yields
- * {@code {file_count, plural, =0 {…} =1 {…} other {…}}}.
+ * {@code {count, plural, =0 {…} =1 {…} other {…}}}.
  */
 final class IcuPatternGenerator {
 

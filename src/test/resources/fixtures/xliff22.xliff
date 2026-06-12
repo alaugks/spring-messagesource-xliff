@@ -3,7 +3,7 @@
     xmlns="urn:oasis:names:tc:xliff:document:2.0"
     xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
     <file id="f1">
-        <unit id="tu1" name="file_deleted" pgs:switch="plural:file_count">
+        <unit id="tu1" name="file_deleted" pgs:switch="plural:count">
             <segment pgs:case="0">
                 <source>You deleted no files.</source>
                 <target>Sie haben keine Dateien gelöscht.</target>
@@ -13,8 +13,8 @@
                 <target>Sie haben eine Datei gelöscht.</target>
             </segment>
             <segment pgs:case="other">
-                <source>You deleted <ph id="1" disp="file_count"/> files.</source>
-                <target>Sie haben <ph id="1" disp="file_count"/> Dateien gelöscht.</target>
+                <source>You deleted <ph id="1" disp="count"/> files.</source>
+                <target>Sie haben <ph id="1" disp="count"/> Dateien gelöscht.</target>
             </segment>
         </unit>
     </file>

@@ -10,69 +10,46 @@ import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.NoSuchMessageException;
 
 class XliffResourceMessageSourceTest {
 
-	@Test
-	void test_get_message() {
+	@ParameterizedTest
+	@MethodSource("provideGetMessageArguments")
+	void test_get_message(String code, Object[] args, Locale locale, String expected) {
 		var messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
-				.build();
+			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.build();
 
-		assertEquals("Postcode", messageSource.getMessage(
-				"postcode",
-				null,
-				Locale.forLanguageTag("en")
-		));
+		assertEquals(expected, messageSource.getMessage(code, args, locale));
+	}
 
-		assertEquals("Zip code", messageSource.getMessage(
-				"postcode",
-				null,
-				Locale.forLanguageTag("en-US")
-		));
-
-		assertEquals("Postleitzahl", messageSource.getMessage(
-				"postcode",
-				null,
-				Locale.forLanguageTag("de")
-		));
-
-		assertEquals("There are 1,000 files.", messageSource.getMessage(
-			"format_choice",
-			new Object[]{1000L},
-			Locale.forLanguageTag("en")
-		));
-
-		assertEquals("There are 1,000 files.", messageSource.getMessage(
-			"format_choice",
-			new Object[]{1000L},
-			Locale.forLanguageTag("en-US")
-		));
-
-		assertEquals("Es gibt 1.000 Dateien.", messageSource.getMessage(
-			"format_choice",
-			new Object[]{1000L},
-			Locale.forLanguageTag("de")
-		));
-
-		assertEquals(
-			"Expiry date",
-			messageSource.getMessage("payment.expiry_date", null, Locale.forLanguageTag("en"))
-		);
-		assertEquals(
-			"Expiration date",
-			messageSource.getMessage("payment.expiry_date", null, Locale.forLanguageTag("en-US"))
-		);
-		assertEquals(
-			"Ablaufdatum",
-			messageSource.getMessage("payment.expiry_date", null, Locale.forLanguageTag("de"))
+	private static Stream<Arguments> provideGetMessageArguments() {
+		return Stream.of(
+			Arguments.of("postcode", null, Locale.forLanguageTag("en"), "Postcode"),
+			Arguments.of("postcode", null, Locale.forLanguageTag("en-US"), "Zip code"),
+			Arguments.of("postcode", null, Locale.forLanguageTag("de"), "Postleitzahl"),
+			Arguments.of("format_choice", new Object[]{1000L}, Locale.forLanguageTag("en"), "There are 1,000 files."),
+			Arguments.of("format_choice", new Object[]{1000L}, Locale.forLanguageTag("en-US"), "There are 1,000 files."),
+			Arguments.of("format_choice", new Object[]{1000L}, Locale.forLanguageTag("de"), "Es gibt 1.000 Dateien."),
+			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en"), "Expiry date"),
+			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en-US"), "Expiration date"),
+			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("de"), "Ablaufdatum"),
+			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en"), "You deleted 2 files."),
+			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en-US"), "You deleted 2 files."),
+			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("de"), "Sie haben 2 Dateien gelöscht.")
 		);
 	}
 
-	@Test
-	void test_builder_with_location_patterns() {
+	@ParameterizedTest
+	@MethodSource("provideBuilderWithLocationPatternsArguments")
+	void test_builder_with_location_patterns(String code, Locale locale, String expected) {
 		var messageSource = XliffResourceMessageSource
 				.builder(
 						Locale.forLanguageTag("en"),
@@ -85,21 +62,15 @@ class XliffResourceMessageSourceTest {
 				)
 				.build();
 
-		assertEquals(
-				"Postcode",
-				messageSource.getMessage("messages.postcode", null, Locale.forLanguageTag("en"))
-		);
-		assertEquals(
-				"Expiry date",
-				messageSource.getMessage("payment.expiry_date", null, Locale.forLanguageTag("en"))
-		);
-		assertEquals(
-				"Postleitzahl",
-				messageSource.getMessage("messages.postcode", null, Locale.forLanguageTag("de"))
-		);
-		assertEquals(
-				"Ablaufdatum",
-				messageSource.getMessage("payment.expiry_date", null, Locale.forLanguageTag("de"))
+		assertEquals(expected, messageSource.getMessage(code, null, locale));
+	}
+
+	private static Stream<Arguments> provideBuilderWithLocationPatternsArguments() {
+		return Stream.of(
+				Arguments.of("messages.postcode", Locale.forLanguageTag("en"), "Postcode"),
+				Arguments.of("payment.expiry_date", Locale.forLanguageTag("en"), "Expiry date"),
+				Arguments.of("messages.postcode", Locale.forLanguageTag("de"), "Postleitzahl"),
+				Arguments.of("payment.expiry_date", Locale.forLanguageTag("de"), "Ablaufdatum")
 		);
 	}
 

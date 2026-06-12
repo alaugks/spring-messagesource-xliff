@@ -141,6 +141,7 @@ public class XliffResourceMessageSource {
 			return CatalogMessageSourceBuilder
 					.builder(xliffCatalog, this.defaultLocale)
 					.defaultDomain(this.defaultDomain)
+					.enableICU4j()
 					.build();
 		}
 	}
