@@ -3,8 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ class XliffDocumentTest {
 				</xliff>
 				"""));
 
-		assertEquals("2.1", xliffDocument.getXliffVersion());
+		assertThat(xliffDocument.getXliffVersion()).isEqualTo("2.1");
 	}
 
 	@Test
@@ -47,7 +46,7 @@ class XliffDocumentTest {
 				</xliff>
 				"""));
 
-		assertNull(xliffDocument.getXliffVersion());
+		assertThat(xliffDocument.getXliffVersion()).isNull();
 	}
 
 	@Test
@@ -57,8 +56,8 @@ class XliffDocumentTest {
 				<translations></translations>
 				""");
 
-		assertEquals(Map.of(), new Xliff12Document(document).getUnits());
-		assertEquals(Map.of(), new Xliff2xDocument(document).getUnits());
-		assertNull(XliffDocument.readVersion(document.getDocumentElement()));
+		assertThat(new Xliff12Document(document).getUnits()).isEqualTo(Map.of());
+		assertThat(new Xliff2xDocument(document).getUnits()).isEqualTo(Map.of());
+		assertThat(XliffDocument.readVersion(document.getDocumentElement())).isNull();
 	}
 }

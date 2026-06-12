@@ -3,7 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ibm.icu.text.MessageFormat;
 import java.util.Locale;
@@ -41,15 +41,10 @@ class IcuPatternGeneratorTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals(
-			icuPattern,
-			units.get("file_deleted")
-		);
-
+		assertThat(units).containsEntry("file_deleted", icuPattern);
 
 		MessageFormat messageFormat = new MessageFormat(icuPattern, Locale.forLanguageTag("de"));
-		assertEquals("Sie haben 1.000 Dateien gelöscht.", messageFormat.format(Map.of("count", 1000L)));
-
+		assertThat(messageFormat.format(Map.of("count", 1000L))).isEqualTo("Sie haben 1.000 Dateien gelöscht.");
 	}
 
 	// Arabic (ar) is one of the languages that actually use all six CLDR plural
@@ -77,10 +72,7 @@ class IcuPatternGeneratorTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals(
-			icuPattern,
-			units.get("count")
-		);
+		assertThat(units).containsEntry("count", icuPattern);
 
 		// A plural category is selected via a Number (ICU derives the CLDR category
 		// from the locale's rules), not via the keyword string. The Arabic (ar)
@@ -93,12 +85,12 @@ class IcuPatternGeneratorTest {
 		//   other -> everything else   (e.g. 100, 101, decimals)
 		MessageFormat messageFormat = new MessageFormat(icuPattern, Locale.forLanguageTag("ar"));
 
-		assertEquals("zero", messageFormat.format(Map.of("count", 0)));
-		assertEquals("one", messageFormat.format(Map.of("count", 1)));
-		assertEquals("two", messageFormat.format(Map.of("count", 2)));
-		assertEquals("few", messageFormat.format(Map.of("count", 10)));
-		assertEquals("many", messageFormat.format(Map.of("count", 50)));
-		assertEquals("other", messageFormat.format(Map.of("count", 100)));
+		assertThat(messageFormat.format(Map.of("count", 0))).isEqualTo("zero");
+		assertThat(messageFormat.format(Map.of("count", 1))).isEqualTo("one");
+		assertThat(messageFormat.format(Map.of("count", 2))).isEqualTo("two");
+		assertThat(messageFormat.format(Map.of("count", 10))).isEqualTo("few");
+		assertThat(messageFormat.format(Map.of("count", 50))).isEqualTo("many");
+		assertThat(messageFormat.format(Map.of("count", 100))).isEqualTo("other");
 	}
 
 	@Test
@@ -122,15 +114,11 @@ class IcuPatternGeneratorTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals(
-			icuPattern,
-			units.get("count")
-		);
+		assertThat(units).containsEntry("count", icuPattern);
 
-		assertEquals(
-			"zwei",
+		assertThat(
 			new MessageFormat(icuPattern).format(Map.of("count", 2))
-		);
+		).isEqualTo("zwei");
 	}
 
 	@Test
@@ -153,11 +141,7 @@ class IcuPatternGeneratorTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals(
-			"{count, plural, one {eine} other {andere}}",
-			units.get("count")
-		);
-
+		assertThat(units).containsEntry("count", "{count, plural, one {eine} other {andere}}");
 	}
 
 	@Test
@@ -189,15 +173,11 @@ class IcuPatternGeneratorTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals(
-			icuPattern,
-			units.get("greeting")
-		);
+		assertThat(units).containsEntry("greeting", icuPattern);
 
-		assertEquals(
-			"Wie geht's ihr?",
+		assertThat(
 			new MessageFormat(icuPattern).format(Map.of("recipient_gender", "feminine"))
-		);
+		).isEqualTo("Wie geht's ihr?");
 	}
 
 	@Test
@@ -223,14 +203,10 @@ class IcuPatternGeneratorTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals(
-			icuPattern,
-			units.get("discount")
-		);
+		assertThat(units).containsEntry("discount", icuPattern);
 
-		assertEquals(
-			"# 30% {Rabatt}",
+		assertThat(
 			new MessageFormat(icuPattern, Locale.forLanguageTag("ar")).format(Map.of("count", 30))
-		);
+		).isEqualTo("# 30% {Rabatt}");
 	}
 }

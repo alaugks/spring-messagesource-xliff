@@ -3,9 +3,9 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
@@ -35,8 +35,8 @@ class XliffCatalogTest {
 		var catalog = new XliffCatalog(ressourceLoader.getTranslationFiles(), true);
 		var transUnits = catalog.getTransUnits();
 
-		assertEquals("Postcode", TestHelper.findInTransUnits(transUnits, "en", "postcode"));
-		assertEquals("Postleitzahl", TestHelper.findInTransUnits(transUnits, "de", "postcode"));
+		assertThat(TestHelper.findInTransUnits(transUnits, "en", "postcode")).isEqualTo("Postcode");
+		assertThat(TestHelper.findInTransUnits(transUnits, "de", "postcode")).isEqualTo("Postleitzahl");
 	}
 
 	@Test
@@ -46,13 +46,8 @@ class XliffCatalogTest {
 				Locale.forLanguageTag("en")
 		);
 
-		assertThrows(
-				XliffMessageSourceSAXParseException.class, xliffCatalog::getTransUnits
-		);
-
-		assertThrows(
-				FatalError.class, xliffCatalog::getTransUnits
-		);
+		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(XliffMessageSourceSAXParseException.class);
+		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(FatalError.class);
 	}
 
 	@Test
@@ -69,7 +64,7 @@ class XliffCatalogTest {
 				true
 		).getTransUnits();
 
-		assertEquals(List.of(), transUnits);
+		assertThat(transUnits).isEqualTo(List.of());
 	}
 
 	@Test
@@ -80,12 +75,12 @@ class XliffCatalogTest {
 				false
 		);
 
-		XliffMessageSourceVersionSupportException exception = assertThrows(
-				XliffMessageSourceVersionSupportException.class, xliffCatalog::getTransUnits
-		);
-		assertEquals(
-				"XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",
-				exception.getMessage()
+		assertThatThrownBy(
+				xliffCatalog::getTransUnits
+		)
+		.isInstanceOf(XliffMessageSourceVersionSupportException.class)
+		.hasMessage(
+				"XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2"
 		);
 	}
 
@@ -97,10 +92,7 @@ class XliffCatalogTest {
 				Locale.forLanguageTag("en")
 		);
 
-		assertEquals(
-				expected,
-				TestHelper.findInTransUnits(catalog.getTransUnits(), "en", "code-1")
-		);
+		assertThat(TestHelper.findInTransUnits(catalog.getTransUnits(), "en", "code-1")).isEqualTo(expected);
 	}
 
 	private static Stream<Arguments> dataProvider_loadVersions() {
@@ -118,9 +110,7 @@ class XliffCatalogTest {
 				Locale.forLanguageTag("en")
 		);
 
-		assertThrows(
-				XliffMessageSourceValidationException.class, xliffCatalog::getTransUnits
-		);
+		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(XliffMessageSourceValidationException.class);
 	}
 
 	@Test
@@ -133,7 +123,7 @@ class XliffCatalogTest {
 
 		var transUnits = new XliffCatalog(ressourceLoader.getTranslationFiles(), false).getTransUnits();
 
-		assertEquals("Target", TestHelper.findInTransUnits(transUnits, "en", "novalid"));
+		assertThat(TestHelper.findInTransUnits(transUnits, "en", "novalid")).isEqualTo("Target");
 	}
 
 	@ParameterizedTest
@@ -144,7 +134,7 @@ class XliffCatalogTest {
 				Locale.forLanguageTag("en")
 		);
 
-		assertDoesNotThrow(catalog::getTransUnits);
+		assertThatCode(catalog::getTransUnits).doesNotThrowAnyException();
 	}
 
 	private static Stream<Arguments> dataProvider_standardCompliantFixtures() {

@@ -4,9 +4,8 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.stream.Stream;
@@ -81,7 +80,7 @@ class XliffSchemaValidatorTest {
 	void test_validate_supported_version(String version, String xml) {
 		Document document = TestHelper.parseDocument(xml);
 		XliffSchemaValidator validator = new XliffSchemaValidator();
-		assertDoesNotThrow(() -> validator.validate(document, version));
+		assertThatCode(() -> validator.validate(document, version)).doesNotThrowAnyException();
 	}
 
 	@Test
@@ -102,10 +101,8 @@ class XliffSchemaValidatorTest {
 
 		Document document = TestHelper.parseDocument(xml);
 		XliffSchemaValidator validator = new XliffSchemaValidator();
-		XliffMessageSourceValidationException exception = assertThrows(
-			XliffMessageSourceValidationException.class,
-			() -> validator.validate(document, "1.0")
-		);
-		assertEquals("No schema available for version '1.0'", exception.getMessage());
+		assertThatThrownBy(() -> validator.validate(document, "1.0"))
+			.isInstanceOf(XliffMessageSourceValidationException.class)
+			.hasMessage("No schema available for version '1.0'");
 	}
 }

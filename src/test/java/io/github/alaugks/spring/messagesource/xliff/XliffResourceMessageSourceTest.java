@@ -3,8 +3,8 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
@@ -27,7 +27,7 @@ class XliffResourceMessageSourceTest {
 			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 			.build();
 
-		assertEquals(expected, messageSource.getMessage(code, args, locale));
+		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
 	}
 
 	private static Stream<Arguments> provideGetMessageArguments() {
@@ -62,7 +62,7 @@ class XliffResourceMessageSourceTest {
 				)
 				.build();
 
-		assertEquals(expected, messageSource.getMessage(code, null, locale));
+		assertThat(messageSource.getMessage(code, null, locale)).isEqualTo(expected);
 	}
 
 	private static Stream<Arguments> provideBuilderWithLocationPatternsArguments() {
@@ -81,11 +81,11 @@ class XliffResourceMessageSourceTest {
 				.defaultDomain("payment")
 				.build();
 
-		assertEquals("Expiration date", messageSource.getMessage(
+		assertThat(messageSource.getMessage(
 				"expiry_date",
 				null,
 				Locale.forLanguageTag("en-US")
-		));
+		)).isEqualTo("Expiration date");
 	}
 
 	@Test
@@ -96,11 +96,11 @@ class XliffResourceMessageSourceTest {
 				.build();
 
 		var locale = Locale.forLanguageTag("en");
-		assertThrows(NoSuchMessageException.class, () -> messageSource.getMessage(
+		assertThatThrownBy(() -> messageSource.getMessage(
 				"postcode",
 				null,
 				locale
-		));
+		)).isInstanceOf(NoSuchMessageException.class);
 	}
 
 	@Test
@@ -109,7 +109,7 @@ class XliffResourceMessageSourceTest {
 				.builder(Locale.forLanguageTag("en"), new LocationPattern("fixtures/schemainvalid.xliff"))
 				.validateSchema(true);
 
-		assertThrows(XliffMessageSourceValidationException.class, builder::build);
+		assertThatThrownBy(builder::build).isInstanceOf(XliffMessageSourceValidationException.class);
 	}
 
 	@Test
@@ -119,10 +119,10 @@ class XliffResourceMessageSourceTest {
 				.defaultDomain("schemainvalid")
 				.build();
 
-		assertEquals("Target", messageSource.getMessage(
+		assertThat(messageSource.getMessage(
 				"novalid",
 				null,
 				Locale.forLanguageTag("en")
-		));
+		)).isEqualTo("Target");
 	}
 }

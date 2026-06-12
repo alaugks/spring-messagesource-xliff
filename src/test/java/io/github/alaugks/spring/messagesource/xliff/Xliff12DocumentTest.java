@@ -3,9 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -39,15 +37,16 @@ class Xliff12DocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		// resname takes precedence over id.
-		assertEquals("Target A", units.get("resname_a_key"));
-		assertFalse(units.containsKey("id_a"));
-		// No <target> => fall back to <source>.
-		assertEquals("Source B", units.get("id_b"));
-		// No id => fall back to resname.
-		assertEquals("Target D", units.get("resname_only"));
-		// No resname and no id => the unit is skipped.
-		assertFalse(units.containsKey("Source E"));
+		assertThat(units)
+			// resname takes precedence over id.
+			.containsEntry("resname_a_key", "Target A")
+			.doesNotContainKey("id_a")
+			// No <target> => fall back to <source>.
+			.containsEntry("id_b", "Source B")
+			// No id => fall back to resname.
+			.containsEntry("resname_only", "Target D")
+			// No resname and no id => the unit is skipped.
+			.doesNotContainKey("Source E");
 	}
 
 	@Test
@@ -66,8 +65,9 @@ class Xliff12DocumentTest {
 				</xliff>
 				""", true)).getUnits();
 
-		assertEquals("target", units.get("trans-unit-resname"));
-		assertFalse(units.containsKey("unit-id"));
+		assertThat(units)
+			.containsEntry("trans-unit-resname", "target")
+			.doesNotContainKey("unit-id");
 	}
 
 	@Test
@@ -86,7 +86,7 @@ class Xliff12DocumentTest {
 				</xliff>
 				""", true)).getUnits();
 
-		assertEquals("target", units.get("unit-id"));
+		assertThat(units).containsEntry("unit-id", "target");
 	}
 
 	@Test
@@ -105,7 +105,7 @@ class Xliff12DocumentTest {
 				</xliff>
 				""", true)).getUnits();
 
-		assertEquals("spaced value", units.get("trans-unit-resname"));
+		assertThat(units).containsEntry("trans-unit-resname", "spaced value");
 	}
 
 	@Test
@@ -124,7 +124,7 @@ class Xliff12DocumentTest {
 				</xliff>
 				""", true)).getUnits();
 
-		assertEquals("   spaced value   ", units.get("trans-unit-resname"));
+		assertThat(units).containsEntry("trans-unit-resname", "   spaced value   ");
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class Xliff12DocumentTest {
 				""", true)).getUnits();
 
 		// <mrk> is not processed, but its text content is part of the value.
-		assertEquals("Hallo Welt!", units.get("unit-id"));
+		assertThat(units).containsEntry("unit-id", "Hallo Welt!");
 	}
 
 	@Test
@@ -163,6 +163,6 @@ class Xliff12DocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertTrue(units.isEmpty());
+		assertThat(units).isEmpty();
 	}
 }
