@@ -25,6 +25,7 @@ class XliffResourceMessageSourceTest {
 	void test_get_message(String code, Object[] args, Locale locale, String expected) {
 		var messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.enableICU4j()
 			.build();
 
 		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);

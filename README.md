@@ -62,6 +62,15 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 
 * `validateSchema(boolean validateSchema)` — validate each file against its OASIS XSD before reading. Default `false`; `validateSchema(true)` rejects non-conforming files (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 `<trans-unit/>` without the required `id`).
 
+* `enableICU4j()` — format messages with ICU4J instead of the default `java.text.MessageFormat`. The default only understands numeric argument indices (`{0}`, `{1}`); ICU4J additionally supports named arguments and ICU plural/select/gender patterns (e.g. `{count, plural, …}`).
+
+> [!IMPORTANT]
+> The XLIFF 2.2 PGS module generates ICU patterns with named arguments (e.g. `{count, plural, …}`). These cannot be resolved by the default `java.text.MessageFormat` and fail at `getMessage()` time. When using the PGS module you **must** enable ICU4J via `enableICU4j()`.
+>
+> ICU4J is the [`com.ibm.icu:icu4j`](https://mvnrepository.com/artifact/com.ibm.icu/icu4j) dependency, which is shipped transitively with this library — no extra dependency is required. Its `com.ibm.icu.text.MessageFormat` is a syntax superset of `java.text.MessageFormat`, so existing numeric-index patterns keep working.
+>
+> Note that the two are not fully output-compatible: ICU4J uses Unicode CLDR locale data, so the formatted result for a given locale can differ from the JDK's — for example the decimal and grouping separators in numbers (`.` vs `,`). Verify locale-sensitive output after enabling ICU4J.
+
 ### Example
 
 * Default locale is `en`.

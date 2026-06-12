@@ -57,6 +57,8 @@ public class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
+		private boolean enableICU4j;
+
 		/**
 		 * Creates a new builder with the given default locale and XLIFF file
 		 * location pattern.
@@ -120,6 +122,27 @@ public class XliffResourceMessageSource {
 		}
 
 		/**
+		 * Enables ICU4J message formatting on the underlying
+		 * {@link CatalogMessageSourceBuilder}.
+		 * <p>By default the catalog formats messages with
+		 * {@link java.text.MessageFormat}, which only understands numeric
+		 * argument indices ({@code {0}}, {@code {1}}). Patterns that use named
+		 * arguments or ICU plural/select/gender syntax — for example the
+		 * {@code {count, plural, …}} patterns generated from XLIFF 2.2 PGS
+		 * units — cannot be resolved by it and fail at {@code getMessage()} time.
+		 * <p>Enabling ICU4J switches the formatter to ICU's {@code MessageFormat},
+		 * which supports those patterns. The {@code com.ibm.icu:icu4j} dependency
+		 * is shipped transitively with this library, so no extra dependency is
+		 * required.
+		 *
+		 * @return this builder for chaining.
+		 */
+		public Builder enableICU4j() {
+			enableICU4j = true;
+			return this;
+		}
+
+		/**
 		 * Assembles the configured {@link CatalogMessageSourceBuilder} backed
 		 * by an {@link XliffCatalog} loaded from the configured location
 		 * pattern.
@@ -138,11 +161,15 @@ public class XliffResourceMessageSource {
 					this.validateSchema
 			);
 
-			return CatalogMessageSourceBuilder
-					.builder(xliffCatalog, this.defaultLocale)
-					.defaultDomain(this.defaultDomain)
-					.enableICU4j()
-					.build();
+			CatalogMessageSourceBuilder.Builder builder = CatalogMessageSourceBuilder
+				.builder(xliffCatalog, this.defaultLocale)
+				.defaultDomain(this.defaultDomain);
+
+			if (this.enableICU4j) {
+				builder.enableICU4j();
+			}
+
+			return builder.build();
 		}
 	}
 }
