@@ -15,11 +15,11 @@ import org.w3c.dom.Node;
  * Generates an ICU MessageFormat pattern from an XLIFF 2.2 unit annotated with
  * the Plural, Gender, and Select (PGS) Module.
  *
- * <p>Each {@code pgs:switch} ({@code plural}, {@code gender} or {@code select})
- * becomes an ICU argument; the unit's {@code <segment>}s are the cases, matched
- * via {@code pgs:case}. Multiple switches are nested in declaration order.
- * Within a case, literal text is ICU-escaped and each {@code <ph disp="..."/>}
- * placeholder becomes an ICU argument {@code {disp}}.
+ * <p>The unit's single {@code pgs:switch} ({@code plural}, {@code gender} or
+ * {@code select}) becomes an ICU argument; the unit's {@code <segment>}s are the
+ * cases, matched via {@code pgs:case}. Within a case, literal text is
+ * ICU-escaped and each {@code <ph disp="..."/>} placeholder becomes an ICU
+ * argument {@code {disp}}.
  *
  * <p>Example: a {@code plural:file_count} switch with cases {@code 0}, {@code 1}
  * and {@code other} yields
@@ -42,24 +42,22 @@ final class IcuPatternGenerator {
 	 *         read.
 	 */
 	String generate(Element unit, String pgsSwitch) {
-		List<PgsSwitch> switches = this.parseSwitches(pgsSwitch);
+		PgsSwitch pgs = this.parseSwitch(pgsSwitch);
 		List<Element> segments = this.segments(unit);
-		if (switches.isEmpty() || segments.isEmpty()) {
+		if (pgs == null || segments.isEmpty()) {
 			return "";
 		}
-		return this.build(switches, 0, segments);
+		return this.build(pgs, segments);
 	}
 
-	/** Parses a pgs:switch value (whitespace-separated type:variable tokens), mapping each PGS type to its ICU counterpart. */
-	private List<PgsSwitch> parseSwitches(String pgsSwitch) {
-		List<PgsSwitch> switches = new ArrayList<>();
-		for (String token : pgsSwitch.trim().split("\\s+")) {
-			int colon = token.indexOf(':');
-			if (colon > 0 && colon < token.length() - 1) {
-				switches.add(new PgsSwitch(icuType(token.substring(0, colon)), token.substring(colon + 1)));
-			}
+	/** Parses a single pgs:switch value (a type:variable token), mapping the PGS type to its ICU counterpart; returns null when malformed. */
+	private PgsSwitch parseSwitch(String pgsSwitch) {
+		String pgsSwitchValue = pgsSwitch.trim();
+		int colon = pgsSwitchValue.indexOf(':');
+		if (colon > 0 && colon < pgsSwitchValue.length() - 1) {
+			return new PgsSwitch(icuType(pgsSwitchValue.substring(0, colon)), pgsSwitchValue.substring(colon + 1));
 		}
-		return switches;
+		return null;
 	}
 
 	/** Maps a PGS switch type to its ICU type (gender becomes select). */
@@ -80,39 +78,30 @@ final class IcuPatternGenerator {
 		return segments;
 	}
 
-	/** Recursively builds the ICU pattern for the switch at the given level, nesting the remaining switches inside each case branch. */
-	private String build(List<PgsSwitch> switches, int level, List<Element> segments) {
-		PgsSwitch current = switches.get(level);
-		boolean last = level + 1 == switches.size();
-
+	/** Builds the ICU pattern for the switch, emitting one case branch per segment. */
+	private String build(PgsSwitch pgs, List<Element> segments) {
 		StringBuilder icu = new StringBuilder();
-		icu.append('{').append(current.variable()).append(", ").append(current.icuType()).append(',');
-		for (Map.Entry<String, List<Element>> branch : this.groupByCase(segments, level).entrySet()) {
-			String body = last
-				? this.caseText(branch.getValue().get(0))
-				: this.build(switches, level + 1, branch.getValue());
-			icu.append(' ').append(formatCase(current.icuType(), branch.getKey())).append(" {").append(body).append('}');
+		icu.append('{').append(pgs.variable()).append(", ").append(pgs.icuType()).append(',');
+		for (Map.Entry<String, Element> branch : this.segmentsByCase(segments).entrySet()) {
+			String body = this.caseText(branch.getValue());
+			icu.append(' ').append(formatCase(pgs.icuType(), branch.getKey())).append(" {").append(body).append('}');
 		}
 		return icu.append('}').toString();
 	}
 
-	/** Groups the segments by their pgs:case value at the given level, preserving document order. */
-	private Map<String, List<Element>> groupByCase(List<Element> segments, int level) {
-		Map<String, List<Element>> byCase = new LinkedHashMap<>();
+	/** Maps each pgs:case value to its segment, preserving document order; the first segment wins on duplicate cases. */
+	private Map<String, Element> segmentsByCase(List<Element> segments) {
+		Map<String, Element> byCase = new LinkedHashMap<>();
 		for (Element segment : segments) {
-			byCase.computeIfAbsent(this.caseValueAt(segment, level), key -> new ArrayList<>()).add(segment);
+			byCase.putIfAbsent(this.caseValue(segment), segment);
 		}
 		return byCase;
 	}
 
-	/** Returns the segment's pgs:case value for the switch at the given level. */
-	private String caseValueAt(Element segment, int level) {
+	/** Returns the segment's pgs:case value, defaulting to other when absent. */
+	private String caseValue(Element segment) {
 		String raw = segment.getAttributeNS(PGS_NS, "case").trim();
-		if (raw.isEmpty()) {
-			return OTHER;
-		}
-		String[] cases = raw.split("\\s+");
-		return level < cases.length ? cases[level] : OTHER;
+		return raw.isEmpty() ? OTHER : raw;
 	}
 
 	/** Formats a case key for ICU: numeric plural cases become exact matches (=0); CLDR plural keywords and all select cases are emitted as-is. */

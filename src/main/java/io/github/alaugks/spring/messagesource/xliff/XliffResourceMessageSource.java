@@ -3,28 +3,20 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import com.ibm.icu.text.MessageFormat;
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
 import java.util.List;
 import java.util.Locale;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.lang.Nullable;
 
-public class XliffResourceMessageSource implements MessageSource {
-
-	private final CatalogMessageSourceBuilder delegate;
+public class XliffResourceMessageSource {
 
 	/**
-	 * Wraps the {@link MessageSource} assembled by {@link Builder#build()};
-	 * all {@code getMessage} calls are forwarded to it.
+	 * Utility class — not intended to be instantiated.
 	 */
-	private XliffResourceMessageSource(CatalogMessageSourceBuilder delegate) {
-		this.delegate = delegate;
+	private XliffResourceMessageSource() {
+		throw new IllegalStateException("Utility class");
 	}
 
 	/**
@@ -51,46 +43,6 @@ public class XliffResourceMessageSource implements MessageSource {
 	 */
 	public static Builder builder(Locale defaultLocale, LocationPattern locationPattern) {
 		return new Builder(defaultLocale, locationPattern);
-	}
-
-	@Nullable
-	@Override
-	public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage,
-		@Nullable Locale locale) {
-		return this.delegate.getMessage(code, args, defaultMessage, locale);
-	}
-
-
-	@Override
-	public String getMessage(String code, @Nullable Object[] args, @Nullable Locale locale)
-		throws NoSuchMessageException {
-		try {
-			return this.delegate.getMessage(code, args, locale);
-		} catch (IllegalArgumentException e) {
-			String pattern = this.delegate.resolveFromCatalog(code, locale); // bereits vorhanden
-
-			if (pattern == null) {
-				throw new NoSuchMessageException(code, locale);
-			}
-
-			MessageFormat fmt = new MessageFormat(pattern, locale);
-
-			if (args == null || args.length == 0) {
-				return pattern;
-			}
-
-			if (args.length == 1 && args[0] instanceof java.util.Map) {
-				return fmt.format(args[0]);
-			}
-		}
-
-		return null;
-	}
-
-	@Override
-	public String getMessage(MessageSourceResolvable resolvable, @Nullable Locale locale)
-		throws NoSuchMessageException {
-		return this.delegate.getMessage(resolvable, locale);
 	}
 
 	public static final class Builder {
@@ -172,9 +124,9 @@ public class XliffResourceMessageSource implements MessageSource {
 		 * by an {@link XliffCatalog} loaded from the configured location
 		 * pattern.
 		 *
-		 * @return the configured message source.
+		 * @return the configured message source builder.
 		 */
-		public XliffResourceMessageSource build() {
+		public CatalogMessageSourceBuilder build() {
 			ResourcesLoader resourcesLoader = new ResourcesLoader(
 					this.defaultLocale,
 					this.locationPattern,
@@ -186,12 +138,10 @@ public class XliffResourceMessageSource implements MessageSource {
 					this.validateSchema
 			);
 
-			CatalogMessageSourceBuilder delegate = CatalogMessageSourceBuilder
+			return CatalogMessageSourceBuilder
 					.builder(xliffCatalog, this.defaultLocale)
 					.defaultDomain(this.defaultDomain)
 					.build();
-
-			return new XliffResourceMessageSource(delegate);
 		}
 	}
 }
