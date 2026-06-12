@@ -16,7 +16,7 @@ public class XliffResourceMessageSource {
 	 * Utility class — not intended to be instantiated.
 	 */
 	private XliffResourceMessageSource() {
-		throw new IllegalStateException("Utility class");
+		throw new IllegalStateException("Not public constructors");
 	}
 
 	/**
