@@ -17,5 +17,19 @@
                 <target>You deleted <ph id="1" disp="count"/> files.</target>
             </segment>
         </unit>
+        <unit id="tu2" name="greeting" pgs:switch="gender:recipient_gender">
+            <segment pgs:case="feminine">
+                <source>How is she?</source>
+                <target>How is she?</target>
+            </segment>
+            <segment pgs:case="masculine">
+                <source>How is he?</source>
+                <target>How is he?</target>
+            </segment>
+            <segment pgs:case="other">
+                <source>How are they?</source>
+                <target>How are they?</target>
+            </segment>
+        </unit>
     </file>
 </xliff>
