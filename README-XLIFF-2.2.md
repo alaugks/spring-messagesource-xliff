@@ -97,7 +97,7 @@ messageSource.getMessage(
 **Thymeleaf** — the same `Map` is passed as the message parameter (the locale comes from the request); use an inline `${ … }` map literal:
 
 ```html
-<p th:text="#{file_deleted(${ {'count' : 1000} })}">…</p>
+<p th:text="#{file_deleted(${ {'count' : 1000} })}"></p>
 ```
 
 > [!NOTE]
@@ -125,14 +125,19 @@ Resolving `cart_summary` for `de` with `count = 1` yields `Ein Artikel liegt in 
 **getMessage**
 
 ```java
-messageSource.getMessage("cart_summary", new Object[] { Map.of("count", 1) }, Locale.forLanguageTag("de"));
+messageSource.getMessage(
+    "cart_summary",
+    new Object[] { Map.of("count", 1) },
+    Locale.forLanguageTag("de")
+);
+
 // → "Ein Artikel liegt in Ihrem Warenkorb und ist bereit zur Kasse."
 ```
 
 **Thymeleaf**
 
 ```html
-<p th:text="#{cart_summary(${ {'count' : 1} })}">…</p>
+<p th:text="#{cart_summary(${ {'count' : 1} })}"></p>
 ```
 
 Which keywords a language uses, and how each number maps to one, is defined per language in the [Unicode CLDR Language Plural Rules](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
@@ -155,14 +160,19 @@ Resolving `count` with `count = 2` yields `zwei`.
 **getMessage**
 
 ```java
-messageSource.getMessage("count", new Object[] { Map.of("count", 2) }, Locale.forLanguageTag("de"));
+messageSource.getMessage(
+    "count",
+    new Object[] { Map.of("count", 2) },
+    Locale.forLanguageTag("de")
+);
+
 // → "zwei"
 ```
 
 **Thymeleaf**
 
 ```html
-<p th:text="#{count(${ {'count' : 2} })}">…</p>
+<p th:text="#{count(${ {'count' : 2} })}"></p>
 ```
 
 ### Missing case
@@ -185,14 +195,19 @@ Resolving `count` with `count = 1` yields `eine`, any other number `andere`.
 **getMessage**
 
 ```java
-messageSource.getMessage("count", new Object[] { Map.of("count", 1) }, Locale.forLanguageTag("de"));
+messageSource.getMessage(
+    "count",
+    new Object[] { Map.of("count", 1) },
+    Locale.forLanguageTag("de")
+);
+
 // → "eine"
 ```
 
 **Thymeleaf**
 
 ```html
-<p th:text="#{count(${ {'count' : 1} })}">…</p>
+<p th:text="#{count(${ {'count' : 1} })}"></p>
 ```
 
 ## Gender
@@ -221,14 +236,19 @@ Resolving `greeting` with `recipient_gender = "feminine"` yields `Wie geht's ihr
 **getMessage**
 
 ```java
-messageSource.getMessage("greeting", new Object[] { Map.of("recipient_gender", "feminine") }, Locale.forLanguageTag("de"));
+messageSource.getMessage(
+    "greeting",
+    new Object[] { Map.of("recipient_gender", "feminine") },
+    Locale.forLanguageTag("de")
+);
+
 // → "Wie geht's ihr?"
 ```
 
 **Thymeleaf**
 
 ```html
-<p th:text="#{greeting(${ {'recipient_gender' : 'feminine'} })}">…</p>
+<p th:text="#{greeting(${ {'recipient_gender' : 'feminine'} })}"></p>
 ```
 
 ## Select
