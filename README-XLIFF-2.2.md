@@ -83,7 +83,7 @@ Resolving `file_deleted` for `de` with `count = 1000` yields `Sie haben 1.000 Da
 
 PGS arguments are **named**, so they are passed as a single `Map` (not as positional `{0}` / `{1}` arguments). The catalog detects a lone `Map` argument and formats the pattern with it:
 
-**getMessage**
+**getMessage()**
 
 ```java
 messageSource.getMessage(
@@ -91,14 +91,17 @@ messageSource.getMessage(
     new Object[] { Map.of("count", 1000) },
     Locale.forLanguageTag("de")
 );
-// → "Sie haben 1.000 Dateien gelöscht."
 ```
+
+**Result:** `Sie haben 1.000 Dateien gelöscht.`
 
 **Thymeleaf** — the same `Map` is passed as the message parameter (the locale comes from the request); use an inline `${ … }` map literal:
 
 ```html
 <p th:text="#{file_deleted(${ {'count' : 1000} })}"></p>
 ```
+
+**Result:** `<p>Sie haben 1.000 Dateien gelöscht.</p>`
 
 > [!NOTE]
 > `th:text` HTML-escapes the resolved text, so e.g. an apostrophe renders as `&#39;` (`Wie geht's ihr?` → `Wie geht&#39;s ihr?`). This is Thymeleaf's standard behavior. Use `th:utext` only if the text is trusted and must contain raw markup.
@@ -122,7 +125,7 @@ Instead of exact numbers, a `pgs:case` can be a CLDR plural keyword — `zero`, 
 
 Resolving `cart_summary` for `de` with `count = 1` yields `Ein Artikel liegt in Ihrem Warenkorb und ist bereit zur Kasse.`, and with `count = 5` `Mehrere Artikel liegen in Ihrem Warenkorb und sind bereit zur Kasse.`
 
-**getMessage**
+**getMessage()**
 
 ```java
 messageSource.getMessage(
@@ -130,15 +133,17 @@ messageSource.getMessage(
     new Object[] { Map.of("count", 1) },
     Locale.forLanguageTag("de")
 );
-
-// → "Ein Artikel liegt in Ihrem Warenkorb und ist bereit zur Kasse."
 ```
+
+**Result:** `Ein Artikel liegt in Ihrem Warenkorb und ist bereit zur Kasse.`
 
 **Thymeleaf**
 
 ```html
 <p th:text="#{cart_summary(${ {'count' : 1} })}"></p>
 ```
+
+**Result:** `<p>Ein Artikel liegt in Ihrem Warenkorb und ist bereit zur Kasse.</p>`
 
 Which keywords a language uses, and how each number maps to one, is defined per language in the [Unicode CLDR Language Plural Rules](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
 
@@ -157,7 +162,7 @@ A `pgs:case` that is not a CLDR keyword is an **exact** numeric match.
 
 Resolving `count` with `count = 2` yields `zwei`.
 
-**getMessage**
+**getMessage()**
 
 ```java
 messageSource.getMessage(
@@ -165,15 +170,17 @@ messageSource.getMessage(
     new Object[] { Map.of("count", 2) },
     Locale.forLanguageTag("de")
 );
-
-// → "zwei"
 ```
+
+**Result:** `zwei`
 
 **Thymeleaf**
 
 ```html
 <p th:text="#{count(${ {'count' : 2} })}"></p>
 ```
+
+**Result:** `<p>zwei</p>`
 
 ### Missing case
 
@@ -192,7 +199,7 @@ A `<segment/>` without a `pgs:case` attribute defaults to `other`.
 
 Resolving `count` with `count = 1` yields `eine`, any other number `andere`.
 
-**getMessage**
+**getMessage()**
 
 ```java
 messageSource.getMessage(
@@ -200,15 +207,17 @@ messageSource.getMessage(
     new Object[] { Map.of("count", 1) },
     Locale.forLanguageTag("de")
 );
-
-// → "eine"
 ```
+
+**Result:** `eine`
 
 **Thymeleaf**
 
 ```html
 <p th:text="#{count(${ {'count' : 1} })}"></p>
 ```
+
+**Result:** `<p>eine</p>`
 
 ## Gender
 
@@ -233,7 +242,7 @@ A `gender:<variable>` switch selects a segment by the value of the argument. Eac
 
 Resolving `greeting` with `recipient_gender = "feminine"` yields `Wie geht's ihr?`.
 
-**getMessage**
+**getMessage()**
 
 ```java
 messageSource.getMessage(
@@ -241,15 +250,17 @@ messageSource.getMessage(
     new Object[] { Map.of("recipient_gender", "feminine") },
     Locale.forLanguageTag("de")
 );
-
-// → "Wie geht's ihr?"
 ```
+
+**Result:** `Wie geht's ihr?`
 
 **Thymeleaf**
 
 ```html
 <p th:text="#{greeting(${ {'recipient_gender' : 'feminine'} })}"></p>
 ```
+
+**Result:** `<p>Wie geht&#39;s ihr?</p>` — the apostrophe is HTML-escaped by `th:text` (see the note above).
 
 ## Select
 
