@@ -3,7 +3,7 @@
 This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1. 
 
 > [!NOTE]  
-> XLIFF 2.2 (PGS module (Plural, Gender and Select)) is planned for version [3.2.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.2.0).
+> XLIFF 2.2 (PGS module (Plural, Gender and Select)) is planned for version [3.2.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.2.0). See [XLIFF 2.2 — PGS Module](README-XLIFF-2.2.md) for details and examples.
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.2.0-SNAPSHOT)
@@ -21,6 +21,7 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
     - [XLIFF 1.2](#xliff-12)
     - [XLIFF 2.x — Segmentation](#xliff-2x--segmentation)
     - [XLIFF 2.x — Segments Order](#xliff-2x--segments-order)
+    - [XLIFF 2.2 — PGS Module (Plural, Gender and Select)](#xliff-22--pgs-module-plural-gender-and-select)
     - [Markup](#markup)
     - [Whitespace](#whitespace)
   - [Unsupported XLIFF Features](#unsupported-xliff-features)
@@ -187,6 +188,12 @@ The `order` attribute on `<target/>` defines the order in which target segments 
 ```
 
 Result: `example` → `Erstes Zweites`
+
+#### XLIFF 2.2 — PGS Module (Plural, Gender and Select)
+
+XLIFF 2.2 adds the PGS module, which annotates a `<unit/>` with a `pgs:switch` so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument (e.g. a count or a gender). This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
+
+See [XLIFF 2.2 — PGS Module](README-XLIFF-2.2.md) for the annotation, all switch types and examples.
 
 #### Markup
 
