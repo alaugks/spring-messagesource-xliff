@@ -21,27 +21,44 @@ import org.springframework.context.NoSuchMessageException;
 class XliffResourceMessageSourceTest {
 
 	@ParameterizedTest
-	@MethodSource("provideGetMessageArguments")
+	@MethodSource("provider_message")
 	void test_get_message(String code, Object[] args, Locale locale, String expected) {
 		var messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
-			.enableICU4j()
+			.validateSchema(true)
 			.build();
 
 		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
 	}
 
-	private static Stream<Arguments> provideGetMessageArguments() {
+	static Stream<Arguments> provider_message() {
 		return Stream.of(
 			Arguments.of("postcode", null, Locale.forLanguageTag("en"), "Postcode"),
 			Arguments.of("postcode", null, Locale.forLanguageTag("en-US"), "Zip code"),
 			Arguments.of("postcode", null, Locale.forLanguageTag("de"), "Postleitzahl"),
-			Arguments.of("format_choice", new Object[]{1000L}, Locale.forLanguageTag("en"), "There are 1,000 files."),
-			Arguments.of("format_choice", new Object[]{1000L}, Locale.forLanguageTag("en-US"), "There are 1,000 files."),
-			Arguments.of("format_choice", new Object[]{1000L}, Locale.forLanguageTag("de"), "Es gibt 1.000 Dateien."),
+			Arguments.of("format_plural", new Object[]{1000L}, Locale.forLanguageTag("en"), "There are 1,000 files."),
+			Arguments.of("format_plural", new Object[]{1000L}, Locale.forLanguageTag("en-US"), "There are 1,000 files."),
+			Arguments.of("format_plural", new Object[]{1000L}, Locale.forLanguageTag("de"), "Es gibt 1.000 Dateien."),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en"), "Expiry date"),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en-US"), "Expiration date"),
-			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("de"), "Ablaufdatum"),
+			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("de"), "Ablaufdatum")
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource({"provider_message", "provider_message_icu4j"})
+	void test_get_message_enabled_icu4j(String code, Object[] args, Locale locale, String expected) {
+		var messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.enableICU4j()
+			.validateSchema(true)
+			.build();
+
+		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
+	}
+
+	static Stream<Arguments> provider_message_icu4j() {
+		return Stream.of(
 			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en"), "You deleted 2 files."),
 			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en-US"), "You deleted 2 files."),
 			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("de"), "Sie haben 2 Dateien gelöscht.")
@@ -49,8 +66,8 @@ class XliffResourceMessageSourceTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("provideBuilderWithLocationPatternsArguments")
-	void test_builder_with_location_patterns(String code, Locale locale, String expected) {
+	@MethodSource("provider_builder_with_location_pattern_multiple_folder")
+	void test_builder_with_location_pattern_multiple_folder(String code, Locale locale, String expected) {
 		var messageSource = XliffResourceMessageSource
 				.builder(
 						Locale.forLanguageTag("en"),
@@ -61,12 +78,13 @@ class XliffResourceMessageSourceTest {
 								)
 						)
 				)
+				.validateSchema(true)
 				.build();
 
 		assertThat(messageSource.getMessage(code, null, locale)).isEqualTo(expected);
 	}
 
-	private static Stream<Arguments> provideBuilderWithLocationPatternsArguments() {
+	static Stream<Arguments> provider_builder_with_location_pattern_multiple_folder() {
 		return Stream.of(
 				Arguments.of("messages.postcode", Locale.forLanguageTag("en"), "Postcode"),
 				Arguments.of("payment.expiry_date", Locale.forLanguageTag("en"), "Expiry date"),
@@ -80,6 +98,7 @@ class XliffResourceMessageSourceTest {
 		var messageSource = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 				.defaultDomain("payment")
+				.validateSchema(true)
 				.build();
 
 		assertThat(messageSource.getMessage(
@@ -94,6 +113,7 @@ class XliffResourceMessageSourceTest {
 		var messageSource = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
 				.fileExtensions(List.of("xlf"))
+				.validateSchema(true)
 				.build();
 
 		var locale = Locale.forLanguageTag("en");

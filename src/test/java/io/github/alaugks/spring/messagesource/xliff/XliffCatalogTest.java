@@ -85,7 +85,7 @@ class XliffCatalogTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("dataProvider_loadVersions")
+	@MethodSource("provider_supported_versions")
 	void test_version_supported(String ressourcePath, String expected) {
 		var catalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of(ressourcePath)),
@@ -95,7 +95,7 @@ class XliffCatalogTest {
 		assertThat(TestHelper.findInTransUnits(catalog.getTransUnits(), "en", "code-1")).isEqualTo(expected);
 	}
 
-	private static Stream<Arguments> dataProvider_loadVersions() {
+	static Stream<Arguments> provider_supported_versions() {
 		return Stream.of(
 				Arguments.of("fixtures/xliff12.xliff", "Postcode (Xliff Version 1.2)"),
 				Arguments.of("fixtures/xliff20.xliff", "Postcode (Xliff Version 2.0)"),
@@ -127,7 +127,7 @@ class XliffCatalogTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("dataProvider_standardCompliantFixtures")
+	@MethodSource("provider_standard_compliant_fixtures")
 	void test_fixtures_are_schema_valid(String resourcePath) {
 		var catalog = TestHelper.getXliffCatalog(
 				new LocationPattern(List.of(resourcePath)),
@@ -137,7 +137,7 @@ class XliffCatalogTest {
 		assertThatCode(catalog::getTransUnits).doesNotThrowAnyException();
 	}
 
-	private static Stream<Arguments> dataProvider_standardCompliantFixtures() {
+	static Stream<Arguments> provider_standard_compliant_fixtures() {
 		return Stream.of(
 				Arguments.of("fixtures/xliff12.xliff"),
 				Arguments.of("fixtures/xliff20.xliff"),

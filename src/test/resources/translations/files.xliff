@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="2.2" srcLang="en" trgLang="de"
-    xmlns="urn:oasis:names:tc:xliff:document:2.0"
+    xmlns="urn:oasis:names:tc:xliff:document:2.2"
     xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
     <file id="f1">
         <unit id="tu1" name="file_deleted" pgs:switch="plural:count">

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    NVDL dispatch for XLIFF 2.2 with the Plural, Gender, and Select (PGS) Module.
+
+    XLIFF is validated via NVDL (ISO/IEC 19757-4), not against the bare core XSD:
+    foreign-namespace content (here the PGS module attributes) is dispatched away
+    from the core schema before XSD validation, so the core schema stays the
+    unmodified OASIS schema. Core elements are validated against the core 2.2 XSD;
+    PGS attributes against the PGS module schema; anything else is allowed.
+-->
+<rules xmlns="http://purl.oclc.org/dsdl/nvdl/ns/structure/1.0" startMode="core">
+    <mode name="core">
+        <namespace ns="urn:oasis:names:tc:xliff:document:2.2">
+            <validate schema="xliff_core_2.2.xsd" useMode="modules"/>
+        </namespace>
+    </mode>
+    <mode name="modules">
+        <namespace ns="urn:oasis:names:tc:xliff:metadata:2.0">
+            <validate schema="metadata.xsd"/>
+        </namespace>
+        <namespace ns="urn:oasis:names:tc:xliff:pgs:1.0" match="attributes">
+            <validate schema="plural_gender_select.xsd"/>
+        </namespace>
+        <anyNamespace>
+            <allow/>
+        </anyNamespace>
+    </mode>
+</rules>
+
+
+

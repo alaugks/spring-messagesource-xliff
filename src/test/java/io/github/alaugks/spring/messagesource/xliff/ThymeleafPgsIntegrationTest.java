@@ -38,13 +38,13 @@ class ThymeleafPgsIntegrationTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("providePluralArguments")
+	@MethodSource("provider_plural_arguments")
 	void test_plural_resolves_in_thymeleaf(int count, Locale locale, String expected) {
 		String template = "<p th:text=\"#{files.file_deleted(${ {'count' : %s} })}\">delete text value</p>".formatted(count);
 		assertThat(this.process(template, locale)).isEqualTo("<p>%s</p>".formatted(expected));
 	}
 
-	private static Stream<Arguments> providePluralArguments() {
+	static Stream<Arguments> provider_plural_arguments() {
 		return Stream.of(
 			Arguments.of(0, Locale.forLanguageTag("de"), "Sie haben keine Dateien gelöscht."),
 			Arguments.of(1, Locale.forLanguageTag("de"), "Sie haben eine Datei gelöscht."),
@@ -56,13 +56,13 @@ class ThymeleafPgsIntegrationTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("provideGenderArguments")
+	@MethodSource("provider_gender_arguments")
 	void test_gender_resolves_in_thymeleaf(String gender, Locale locale, String expected) {
 		String template = "<p th:text=\"#{files.greeting(${ {'recipient_gender' : '%s'} })}\">gender value</p>".formatted(gender);
 		assertThat(this.process(template, locale)).isEqualTo("<p>%s</p>".formatted(expected));
 	}
 
-	private static Stream<Arguments> provideGenderArguments() {
+	static Stream<Arguments> provider_gender_arguments() {
 		return Stream.of(
 			Arguments.of("feminine", Locale.forLanguageTag("de"), "Wie geht&#39;s ihr?"),
 			Arguments.of("masculine", Locale.forLanguageTag("de"), "Wie geht&#39;s ihm?"),
@@ -71,7 +71,7 @@ class ThymeleafPgsIntegrationTest {
 		);
 	}
 
-	private String process(String template, Locale locale) {
+	String process(String template, Locale locale) {
 		return this.templateEngine.process(template, new Context(locale));
 	}
 }
