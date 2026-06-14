@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -44,8 +45,9 @@ import org.xml.sax.SAXParseException;
  * validation, which is necessary because the OASIS core schema does not declare
  * a wildcard for module attributes on every element. The core schemas therefore
  * stay the unmodified OASIS schemas. All schemas, including the {@code xml.xsd}
- * imported by every core schema, are read only from the package; nothing is ever
- * fetched from outside the classpath.
+ * imported by every core schema and the schemas the 2.2 NVDL cross-references, are
+ * read only from the package via the entity resolver; nothing is ever fetched from
+ * outside the classpath.
  */
 final class XliffSchemaValidator {
 
@@ -59,13 +61,28 @@ final class XliffSchemaValidator {
 	);
 
 	/**
+	 * Bundled schemas that core schemas and the 2.2 NVDL cross-reference. They are served from the
+	 * package so the references resolve from the classpath instead of relative to the (possibly
+	 * {@code jar:}) URL of the referencing schema, which Jing cannot open from inside a JAR.
+	 */
+	private static final Set<String> BUNDLED_SCHEMAS = Set.of(
+		"xml.xsd",
+		"metadata.xsd",
+		"plural_gender_select.xsd",
+		"xliff_core_2.2.xsd",
+		"xliff-core-2.0.xsd",
+		"xliff-core-1.2-transitional.xsd"
+	);
+
+	/**
 	 * Validates the given XLIFF document against the schema for its version with Jing.
 	 *
 	 * <p>The bundled schema resource is either a core XSD (1.2/2.0/2.1) or, for 2.2, the NVDL that
 	 * dispatches the PGS module attributes away from the core XSD; the {@link AutoSchemaReader} picks
-	 * the schema language from the resource. Schema references resolve relative to the resource's
-	 * classpath location; the {@code xml.xsd} that every core schema imports is served from the package
-	 * via the entity resolver, so nothing is fetched from outside the classpath.
+	 * the schema language from the resource. Cross-referenced schemas (the {@code xml.xsd} that every
+	 * core schema imports, and the core/module schemas the 2.2 NVDL references) are served from the
+	 * package by file name via the entity resolver, since Jing cannot resolve them relative to a
+	 * {@code jar:} URL; so nothing is fetched from outside the classpath.
 	 *
 	 * @param document the parsed XLIFF document.
 	 * @param version  the resolved XLIFF version (e.g. {@code "1.2"}).
@@ -84,14 +101,7 @@ final class XliffSchemaValidator {
 
 		CollectingErrorHandler errorHandler = new CollectingErrorHandler();
 
-		EntityResolver entityResolver = (publicId, systemId) -> {
-			if (systemId != null && systemId.endsWith("xml.xsd")) {
-				InputSource source = new InputSource(openXmlSchema());
-				source.setSystemId(systemId); // <<----------------------------------------------------- ??????
-				return source;
-			}
-			return null;
-		};
+		EntityResolver entityResolver = (publicId, systemId) -> resolveBundledSchema(systemId);
 
 		PropertyMapBuilder properties = new PropertyMapBuilder();
 		properties.put(ValidateProperty.ERROR_HANDLER, errorHandler);
@@ -149,10 +159,27 @@ final class XliffSchemaValidator {
 	}
 
 	/**
-	 * Opens the bundled W3C {@code xml.xsd} from the package (classpath); every core schema imports it.
+	 * Serves a cross-referenced bundled schema from the package by its file name. Returns null for an
+	 * unknown reference so the caller's resolver chain handles it.
 	 */
-	private static InputStream openXmlSchema() {
-		String resource = SCHEMA_PATH + "xml.xsd";
+	private static InputSource resolveBundledSchema(String systemId) {
+		if (systemId == null) {
+			return null;
+		}
+		String fileName = systemId.substring(systemId.lastIndexOf('/') + 1);
+		if (!BUNDLED_SCHEMAS.contains(fileName)) {
+			return null;
+		}
+		InputSource source = new InputSource(openSchema(fileName));
+		source.setSystemId(systemId);
+		return source;
+	}
+
+	/**
+	 * Opens a bundled schema from the package (classpath) by its file name.
+	 */
+	private static InputStream openSchema(String fileName) {
+		String resource = SCHEMA_PATH + fileName;
 		InputStream in = XliffSchemaValidator.class.getResourceAsStream(resource);
 		if (in == null) {
 			throw new XliffMessageSourceValidationException(
