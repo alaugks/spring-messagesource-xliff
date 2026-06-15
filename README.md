@@ -99,7 +99,7 @@ public class MessageSourceConfig {
 
 * Translations can be split into files by domain (default domain `messages`, configurable via `defaultDomain`).
 * Files live in the resource folder with extension `xliff` or `xlf`.
-* Supported versions: `1.2`, `2.0` and `2.1`.
+* Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
 * Each file can optionally be validated against its OASIS XSD (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`); off by default, enable with `validateSchema(true)`.
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
 * Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`) — **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
