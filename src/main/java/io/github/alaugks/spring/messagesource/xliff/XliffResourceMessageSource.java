@@ -9,6 +9,7 @@ import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
 import java.util.List;
 import java.util.Locale;
+import org.springframework.context.MessageSource;
 
 public class XliffResourceMessageSource {
 
@@ -58,6 +59,8 @@ public class XliffResourceMessageSource {
 		private boolean validateSchema = false;
 
 		private boolean enableICU4j;
+
+		private MessageSource parentMessageSource;
 
 		/**
 		 * Creates a new builder with the given default locale and XLIFF file
@@ -143,6 +146,19 @@ public class XliffResourceMessageSource {
 		}
 
 		/**
+		 * Sets the parent {@link MessageSource} for delegation. If no message is found
+		 * within this message source, the parent source will be consulted.
+		 *
+		 * @param parentMessageSource the parent {@link MessageSource} to delegate to
+		 *                            if a message is not found.
+		 * @return this builder for chaining.
+		 */
+		public Builder parentMessageSource(MessageSource parentMessageSource) {
+			this.parentMessageSource = parentMessageSource;
+			return this;
+		}
+
+		/**
 		 * Assembles the configured {@link CatalogMessageSourceBuilder} backed
 		 * by an {@link XliffCatalog} loaded from the configured location
 		 * pattern.
@@ -163,7 +179,8 @@ public class XliffResourceMessageSource {
 
 			CatalogMessageSourceBuilder.Builder builder = CatalogMessageSourceBuilder
 				.builder(xliffCatalog, this.defaultLocale)
-				.defaultDomain(this.defaultDomain);
+				.defaultDomain(this.defaultDomain)
+				.parentMessageSource(this.parentMessageSource);
 
 			if (this.enableICU4j) {
 				builder.enableICU4j();
