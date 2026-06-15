@@ -14,7 +14,6 @@ The key is the resource name (`name` / `id`) as for every other unit. See the ma
 - [Plural](#plural)
   - [Numeric cases](#numeric-cases)
   - [CLDR plural keywords](#cldr-plural-keywords)
-  - [Missing case](#missing-case)
 - [Gender](#gender)
 - [Select](#select)
 - [Placeholders](#placeholders)
@@ -148,6 +147,7 @@ messageSource.getMessage(
 
 **Result:** `<p>Ein Artikel liegt in Ihrem Warenkorb und ist bereit zur Kasse.</p>`
 
+<!-- 
 ### Missing case
 
 A `<segment/>` without a `pgs:case` attribute defaults to `other`.
@@ -178,6 +178,7 @@ messageSource.getMessage(
 ```
 
 **Result:** `eine`
+-->
 
 **Thymeleaf**
 
