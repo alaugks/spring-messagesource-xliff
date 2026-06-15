@@ -21,11 +21,11 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
     - [XLIFF 2.2 — PGS Module (Plural, Gender and Select)](#xliff-22--pgs-module-plural-gender-and-select)
     - [Markup](#markup)
     - [Whitespace](#whitespace)
-  - [Unsupported XLIFF Features](#unsupported-xliff-features)
   - [Structure of the Translation Filename](#structure-of-the-translation-filename)
   - [Example with XLIFF Files](#example-with-xliff-files)
     - [XLIFF Files](#xliff-files-1)
     - [Target value](#target-value)
+  - [Unsupported XLIFF Features](#unsupported-xliff-features)
 - [Full Example](#full-example)
 - [Related MessageSources and Examples](#related-messagesources-and-examples)
 - [License](#license)
@@ -100,7 +100,7 @@ public class MessageSourceConfig {
 * Translations can be split into files by domain (default domain `messages`, configurable via `defaultDomain`).
 * Files live in the resource folder with extension `xliff` or `xlf`.
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
-* Each file can optionally be validated against its OASIS XSD (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`); off by default, enable with `validateSchema(true)`.
+* Each file can optionally be validated against its OASIS schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_2.2_validation.nvdl`); off by default, enable with `validateSchema(true)`.
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
 * Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`) — **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
 
@@ -114,7 +114,7 @@ The key is the application-facing resource name. XLIFF separates the internal id
 | 2.x | `<unit/>` | `name` *(optional, resource name)* | `id` *(required, document identifier)* | `segment/@id` |
 
 * **XLIFF 1.2:** `resname` &rarr; `id`. `resname` is the original resource name (e.g. a properties-file key) and is preferred; `id` is required and unique within the `<file/>` but is a tool-internal identifier, used as the key only when `resname` is absent. ([Docs: General Identifiers](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers))
-* **XLIFF 2.x:** `unit/@name` &rarr; `unit/@id`, analogous to 1.2. `segment/@id` is **never** the key (optional, only unique within its `<unit/>`). ([Docs: 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment), [2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment))
+* **XLIFF 2.x:** `unit/@name` &rarr; `unit/@id`, analogous to 1.2. `segment/@id` is **never** the key (optional, only unique within its `<unit/>`). ([Docs: 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment), [2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment), [2.2](https://docs.oasis-open.org/xliff/xliff-core/v2.2/xliff-core-v2.2-part1.html#segment))
 * A unit is **skipped** when neither attribute is set (1.2: no `resname`/`id`; 2.x: no `name`/`id`).
 
 ### Translation Value
@@ -219,26 +219,6 @@ Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="
 ```
 
 **Result:** `separator` → ` · ` (with the surrounding spaces preserved)
-
-### Unsupported XLIFF Features
-
-This package focuses on **reading and displaying** translations (key → text), not on editing XLIFF with translation tools. Features that only matter for the authoring round-trip are intentionally **not** processed: a document using them still loads, the features are ignored, and only the resolved text is returned.
-
-Not supported, relative to the XLIFF 1.2 and 2.0/2.1 specifications (a `—` means the version has no such concept):
-
-| Feature | XLIFF 1.2 | XLIFF 2.x | Behavior in 3.0.0 |
-|---|---|---|---|
-| Inline formatting / code elements | `<g/>`, `<x/>`, `<bx/>`, `<ex/>`, `<bpt/>`, `<ept/>`, `<ph/>`, `<it/>`, `<sub/>` | `<pc/>`, `<ph/>`, `<sc/>`, `<ec/>`, `<cp/>` | Not interpreted. Text-wrapping elements keep their text; standalone placeholders contribute nothing. Use `CDATA` for display markup (see [Markup](#markup)). |
-| Placeholder / original-data fallback text | `equiv-text` | `equiv`, `disp`, `<originalData/>` + `dataRef` | Ignored; native code is not reconstructed. |
-| Annotation markers | `<mrk/>` (`mtype`, `comment`) | `<mrk/>`, `<sm/>` / `<em/>` | Tag dropped, wrapped text kept (see [Markup](#markup)). |
-| Translation state | `state`, `state-qualifier` | segment `state` | `<target/>` is always used, regardless of state. |
-| Notes & alternative translations | `<note/>`, `<alt-trans/>` | `<notes/>` | Not exposed. |
-| Process metadata | `approved`, `<phase-group/>` / `phase`, `tool` | `tool` / metadata | Ignored. |
-| Skeleton / round-trip structure | `<skl/>` / external skeleton | `<skeleton/>` | Not read. |
-| Grouping & context | `<group/>`, `restype`, `<context-group/>`, `<count-group/>` | `<group/>` | Structural metadata ignored. |
-| Binary content | `<bin-unit/>`, `<bin-source/>`, `<bin-target/>` | — | Not read. |
-| XLIFF 2.x modules | — | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed. |
-| Version | — | XLIFF 2.2 | Not supported (only 2.0 / 2.1). **Planned for 3.2.0**. |
 
 ### Structure of the Translation Filename
 
@@ -463,9 +443,28 @@ Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / 
 > 
 > ***There is no translation for Japanese (`jp`). The default locale translations (`en`) are selected.
 
+### Unsupported XLIFF Features
+
+This package focuses on **reading and displaying** translations (key → text), not on editing XLIFF with translation tools. Features that only matter for the authoring round-trip are intentionally **not** processed: a document using them still loads, the features are ignored, and only the resolved text is returned.
+
+Not supported, relative to the XLIFF 1.2 and 2.x specifications (a `—` means the version has no such concept):
+
+| Feature | XLIFF 1.2 | XLIFF 2.x | Behavior in 3.0.0 |
+|---|---|---|---|
+| Inline formatting / code elements | `<g/>`, `<x/>`, `<bx/>`, `<ex/>`, `<bpt/>`, `<ept/>`, `<ph/>`, `<it/>`, `<sub/>` | `<pc/>`, `<ph/>`, `<sc/>`, `<ec/>`, `<cp/>` | Not interpreted. Text-wrapping elements keep their text; standalone placeholders contribute nothing. Use `CDATA` for display markup (see [Markup](#markup)). |
+| Placeholder / original-data fallback text | `equiv-text` | `equiv`, `disp`, `<originalData/>` + `dataRef` | Ignored; native code is not reconstructed. |
+| Annotation markers | `<mrk/>` (`mtype`, `comment`) | `<mrk/>`, `<sm/>` / `<em/>` | Tag dropped, wrapped text kept (see [Markup](#markup)). |
+| Translation state | `state`, `state-qualifier` | segment `state` | `<target/>` is always used, regardless of state. |
+| Notes & alternative translations | `<note/>`, `<alt-trans/>` | `<notes/>` | Not exposed. |
+| Process metadata | `approved`, `<phase-group/>` / `phase`, `tool` | `tool` / metadata | Ignored. |
+| Skeleton / round-trip structure | `<skl/>` / external skeleton | `<skeleton/>` | Not read. |
+| Grouping & context | `<group/>`, `restype`, `<context-group/>`, `<count-group/>` | `<group/>` | Structural metadata ignored. |
+| Binary content | `<bin-unit/>`, `<bin-source/>`, `<bin-target/>` | — | Not read. |
+| XLIFF 2.x modules | — | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed (the XLIFF 2.2 PGS module is supported, see [XLIFF 2.2 — PGS Module](#xliff-22--pgs-module-plural-gender-and-select)). |
+
 ## Full Example
 
-A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.1 translation files:
+A Full Example using Spring Boot, mixing XLIFF 1.2 and XLIFF 2.x translation files:
 
 Repository: https://github.com/alaugks/spring-messagesource-xliff-example<br>
 
