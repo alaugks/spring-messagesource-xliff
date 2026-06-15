@@ -1,9 +1,6 @@
 # XLIFF MessageSource for Spring
 
-This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0 and 2.1. 
-
-> [!NOTE]  
-> XLIFF 2.2 (PGS module (Plural, Gender and Select)) is planned for version [3.2.0](https://github.com/alaugks/spring-messagesource-xliff/tree/snapshot/3.2.0). See [XLIFF 2.2 — PGS Module](README-XLIFF-2.2.md) for details and examples.
+This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0, 2.1 and 2.2. 
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.2.0-SNAPSHOT)
@@ -113,11 +110,11 @@ The key is the application-facing resource name. XLIFF separates the internal id
 
 | Version | Element | 1. Key from | 2. Fallback | Not used as key |
 |---|---|---|---|---|
-| **1.2** | `<trans-unit/>` | `resname` *(optional, resource name)* | `id` *(required, document identifier)* | — |
-| **2.0 / 2.1** | `<unit/>` | `name` *(optional, resource name)* | `id` *(required, document identifier)* | `segment/@id` |
+| 1.2 | `<trans-unit/>` | `resname` *(optional, resource name)* | `id` *(required, document identifier)* | — |
+| 2.x | `<unit/>` | `name` *(optional, resource name)* | `id` *(required, document identifier)* | `segment/@id` |
 
 * **XLIFF 1.2:** `resname` &rarr; `id`. `resname` is the original resource name (e.g. a properties-file key) and is preferred; `id` is required and unique within the `<file/>` but is a tool-internal identifier, used as the key only when `resname` is absent. ([Docs: General Identifiers](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers))
-* **XLIFF 2.0 / 2.1:** `unit/@name` &rarr; `unit/@id`, analogous to 1.2. `segment/@id` is **never** the key (optional, only unique within its `<unit/>`). ([Docs: 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment), [2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment))
+* **XLIFF 2.x:** `unit/@name` &rarr; `unit/@id`, analogous to 1.2. `segment/@id` is **never** the key (optional, only unique within its `<unit/>`). ([Docs: 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment), [2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment))
 * A unit is **skipped** when neither attribute is set (1.2: no `resname`/`id`; 2.x: no `name`/`id`).
 
 ### Translation Value
@@ -190,7 +187,7 @@ The `order` attribute on `<target/>` defines the order in which target segments 
 
 XLIFF 2.2 adds the PGS module, which annotates a `<unit/>` with a `pgs:switch` so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument (e.g. a count or a gender). This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
 
-See [XLIFF 2.2 — PGS Module](README-XLIFF-2.2.md) for the annotation, all switch types and examples.
+ℹ️ See [XLIFF 2.2 — PGS Module](README-XLIFF-2.2.md) for the annotation, all switch types and examples.
 
 #### Markup
 
