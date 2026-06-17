@@ -62,9 +62,9 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 > [!IMPORTANT]
 > The XLIFF 2.2 PGS module generates ICU patterns with named arguments (e.g. `{count, plural, …}`). These cannot be resolved by the default `java.text.MessageFormat` and fail at `getMessage()` time. When using the PGS module you **must** enable ICU4J via `enableICU4j()`.
 >
-> ICU4J is the [`com.ibm.icu:icu4j`](https://mvnrepository.com/artifact/com.ibm.icu/icu4j) dependency, which is shipped transitively with this library — no extra dependency is required. Its `com.ibm.icu.text.MessageFormat` is a syntax superset of `java.text.MessageFormat`, so existing numeric-index patterns keep working.
+> ICU4J is the [`com.ibm.icu:icu4j`](https://mvnrepository.com/artifact/com.ibm.icu/icu4j) dependency, which is shipped transitively with this library. No extra dependency is required. Its `com.ibm.icu.text.MessageFormat` is a syntax superset of `java.text.MessageFormat`, so existing numeric-index patterns keep working.
 >
-> Note that the two are not fully output-compatible: ICU4J uses Unicode CLDR locale data, so the formatted result for a given locale can differ from the JDK's — for example the decimal and grouping separators in numbers (`.` vs `,`). Verify locale-sensitive output after enabling ICU4J.
+> Note that the two are not fully output-compatible: ICU4J uses Unicode CLDR locale data, so the formatted result for a given locale can differ from the JDK's, for example the decimal and grouping separators in numbers (`.` vs `,`). Verify locale-sensitive output after enabling ICU4J.
 
 ### Example
 
@@ -102,7 +102,7 @@ public class MessageSourceConfig {
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
 * Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `validateSchema(true)`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
-* Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`) — **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
+* Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`), **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
 
 ### Translation Key
 
@@ -119,7 +119,7 @@ The key is the application-facing resource name. XLIFF separates the internal id
 
 ### Translation Value
 
-The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content** — embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are not interpreted, and the value is trimmed unless `xml:space="preserve"` is set. See [Markup](#markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
+The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are not interpreted, and the value is trimmed unless `xml:space="preserve"` is set. See [Markup](#markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
 
 #### XLIFF 1.2
 
@@ -191,9 +191,9 @@ XLIFF 2.2 adds the PGS module, which annotates a `<unit/>` with a `pgs:switch` s
 
 #### Markup
 
-Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**; embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements (`<g/>`, `<pc/>`, `<ph/>`, `<x/>`, …) are **not** interpreted — put display markup into the text as `CDATA` or escaped characters.
+Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**; embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements (`<g/>`, `<pc/>`, `<ph/>`, `<x/>`, …) are **not** interpreted. Put display markup into the text as `CDATA` or escaped characters.
 
-Text-wrapping inline elements — most notably the annotation marker `<mrk/>` — are not processed, but their **text is kept**: the tag is dropped, the spanned text remains. E.g. `Hallo <mrk ...>Welt</mrk>!` → `Hallo Welt!`.
+Text-wrapping inline elements, most notably the annotation marker `<mrk/>`, are not processed, but their **text is kept**: the tag is dropped, the spanned text remains. E.g. `Hallo <mrk ...>Welt</mrk>!` → `Hallo Welt!`.
 
 ```xml
 <unit id="1" name="teaser">
