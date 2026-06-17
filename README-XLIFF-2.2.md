@@ -4,9 +4,6 @@ XLIFF 2.2 introduces the **PGS module** (Plural, Gender and Select). This librar
 
 The key is the resource name (`name` / `id`) as for every other unit. See the main [README](README.md) for keys, filenames and the `MessageSource` configuration.
 
-> [!IMPORTANT]
-> PGS units use named arguments (e.g. `count`, `recipient_gender`), which the default `java.text.MessageFormat` cannot resolve — it only understands numeric indices (`{0}`, `{1}`). When using the PGS module you **must** enable ICU4J via `enableICU4j()`, otherwise `getMessage()` fails. ICU4J ships transitively with this library; no extra dependency is required.
-
 ## Table of Contents
 
 - [Configuration](#configuration)
@@ -196,20 +193,20 @@ ICU has no gender construct, so a `gender:<variable>` switch is mapped to an ICU
 <unit id="tu1" name="greeting" pgs:switch="gender:recipient_gender">
     <segment pgs:case="feminine">
         <source>How is she?</source>
-        <target>Wie geht's ihr?</target>
+        <target>Wie geht es ihr?</target>
     </segment>
     <segment pgs:case="masculine">
         <source>How is he?</source>
-        <target>Wie geht's ihm?</target>
+        <target>Wie geht es ihm?</target>
     </segment>
     <segment pgs:case="other">
         <source>How are they?</source>
-        <target>Wie geht's ihnen?</target>
+        <target>Wie geht es ihnen?</target>
     </segment>
 </unit>
 ```
 
-Resolving `greeting` with `recipient_gender = "feminine"` yields `Wie geht's ihr?`.
+Resolving `greeting` with `recipient_gender = "feminine"` yields `Wie geht es ihr?`.
 
 **getMessage()**
 
@@ -221,7 +218,7 @@ messageSource.getMessage(
 );
 ```
 
-**Result:** `Wie geht's ihr?`
+**Result:** `Wie geht es ihr?`
 
 **Thymeleaf**
 
@@ -229,10 +226,7 @@ messageSource.getMessage(
 <p th:text="#{greeting(${ {'recipient_gender' : 'feminine'} })}"></p>
 ```
 
-**Result:** `<p>Wie geht&#39;s ihr?</p>`
-
-> [!NOTE]
-> `th:text` HTML-escapes the resolved text, so the apostrophe renders as `&#39;` (`Wie geht's ihr?` → `Wie geht&#39;s ihr?`). This is Thymeleaf's standard behavior. Use `th:utext` only if the text is trusted and must contain raw markup.
+**Result:** `<p>Wie geht es ihr?</p>`
 
 ## Select
 

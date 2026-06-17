@@ -158,15 +158,15 @@ class IcuPatternGeneratorTest {
 				        <unit id="tu1" name="greeting" pgs:switch="gender:recipient_gender">
 				            <segment pgs:case="feminine">
 				                <source>How is she?</source>
-				                <target>Wie geht's ihr?</target>
+				                <target>Wie geht es ihr?</target>
 				            </segment>
 				            <segment pgs:case="masculine">
 				                <source>How is he?</source>
-				                <target>Wie geht's ihm?</target>
+				                <target>Wie geht es ihm?</target>
 				            </segment>
 				            <segment pgs:case="other">
 				                <source>How are they?</source>
-				                <target>Wie geht's ihnen?</target>
+				                <target>Wie geht es ihnen?</target>
 				            </segment>
 				        </unit>
 				    </file>
@@ -177,7 +177,7 @@ class IcuPatternGeneratorTest {
 
 		assertThat(
 			new MessageFormat(icuPattern).format(Map.of("recipient_gender", "feminine"))
-		).isEqualTo("Wie geht's ihr?");
+		).isEqualTo("Wie geht es ihr?");
 	}
 
 	@Test
