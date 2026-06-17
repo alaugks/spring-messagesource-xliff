@@ -18,10 +18,11 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -51,6 +52,7 @@ final class XliffSchemaValidator {
 
 	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
 	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
+	private static final String PGS_ATTRIBUTES_XPATH = "//@*[namespace-uri()='" + PGS_NS + "']";
 
 	private static final Map<String, List<String>> SCHEMA_BY_VERSION = Map.of(
 			"1.2", List.of("xliff-core-1.2-transitional.xsd"),
@@ -106,20 +108,17 @@ final class XliffSchemaValidator {
 	 */
 	private static Document withoutPgsAttributes(Document document) {
 		Document copy = (Document) document.cloneNode(true);
-		NodeList elements = copy.getElementsByTagName("*");
-		for (int i = 0; i < elements.getLength(); i++) {
-			Element element = (Element) elements.item(i);
-			NamedNodeMap attributes = element.getAttributes();
-			List<Attr> pgsAttributes = new ArrayList<>();
-			for (int j = 0; j < attributes.getLength(); j++) {
-				Attr attribute = (Attr) attributes.item(j);
-				if (PGS_NS.equals(attribute.getNamespaceURI())) {
-					pgsAttributes.add(attribute);
-				}
+		try {
+			NodeList pgsAttributes = (NodeList) XPathFactory.newInstance()
+					.newXPath()
+					.evaluate(PGS_ATTRIBUTES_XPATH, copy, XPathConstants.NODESET);
+			for (int i = 0; i < pgsAttributes.getLength(); i++) {
+				Attr attribute = (Attr) pgsAttributes.item(i);
+				attribute.getOwnerElement().removeAttributeNode(attribute);
 			}
-			for (Attr pgsAttribute : pgsAttributes) {
-				element.removeAttributeNode(pgsAttribute);
-			}
+		}
+		catch (XPathExpressionException e) {
+			throw new XliffMessageSourceValidationException(e.getMessage());
 		}
 		return copy;
 	}
