@@ -175,7 +175,7 @@ messageSource.getMessage(
 ```
 
 **Result:** `eine`
--->
+
 
 **Thymeleaf**
 
@@ -184,6 +184,8 @@ messageSource.getMessage(
 ```
 
 **Result:** `<p>eine</p>`
+
+-->
 
 ## Gender
 
