@@ -75,18 +75,6 @@
             <version>77.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.relaxng</groupId>
-            <artifactId>jing</artifactId>
-            <version>20220510</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

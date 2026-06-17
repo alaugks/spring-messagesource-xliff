@@ -3,86 +3,66 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import com.thaiopensource.util.PropertyMapBuilder;
-import com.thaiopensource.validate.ValidateProperty;
-import com.thaiopensource.validate.ValidationDriver;
-import com.thaiopensource.validate.auto.AutoSchemaReader;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.XMLConstants;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * Validates XLIFF documents against the bundled OASIS schemas.
+ * Validates XLIFF documents against the bundled OASIS XSD schemas.
  *
- * <p>Every version is validated through one engine, Jing
- * ({@link ValidationDriver}). XLIFF 1.2 is validated against
- * {@code xliff-core-1.2-transitional.xsd} and XLIFF 2.0/2.1 against
- * {@code xliff-core-2.0.xsd} (2.1 documents reuse the 2.0 core namespace and
- * schema), both as plain XSD.
+ * <p>XLIFF 1.2 is validated against {@code xliff-core-1.2-transitional.xsd},
+ * XLIFF 2.0/2.1 against {@code xliff-core-2.0.xsd} (2.1 documents reuse the
+ * 2.0 core namespace and schema), and XLIFF 2.2 against
+ * {@code xliff_core_2.2.xsd} together with the {@code metadata.xsd} module it
+ * imports. All schemas, including the {@code xml.xsd} imported by the core
+ * schemas, are read only from the package; external access is disabled so
+ * nothing is ever fetched from outside the classpath.
  *
- * <p>XLIFF 2.2 is validated via NVDL (ISO/IEC 19757-4) using
- * {@code xliff_2.2_validation.nvdl}: NVDL dispatches the Plural, Gender, and
- * Select (PGS) module attributes away from the core schema before XSD
- * validation, which is necessary because the OASIS core schema does not declare
- * a wildcard for module attributes on every element. The core schemas therefore
- * stay the unmodified OASIS schemas. All schemas, including the {@code xml.xsd}
- * imported by every core schema and the schemas the 2.2 NVDL cross-references, are
- * read only from the package via the entity resolver; nothing is ever fetched from
- * outside the classpath.
+ * <p>The Plural, Gender, and Select (PGS) module attributes are an extension of
+ * this library, not part of the OASIS core schema, which declares no wildcard
+ * for module attributes on every element. They are therefore stripped from a
+ * copy of the document before XSD validation so the core schema stays the
+ * unmodified OASIS schema; the original document keeps its PGS attributes for
+ * the reader.
  */
 final class XliffSchemaValidator {
 
 	private static final String SCHEMA_PATH = "schema/";
 
-	private static final Map<String, String> SCHEMA_BY_VERSION = Map.of(
-			"1.2", "xliff-core-1.2-transitional.xsd",
-			"2.0", "xliff-core-2.0.xsd",
-			"2.1", "xliff-core-2.0.xsd",
-			"2.2", "xliff_2.2_validation.nvdl"
+	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
+	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
+
+	private static final Map<String, List<String>> SCHEMA_BY_VERSION = Map.of(
+			"1.2", List.of("xliff-core-1.2-transitional.xsd"),
+			"2.0", List.of("xliff-core-2.0.xsd"),
+			"2.1", List.of("xliff-core-2.0.xsd"),
+			"2.2", List.of("metadata.xsd", "xliff_core_2.2.xsd")
 	);
 
-	/**
-	 * Bundled schemas that core schemas and the 2.2 NVDL cross-reference. They are served from the
-	 * package so the references resolve from the classpath instead of relative to the (possibly
-	 * {@code jar:}) URL of the referencing schema, which Jing cannot open from inside a JAR.
-	 */
-	private static final Set<String> BUNDLED_SCHEMAS = Set.of(
-		"xml.xsd",
-		"metadata.xsd",
-		"plural_gender_select.xsd",
-		"xliff_core_2.2.xsd",
-		"xliff-core-2.0.xsd",
-		"xliff-core-1.2-transitional.xsd"
-	);
+	private final Map<String, Schema> schemaCache = new ConcurrentHashMap<>();
 
 	/**
-	 * Validates the given XLIFF document against the schema for its version with Jing.
-	 *
-	 * <p>The bundled schema resource is either a core XSD (1.2/2.0/2.1) or, for 2.2, the NVDL that
-	 * dispatches the PGS module attributes away from the core XSD; the {@link AutoSchemaReader} picks
-	 * the schema language from the resource. Cross-referenced schemas (the {@code xml.xsd} that every
-	 * core schema imports, and the core/module schemas the 2.2 NVDL references) are served from the
-	 * package by file name via the entity resolver, since Jing cannot resolve them relative to a
-	 * {@code jar:} URL; so nothing is fetched from outside the classpath.
+	 * Validates the given XLIFF document against the schema for its version.
 	 *
 	 * @param document the parsed XLIFF document.
 	 * @param version  the resolved XLIFF version (e.g. {@code "1.2"}).
@@ -90,100 +70,104 @@ final class XliffSchemaValidator {
 	 *                                               the version, or if the
 	 *                                               document violates the schema.
 	 */
-	public void validate(Document document, String version) {
-		String schemaPath = SCHEMA_BY_VERSION.get(version);
-		if (schemaPath == null) {
+	void validate(Document document, String version) {
+		List<String> schemaResources = SCHEMA_BY_VERSION.get(version);
+		if (schemaResources == null) {
 			throw new XliffMessageSourceValidationException(
-				String.format("No schema available for version \"%s\"", version)
+					String.format("No schema available for version \"%s\"", version)
 			);
 		}
-		String schemaResource = SCHEMA_PATH + schemaPath;
+
+		Schema schema = this.schemaCache.computeIfAbsent(version, key -> this.loadSchema(schemaResources));
 
 		CollectingErrorHandler errorHandler = new CollectingErrorHandler();
-
-		EntityResolver entityResolver = (publicId, systemId) -> resolveBundledSchema(systemId);
-
-		PropertyMapBuilder properties = new PropertyMapBuilder();
-		properties.put(ValidateProperty.ERROR_HANDLER, errorHandler);
-		properties.put(ValidateProperty.ENTITY_RESOLVER, entityResolver);
-
-		ValidationDriver driver = new ValidationDriver(properties.toPropertyMap(), new AutoSchemaReader());
+		Validator validator = schema.newValidator();
+		validator.setErrorHandler(errorHandler);
 		try {
-			URL schema = XliffSchemaValidator.class.getResource(schemaResource);
-			if (schema == null) {
-				throw new XliffMessageSourceValidationException(
-						String.format("Bundled schema resource \"%s\" not found.", schemaResource)
-				);
-			}
-			if (!driver.loadSchema(new InputSource(schema.toExternalForm()))) {
-				throw new XliffMessageSourceValidationException(
-						errorHandler.errors.isEmpty()
-								? String.format("Unable to compile schema \"%s\"", schemaResource)
-								: String.join("", errorHandler.errors)
-				);
-			}
-			driver.validate(new InputSource(new ByteArrayInputStream(serialize(document))));
+			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			validator.validate(new DOMSource(withoutPgsAttributes(document)));
 		}
 		catch (SAXException | IOException e) {
 			throw new XliffMessageSourceValidationException(e.getMessage());
 		}
 
 		if (!errorHandler.errors.isEmpty()) {
-			throw new XliffMessageSourceValidationException(String.join("", errorHandler.errors));
-		}
-	}
-
-	/**
-	 * Serializes the parsed document back to bytes, since the Jing validator consumes a byte stream.
-	 */
-	private static byte[] serialize(Document document) {
-		try {
-			// Force the JDK's built-in factory: the jing dependency puts a standalone Xalan/Xerces
-			// on the classpath whose TransformerFactory does not recognize the JAXP 1.5 accessExternal*
-			// attributes set below.
-			TransformerFactory factory = TransformerFactory.newInstance(
-					"com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
-					XliffSchemaValidator.class.getClassLoader()
+			throw new XliffMessageSourceValidationException(
+					String.join("", errorHandler.errors)
 			);
-			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-			Transformer transformer = factory.newTransformer();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			transformer.transform(new DOMSource(document), new StreamResult(out));
-			return out.toByteArray();
-		}
-		catch (TransformerException e) {
-			throw new XliffMessageSourceValidationException(e.getMessage());
 		}
 	}
 
 	/**
-	 * Serves a cross-referenced bundled schema from the package by its file name. Returns null for an
-	 * unknown reference so the caller's resolver chain handles it.
+	 * Returns a deep copy of the document with every PGS module attribute removed, so the document
+	 * validates against the unmodified OASIS core schema. The original document is left untouched and
+	 * keeps its PGS attributes for the reader. Documents without PGS attributes are returned as is.
 	 */
-	private static InputSource resolveBundledSchema(String systemId) {
-		if (systemId == null) {
-			return null;
+	private static Document withoutPgsAttributes(Document document) {
+		Document copy = (Document) document.cloneNode(true);
+		NodeList elements = copy.getElementsByTagName("*");
+		for (int i = 0; i < elements.getLength(); i++) {
+			Element element = (Element) elements.item(i);
+			NamedNodeMap attributes = element.getAttributes();
+			List<Attr> pgsAttributes = new ArrayList<>();
+			for (int j = 0; j < attributes.getLength(); j++) {
+				Attr attribute = (Attr) attributes.item(j);
+				if (PGS_NS.equals(attribute.getNamespaceURI())) {
+					pgsAttributes.add(attribute);
+				}
+			}
+			for (Attr pgsAttribute : pgsAttributes) {
+				element.removeAttributeNode(pgsAttribute);
+			}
 		}
-		String fileName = systemId.substring(systemId.lastIndexOf('/') + 1);
-		if (!BUNDLED_SCHEMAS.contains(fileName)) {
-			return null;
+		return copy;
+	}
+
+	/** Loads and compiles all bundled schemas for the version (xml.xsd plus the core and any module it imports), with external access disabled. */
+	private Schema loadSchema(List<String> schemaResources) {
+		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		try {
+			// Disable any external access and supply every schema from the package, so
+			// imports are resolved only against the bundled sources (xml.xsd plus any
+			// module the core imports) and nothing is fetched from outside the package.
+			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+
+			List<Source> sources = new ArrayList<>();
+			sources.add(readSchema("xml.xsd"));
+			for (String schemaResource : schemaResources) {
+				sources.add(readSchema(schemaResource));
+			}
+			return factory.newSchema(sources.toArray(new Source[0]));
 		}
-		InputSource source = new InputSource(openSchema(fileName));
-		source.setSystemId(systemId);
-		return source;
+		catch (SAXException e) {
+			throw new XliffMessageSourceValidationException(
+					String.format("Unable to load XLIFF schema %s: %s", schemaResources, e.getMessage())
+			);
+		}
+	}
+
+	/** Reads a bundled schema fully into memory so that no open stream outlives this method. */
+	private static Source readSchema(String name) {
+		try (InputStream in = openSchema(name)) {
+			return new StreamSource(new ByteArrayInputStream(in.readAllBytes()));
+		}
+		catch (IOException e) {
+			throw new XliffMessageSourceValidationException(
+					String.format("Unable to read bundled schema \"%s\": %s", name, e.getMessage())
+			);
+		}
 	}
 
 	/**
-	 * Opens a bundled schema from the package (classpath) by its file name.
+	 * Opens a bundled schema resource from the package (classpath) by file name.
 	 */
-	private static InputStream openSchema(String fileName) {
-		String resource = SCHEMA_PATH + fileName;
-		InputStream in = XliffSchemaValidator.class.getResourceAsStream(resource);
+	private static InputStream openSchema(String name) {
+		InputStream in = XliffSchemaValidator.class.getResourceAsStream(SCHEMA_PATH + name);
 		if (in == null) {
 			throw new XliffMessageSourceValidationException(
-					String.format("Bundled schema resource \"%s\" not found.", resource)
+					String.format("Bundled schema resource \"%s%s\" not found.", SCHEMA_PATH, name)
 			);
 		}
 		return in;
@@ -198,15 +182,13 @@ final class XliffSchemaValidator {
 		private final List<String> errors = new ArrayList<>();
 
 		/**
-		 * Ignores a schema warning: warnings (e.g. Jing's XSD hint about an odd
-		 * schemaLocation URI count) are not schema violations and must not fail
-		 * validation.
+		 * Records a schema warning.
 		 *
-		 * @param exception the warning reported by the parser.
+		 * @param exception the violation reported by the parser.
 		 */
 		@Override
 		public void warning(SAXParseException exception) {
-			// Not a violation; intentionally not collected.
+			this.errors.add(format("WARNING", exception));
 		}
 
 		/**
@@ -216,7 +198,7 @@ final class XliffSchemaValidator {
 		 */
 		@Override
 		public void error(SAXParseException exception) {
-			this.errors.add(format(exception));
+			this.errors.add(format("ERROR", exception));
 		}
 
 		/**
@@ -226,17 +208,17 @@ final class XliffSchemaValidator {
 		 */
 		@Override
 		public void fatalError(SAXParseException exception) {
-			this.errors.add(format(exception));
+			this.errors.add(format("ERROR", exception));
 		}
 
 		/**
 		 * Formats a single schema violation as
 		 * [LEVEL] message (line L, column C).
 		 */
-		private static String format(SAXParseException exception) {
+		private static String format(String level, SAXParseException exception) {
 			return String.format(
 					"[%s] %s (line %d, column %d)%n",
-					"ERROR",
+					level,
 					exception.getMessage(),
 					exception.getLineNumber(),
 					exception.getColumnNumber()
