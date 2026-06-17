@@ -59,9 +59,9 @@ class XliffResourceMessageSourceTest {
 
 	static Stream<Arguments> provider_message_icu4j() {
 		return Stream.of(
-			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en"), "You deleted 2 files."),
-			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en-US"), "You deleted 2 files."),
-			Arguments.of("files.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("de"), "Sie haben 2 Dateien gelöscht.")
+			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en"), "You deleted 2 files."),
+			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en-US"), "You deleted 2 files."),
+			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("de"), "Sie haben 2 Dateien gelöscht.")
 		);
 	}
 

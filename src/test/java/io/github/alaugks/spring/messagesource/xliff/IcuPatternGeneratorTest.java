@@ -25,7 +25,7 @@ class IcuPatternGeneratorTest {
 				    <file id="f1">
 				        <unit id="tu1" name="file_deleted" pgs:switch="plural:count">
 				            <segment pgs:case="0">
-				                <source>You deleted no files.</source>
+				                <source>You deleted no plural.</source>
 				                <target>Sie haben keine Dateien gelöscht.</target>
 				            </segment>
 				            <segment pgs:case="1">
@@ -33,7 +33,7 @@ class IcuPatternGeneratorTest {
 				                <target>Sie haben eine Datei gelöscht.</target>
 				            </segment>
 				            <segment pgs:case="other">
-				                <source>You deleted <ph id="1" disp="count"/> files.</source>
+				                <source>You deleted <ph id="1" disp="count"/> plural.</source>
 				                <target>Sie haben <ph id="1" disp="count"/> Dateien gelöscht.</target>
 				            </segment>
 				        </unit>
@@ -147,7 +147,7 @@ class IcuPatternGeneratorTest {
 	@Test
 	void test_gender_to_icu_select_pattern() {
 
-		String icuPattern = "{recipient_gender, select, feminine {Wie geht''s ihr?} masculine {Wie geht''s ihm?} other {Wie geht''s ihnen?}}";
+		String icuPattern = "{recipient_gender, select, feminine {Wie geht es ihr?} masculine {Wie geht es ihm?} other {Wie geht es ihnen?}}";
 
         Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>

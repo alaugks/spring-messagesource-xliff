@@ -92,11 +92,11 @@ class XliffSchemaValidatorTest {
 			    <file id="f1">
 			        <unit id="tu1" name="file_deleted" pgs:switch="plural:count">
 			            <segment pgs:case="0">
-			                <source>You deleted no files.</source>
+			                <source>You deleted no plural.</source>
 			                <target>Sie haben keine Dateien gelöscht.</target>
 			            </segment>
 			            <segment pgs:case="other">
-			                <source>You deleted <ph id="1" disp="count"/> files.</source>
+			                <source>You deleted <ph id="1" disp="count"/> plural.</source>
 			                <target>Sie haben <ph id="1" disp="count"/> Dateien gelöscht.</target>
 			            </segment>
 			        </unit>
@@ -118,7 +118,7 @@ class XliffSchemaValidatorTest {
 			    <file id="f1">
 			        <unit id="tu1" name="file_deleted">
 			            <segment case="0">
-			                <source>You deleted no files.</source>
+			                <source>You deleted no plural.</source>
 			                <target>Sie haben keine Dateien gelöscht.</target>
 			            </segment>
 			        </unit>
