@@ -114,7 +114,7 @@ The key is the application-facing resource name. XLIFF separates the internal id
 | 2.x | `<unit/>` | `name` *(optional, resource name)* | `id` *(required, document identifier)* | `segment/@id` |
 
 * **XLIFF 1.2:** `resname` &rarr; `id`. `resname` is the original resource name (e.g. a properties-file key) and is preferred; `id` is required and unique within the `<file/>` but is a tool-internal identifier, used as the key only when `resname` is absent. ([Docs: General Identifiers](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers))
-* **XLIFF 2.x:** `unit/@name` &rarr; `unit/@id`, analogous to 1.2. `segment/@id` is **never** the key (optional, only unique within its `<unit/>`). ([Docs: 2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#segment), [2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#segment), [2.2](https://docs.oasis-open.org/xliff/xliff-core/v2.2/xliff-core-v2.2-part1.html#segment))
+* **XLIFF 2.x:** `unit/@name` &rarr; `unit/@id`, analogous to 1.2. `segment/@id` is **never** the key (optional, only unique within its `<unit/>`). (Docs: [2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#unit), [2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#unit), [2.2](https://docs.oasis-open.org/xliff/xliff-core/v2.2/xliff-core-v2.2-part1.html#unit))
 * A unit is **skipped** when neither attribute is set (1.2: no `resname`/`id`; 2.x: no `name`/`id`).
 
 ### Translation Value
