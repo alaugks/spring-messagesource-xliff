@@ -183,7 +183,7 @@ class IcuPatternGeneratorTest {
 	@Test
 	void test_escapes_icu_metacharacters_in_text() {
 
-		String icuPattern = "{count, plural, =30 {'#' 30% '{'Rabatt'}'} other {'#' 50% '{'Rabatt'}'}}";
+		String icuPattern = "{count, plural, =30 {'#' 30% '{'Rabatt'''}'} other {'#' 50% '{'Rabatt'''}'}}";
 
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
@@ -193,10 +193,10 @@ class IcuPatternGeneratorTest {
 				    <file id="f1">
 				        <unit id="tu1" name="discount" pgs:switch="plural:count">
 							<segment pgs:case="30">
-				            	<target># 30% {Rabatt}</target>
+				            	<target># 30% {Rabatt'}</target>
 				            </segment>
 				            <segment pgs:case="other">
-				            	<target># 50% {Rabatt}</target>
+				            	<target># 50% {Rabatt'}</target>
 				            </segment>
 				        </unit>
 				    </file>
@@ -207,6 +207,6 @@ class IcuPatternGeneratorTest {
 
 		assertThat(
 			new MessageFormat(icuPattern, Locale.forLanguageTag("ar")).format(Map.of("count", 30))
-		).isEqualTo("# 30% {Rabatt}");
+		).isEqualTo("# 30% {Rabatt'}");
 	}
 }
