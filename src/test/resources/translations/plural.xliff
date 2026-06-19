@@ -31,5 +31,19 @@
                 <target>How are they?</target>
             </segment>
         </unit>
+        <unit id="tu1" name="multiple_placeholder" pgs:switch="plural:count">
+            <segment pgs:case="0">
+                <source>You deleted no files.</source>
+                <target>You deleted no files.</target>
+            </segment>
+            <segment pgs:case="1">
+                <source>You deleted one file in the category <ph id="2" disp="category"/>.</source>
+                <target>You deleted one file in the category <ph id="2" disp="category"/>.</target>
+            </segment>
+            <segment pgs:case="other">
+                <source>You deleted <ph id="1" disp="count"/> files in category <ph id="2" disp="category"/>.</source>
+                <target>Sie haben <ph id="1" disp="count"/> Dateien in der Kategorie <ph id="2" disp="category"/> gelöscht.</target>
+            </segment>
+        </unit>
     </file>
 </xliff>

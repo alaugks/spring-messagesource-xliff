@@ -3,12 +3,12 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.ibm.icu.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class IcuPatternGeneratorTest {
 
@@ -44,7 +44,43 @@ class IcuPatternGeneratorTest {
 		assertThat(units).containsEntry("file_deleted", icuPattern);
 
 		MessageFormat messageFormat = new MessageFormat(icuPattern, Locale.forLanguageTag("de"));
-		assertThat(messageFormat.format(Map.of("count", 1000L))).isEqualTo("Sie haben 1.000 Dateien gelöscht.");
+		assertThat(messageFormat.format(Map.of("count", 1000))).isEqualTo("Sie haben 1.000 Dateien gelöscht.");
+	}
+
+	@Test
+	void test_plural_to_icu_pattern_multiple_placeholder() {
+
+		String icuPattern = "{count, plural, =0 {Sie haben keine Dateien gelöscht.} =1 {Sie haben eine Datei in der Kategorie {category} gelöscht.} other {Sie haben {count} Dateien in der Kategorie {category} gelöscht.}}";
+
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+						<unit id="tu1" name="multiple_placeholder" pgs:switch="plural:count">
+							<segment pgs:case="0">
+								<source>You deleted no files.</source>
+								<target>Sie haben keine Dateien gelöscht.</target>
+							</segment>
+							<segment pgs:case="1">
+								<source>You deleted one file.</source>
+								<target>Sie haben eine Datei in der Kategorie <ph id="2" disp="category"/> gelöscht.</target>
+							</segment>
+							<segment pgs:case="other">
+								<source>You deleted <ph id="1" disp="count"/> files in category <ph id="2" disp="category"/>.</source>
+								<target>Sie haben <ph id="1" disp="count"/> Dateien in der Kategorie <ph id="2" disp="category"/> gelöscht.</target>
+							</segment>
+						</unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).containsEntry("multiple_placeholder", icuPattern);
+
+		MessageFormat messageFormat = new MessageFormat(icuPattern, Locale.forLanguageTag("de"));
+		assertThat(messageFormat.format(Map.of("count", 1000, "category", "FooBar"))).isEqualTo("Sie haben 1.000 Dateien in der Kategorie FooBar gelöscht.");
+		assertThat(messageFormat.format(Map.of("count", 1, "category", "FooBar"))).isEqualTo("Sie haben eine Datei in der Kategorie FooBar gelöscht.");
 	}
 
 	// Arabic (ar) is one of the languages that actually use all six CLDR plural

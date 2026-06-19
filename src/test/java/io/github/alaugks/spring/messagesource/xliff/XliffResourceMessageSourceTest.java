@@ -3,9 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.List;
@@ -17,6 +14,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.NoSuchMessageException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class XliffResourceMessageSourceTest {
 
@@ -36,9 +36,9 @@ class XliffResourceMessageSourceTest {
 			Arguments.of("postcode", null, Locale.forLanguageTag("en"), "Postcode"),
 			Arguments.of("postcode", null, Locale.forLanguageTag("en-US"), "Zip code"),
 			Arguments.of("postcode", null, Locale.forLanguageTag("de"), "Postleitzahl"),
-			Arguments.of("format_plural", new Object[]{1000L}, Locale.forLanguageTag("en"), "There are 1,000 files."),
-			Arguments.of("format_plural", new Object[]{1000L}, Locale.forLanguageTag("en-US"), "There are 1,000 files."),
-			Arguments.of("format_plural", new Object[]{1000L}, Locale.forLanguageTag("de"), "Es gibt 1.000 Dateien."),
+			Arguments.of("format_plural", new Object[]{1000}, Locale.forLanguageTag("en"), "There are 1,000 files."),
+			Arguments.of("format_plural", new Object[]{1000}, Locale.forLanguageTag("en-US"), "There are 1,000 files."),
+			Arguments.of("format_plural", new Object[]{1000}, Locale.forLanguageTag("de"), "Es gibt 1.000 Dateien."),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en"), "Expiry date"),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en-US"), "Expiration date"),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("de"), "Ablaufdatum")
