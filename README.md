@@ -227,10 +227,10 @@ Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="
 <domain>.xlf    // <domain>_<language>.xlf also works.
 
 # Domain + Language
-<domain>[-_]<language>.xlf
+<domain>[-._]<language>.xlf
 
 # Domain + Language + Region
-<domain>[-_]<language>[-_]<region>.xlf
+<domain>[-._]<language>[-_]<region>.xlf
 ```
 
 ### Example with XLIFF Files
@@ -242,12 +242,12 @@ Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="
 ```
 [resources]
      |-[translations]
-             |-messages.xliff           // Default domain and default language. messages_en.xliff also works.
+             |-messages.xliff      // Default domain and default language. messages_en.xliff also works.
              |-messages_de.xliff
              |-messages_en-US.xliff
-             |-payment.xliff            // Default language. payment_en.xliff also works.
-             |-payment_de.xliff
-             |-payment_en-US.xliff     
+             |-payment.de.xliff
+             |-payment.en.xliff    // Default language. payment.xliff also works.
+             |-payment.en-US.xliff     
 ```  
 
 #### XLIFF Files

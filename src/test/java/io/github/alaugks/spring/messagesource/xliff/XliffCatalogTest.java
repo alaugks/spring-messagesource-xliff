@@ -3,10 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
@@ -20,6 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class XliffCatalogTest {
 
@@ -145,8 +145,8 @@ class XliffCatalogTest {
 				Arguments.of("translations/messages.xliff"),
 				Arguments.of("translations/messages_de.xliff"),
 				Arguments.of("translations/messages_en_US.xliff"),
-				Arguments.of("translations/payment.xlf"),
-				Arguments.of("translations/payment_de.xlf"),
+				Arguments.of("translations/payment.en.xlf"),
+				Arguments.of("translations/payment.de.xlf"),
 				Arguments.of("translations_en/messages.xliff"),
 				Arguments.of("translations_en/payment.xlf"),
 				Arguments.of("translations_de/messages_de.xliff"),
