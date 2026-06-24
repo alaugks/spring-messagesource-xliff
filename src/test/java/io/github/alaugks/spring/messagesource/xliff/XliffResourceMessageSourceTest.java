@@ -146,4 +146,19 @@ class XliffResourceMessageSourceTest {
 				Locale.forLanguageTag("en")
 		)).isEqualTo("Target");
 	}
+
+	@Test
+	void test_default_domain_divider() {
+		var messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.validateSchema(true)
+			.domainDivider("__")
+			.build();
+
+		assertThat(messageSource.getMessage(
+			"messages__postcode",
+			null,
+			Locale.forLanguageTag("de")
+		)).isEqualTo("Postleitzahl");
+	}
 }

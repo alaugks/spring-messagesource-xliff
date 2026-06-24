@@ -122,7 +122,8 @@ public class XliffResourceMessageSource {
 				.builder(xliffCatalog, this.getDefaultLocale())
 				.defaultDomain(this.getDefaultDomain())
 				.parentMessageSource(this.getParentMessageSource())
-				.setUseICU4j(this.isICU4jEnabled());
+				.setUseICU4j(this.isICU4jEnabled())
+				.domainDivider(this.getDomainDivider());
 
 			return builder.build();
 		}
