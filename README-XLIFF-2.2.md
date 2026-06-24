@@ -11,8 +11,7 @@ The key is the resource name (`name` / `id`) as for every other unit. See the ma
 - [Plural](#plural)
   - [Numeric cases](#numeric-cases)
   - [CLDR plural keywords](#cldr-plural-keywords)
-- [Gender](#gender)
-- [Select](#select)
+- [Gender and Select](#gender-and-select)
 - [Placeholders](#placeholders)
 
 ## Configuration
@@ -187,9 +186,16 @@ messageSource.getMessage(
 
 -->
 
-## Gender
+## Gender and Select
 
-ICU has no gender construct, so a `gender:<variable>` switch is mapped to an ICU `select`: it picks the segment whose `pgs:case` matches the argument value. `gender` is therefore just a PGS-level alias for [`select`](#select). The only difference is the switch-type name.
+> [!NOTE]
+> ICU (and `icu4j`) has **no** dedicated gender construct — it only knows `select`. `gender` and `select` are therefore the **same** ICU construct; `gender` is merely a PGS-level alias that expresses intent. Internally a `gender:` switch is rewritten to a `select:` switch before the ICU pattern is generated, so both produce the identical ICU `select`. The only difference is the switch-type name you write in the `pgs:switch`.
+
+A `select:<variable>` switch maps directly to an ICU `select`: each `<segment/>`'s `pgs:case` is a value matched against the argument, and a segment without a `pgs:case` defaults to `other`. Use `select` for any value-based choice.
+
+A `gender:<variable>` switch is the same construct under a more specific name: it picks the segment whose `pgs:case` matches the argument value. Because there is no separate gender mechanism in ICU, it behaves exactly like `select`.
+
+The following example uses `gender`; replacing the switch type with `select` (e.g. `pgs:switch="select:recipient_gender"`) produces the identical result.
 
 ```xml
 <unit id="tu1" name="greeting" pgs:switch="gender:recipient_gender">
@@ -229,10 +235,6 @@ messageSource.getMessage(
 ```
 
 **Result:** `<p>Wie geht es ihr?</p>`
-
-## Select
-
-A `select:<variable>` switch maps directly to an ICU `select` and is the general form of [gender](#gender): each `<segment/>`'s `pgs:case` is a value matched against the argument, and a segment without a `pgs:case` defaults to `other`. Use `select` for any value-based choice (gender is the same construct under a more specific name).
 
 ## Placeholders
 
