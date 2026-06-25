@@ -3,12 +3,10 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class Xliff2xDocumentTest {
 
@@ -45,15 +43,16 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		// unit/@name takes precedence over unit/@id.
-		assertEquals("Target A", units.get("unit_name_a"));
-		assertFalse(units.containsKey("unit_id_a"));
-		// name absent, no <target> => fall back to <source>.
-		assertEquals("Source B", units.get("unit_id_b"));
-		// No unit/@name => fall back to unit/@id.
-		assertEquals("Target C", units.get("unit_name_c"));
-		// No unit/@name and no unit/@id => the unit is skipped.
-		assertFalse(units.containsKey("Source D"));
+		assertThat(units)
+			// unit/@name takes precedence over unit/@id.
+			.containsEntry("unit_name_a", "Target A")
+			.doesNotContainKey("unit_id_a")
+			// name absent, no <target> => fall back to <source>.
+			.containsEntry("unit_id_b", "Source B")
+			// No unit/@name => fall back to unit/@id.
+			.containsEntry("unit_name_c", "Target C")
+			// No unit/@name and no unit/@id => the unit is skipped.
+			.doesNotContainKey("Source D");
 	}
 
 	@Test
@@ -103,10 +102,11 @@ class Xliff2xDocumentTest {
 				""", true)).getUnits();
 
 		// Surrounding whitespace, newlines and CDATA wrappers are trimmed away.
-		assertEquals("value", units.get("element"));
-		assertEquals("value", units.get("element-newline"));
-		assertEquals("value", units.get("element-with-cdata"));
-		assertEquals("value", units.get("element-with-cdata-newline"));
+		assertThat(units)
+			.containsEntry("element", "value")
+			.containsEntry("element-newline", "value")
+			.containsEntry("element-with-cdata", "value")
+			.containsEntry("element-with-cdata-newline", "value");
 	}
 
 	@Test
@@ -125,7 +125,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals("target", units.get("unit-attr-name"));
+		assertThat(units).containsEntry("unit-attr-name", "target");
 	}
 
 
@@ -145,7 +145,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals("<span>target</span>", units.get("unit-attr-name"));
+		assertThat(units).containsEntry("unit-attr-name", "<span>target</span>");
 	}
 
 	@Test
@@ -165,7 +165,7 @@ class Xliff2xDocumentTest {
 				""", true)).getUnits();
 
 		// <mrk> is not processed, but its text content is part of the value.
-		assertEquals("Hallo Welt!", units.get("unit-attr-name"));
+		assertThat(units).containsEntry("unit-attr-name", "Hallo Welt!");
 	}
 
 	@Test
@@ -184,7 +184,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""", true)).getUnits();
 
-		assertEquals("spaced value", units.get("unit-attr-name"));
+		assertThat(units).containsEntry("unit-attr-name", "spaced value");
 	}
 
 	@Test
@@ -203,7 +203,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""", true)).getUnits();
 
-		assertEquals("   spaced value   ", units.get("unit-attr-name"));
+		assertThat(units).containsEntry("unit-attr-name", "   spaced value   ");
 	}
 
 	@Test
@@ -222,7 +222,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals("target", units.get("unit-id"));
+		assertThat(units).containsEntry("unit-id", "target");
 	}
 
 	@Test
@@ -241,7 +241,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""", false)).getUnits();
 
-		assertTrue(units.isEmpty());
+		assertThat(units).isEmpty();
 	}
 
 	@Test
@@ -267,7 +267,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals("Hallo Welt!", units.get("name-value"));
+		assertThat(units).containsEntry("name-value", "Hallo Welt!");
 	}
 
 	@Test
@@ -293,7 +293,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals("Hallo Welt!", units.get("name-value"));
+		assertThat(units).containsEntry("name-value", "Hallo Welt!");
 	}
 
 	@Test
@@ -326,7 +326,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals("Hallo Welt! Ich bin hier.", units.get("name-value"));
+		assertThat(units).containsEntry("name-value", "Hallo Welt! Ich bin hier.");
 	}
 
 	@Test
@@ -352,7 +352,7 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals("Welt! Hallo", units.get("disclaimer"));
+		assertThat(units).containsEntry("disclaimer", "Welt! Hallo");
 	}
 
 	@Test
@@ -370,6 +370,6 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getUnits();
 
-		assertEquals("source", units.get("unit-attr-name"));
+		assertThat(units).containsEntry("unit-attr-name", "source");
 	}
 }

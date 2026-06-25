@@ -31,6 +31,11 @@ import org.w3c.dom.NodeList;
  */
 public class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
+	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
+	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
+
+	private final IcuPatternGenerator icuPatternGenerator = new IcuPatternGenerator();
+
 	/**
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
 	 *
@@ -74,6 +79,15 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	private void addUnit(Element unit, Map<String, String> transUnits) {
 		String key = this.firstNonEmpty(unit.getAttribute("name"), unit.getAttribute("id"));
 		if (key.isEmpty()) {
+			return;
+		}
+
+		String pgsSwitch = unit.getAttributeNS(PGS_NS, "switch");
+		if (!pgsSwitch.isEmpty()) {
+			String icu = this.icuPatternGenerator.generate(unit, pgsSwitch);
+			if (!icu.isEmpty()) {
+				transUnits.put(key, icu);
+			}
 			return;
 		}
 

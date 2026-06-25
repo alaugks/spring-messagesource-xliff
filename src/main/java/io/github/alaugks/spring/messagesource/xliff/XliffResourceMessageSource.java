@@ -3,6 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import io.github.alaugks.spring.messagesource.catalog.AbstractCatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
@@ -16,7 +17,7 @@ public class XliffResourceMessageSource {
 	 * Utility class — not intended to be instantiated.
 	 */
 	private XliffResourceMessageSource() {
-		throw new IllegalStateException("Not public constructors");
+		throw new IllegalStateException("Not instantiable");
 	}
 
 	/**
@@ -45,13 +46,9 @@ public class XliffResourceMessageSource {
 		return new Builder(defaultLocale, locationPattern);
 	}
 
-	public static final class Builder {
-
-		private final Locale defaultLocale;
+	public static final class Builder extends AbstractCatalogMessageSourceBuilder<Builder> {
 
 		private final LocationPattern locationPattern;
-
-		private String defaultDomain = CatalogMessageSourceBuilder.DEFAULT_DOMAIN;
 
 		private List<String> fileExtensions = List.of("xlf", "xliff");
 
@@ -67,25 +64,8 @@ public class XliffResourceMessageSource {
 		 *                        the XLIFF files are located.
 		 */
 		public Builder(Locale defaultLocale, LocationPattern locationPattern) {
-			this.defaultLocale = defaultLocale;
+			super(defaultLocale);
 			this.locationPattern = locationPattern;
-		}
-
-		/**
-		 * Sets the default domain on the underlying
-		 * {@link CatalogMessageSourceBuilder}. Codes whose domain matches this
-		 * value are accessible by their bare code; codes from other domains
-		 * must be looked up as {@code <domain>.<code>}.
-		 * <p>The domain itself is always parsed from the XLIFF file name; this
-		 * setting only controls which domain is treated as "default" when
-		 * resolving codes.
-		 *
-		 * @param defaultDomain the new default domain.
-		 * @return this builder for chaining.
-		 */
-		public Builder defaultDomain(String defaultDomain) {
-			this.defaultDomain = defaultDomain;
-			return this;
 		}
 
 		/**
@@ -128,7 +108,7 @@ public class XliffResourceMessageSource {
 		 */
 		public CatalogMessageSourceBuilder build() {
 			ResourcesLoader resourcesLoader = new ResourcesLoader(
-					this.defaultLocale,
+					this.getDefaultLocale(),
 					this.locationPattern,
 					this.fileExtensions
 			);
@@ -139,9 +119,12 @@ public class XliffResourceMessageSource {
 			);
 
 			return CatalogMessageSourceBuilder
-					.builder(xliffCatalog, this.defaultLocale)
-					.defaultDomain(this.defaultDomain)
-					.build();
+				.builder(xliffCatalog, this.getDefaultLocale())
+				.defaultDomain(this.getDefaultDomain())
+				.parentMessageSource(this.getParentMessageSource())
+				.useICU4j(this.isICU4jEnabled())
+				.domainDivider(this.getDomainDivider())
+				.build();
 		}
 	}
 }

@@ -4,6 +4,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,7 +18,12 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -26,19 +32,33 @@ import org.xml.sax.SAXParseException;
  * Validates XLIFF documents against the bundled OASIS XSD schemas.
  *
  * <p>XLIFF 1.2 is validated against {@code xliff-core-1.2-transitional.xsd},
- * and XLIFF 2.0/2.1 against {@code xliff-core-2.0.xsd} (2.1 documents reuse the
- * 2.0 core namespace and schema). All schemas, including the {@code xml.xsd}
- * imported by the core schemas, are read only from the package; external access
- * is disabled so nothing is ever fetched from outside the classpath.
+ * XLIFF 2.0/2.1 against {@code xliff-core-2.0.xsd} (2.1 documents reuse the
+ * 2.0 core namespace and schema), and XLIFF 2.2 against
+ * {@code xliff_core_2.2.xsd} together with the {@code metadata.xsd} module it
+ * imports. All schemas, including the {@code xml.xsd} imported by the core
+ * schemas, are read only from the package; external access is disabled so
+ * nothing is ever fetched from outside the classpath.
+ *
+ * <p>The Plural, Gender, and Select (PGS) module attributes are an extension of
+ * this library, not part of the OASIS core schema, which declares no wildcard
+ * for module attributes on every element. They are therefore stripped from a
+ * copy of the document before XSD validation so the core schema stays the
+ * unmodified OASIS schema; the original document keeps its PGS attributes for
+ * the reader.
  */
 final class XliffSchemaValidator {
 
 	private static final String SCHEMA_PATH = "schema/";
 
-	private static final Map<String, String> SCHEMA_BY_VERSION = Map.of(
-			"1.2", "xliff-core-1.2-transitional.xsd",
-			"2.0", "xliff-core-2.0.xsd",
-			"2.1", "xliff-core-2.0.xsd"
+	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
+	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
+	private static final String PGS_ATTRIBUTES_XPATH = "//@*[namespace-uri()='" + PGS_NS + "']";
+
+	private static final Map<String, List<String>> SCHEMA_BY_VERSION = Map.of(
+			"1.2", List.of("xliff-core-1.2-transitional.xsd"),
+			"2.0", List.of("xliff-core-2.0.xsd"),
+			"2.1", List.of("xliff-core-2.0.xsd"),
+			"2.2", List.of("metadata.xsd", "xliff_core_2.2.xsd")
 	);
 
 	private final Map<String, Schema> schemaCache = new ConcurrentHashMap<>();
@@ -53,12 +73,14 @@ final class XliffSchemaValidator {
 	 *                                               document violates the schema.
 	 */
 	void validate(Document document, String version) {
-		String schemaResource = SCHEMA_BY_VERSION.get(version);
-		if (schemaResource == null) {
-			throw new XliffMessageSourceValidationException("No schema available for version '" + version + "'");
+		List<String> schemaResources = SCHEMA_BY_VERSION.get(version);
+		if (schemaResources == null) {
+			throw new XliffMessageSourceValidationException(
+					String.format("No schema available for version \"%s\"", version)
+			);
 		}
 
-		Schema schema = this.schemaCache.computeIfAbsent(schemaResource, this::loadSchema);
+		Schema schema = this.schemaCache.computeIfAbsent(version, key -> this.loadSchema(schemaResources));
 
 		CollectingErrorHandler errorHandler = new CollectingErrorHandler();
 		Validator validator = schema.newValidator();
@@ -66,7 +88,7 @@ final class XliffSchemaValidator {
 		try {
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			validator.validate(new DOMSource(document));
+			validator.validate(new DOMSource(withoutPgsAttributes(document)));
 		}
 		catch (SAXException | IOException e) {
 			throw new XliffMessageSourceValidationException(e.getMessage());
@@ -80,24 +102,59 @@ final class XliffSchemaValidator {
 	}
 
 	/**
-	 * Loads and compiles the bundled core schema together with the bundled
-	 * xml.xsd, with external access disabled.
+	 * Returns a deep copy of the document with every PGS module attribute removed, so the document
+	 * validates against the unmodified OASIS core schema. The original document is left untouched and
+	 * keeps its PGS attributes for the reader. Documents without PGS attributes are returned as is.
 	 */
-	private Schema loadSchema(String schemaResource) {
+	private static Document withoutPgsAttributes(Document document) {
+		Document copy = (Document) document.cloneNode(true);
+		try {
+			NodeList pgsAttributes = (NodeList) XPathFactory.newInstance()
+					.newXPath()
+					.evaluate(PGS_ATTRIBUTES_XPATH, copy, XPathConstants.NODESET);
+			for (int i = 0; i < pgsAttributes.getLength(); i++) {
+				Attr attribute = (Attr) pgsAttributes.item(i);
+				attribute.getOwnerElement().removeAttributeNode(attribute);
+			}
+		}
+		catch (XPathExpressionException e) {
+			throw new XliffMessageSourceValidationException(e.getMessage());
+		}
+		return copy;
+	}
+
+	/** Loads and compiles all bundled schemas for the version (xml.xsd plus the core and any module it imports), with external access disabled. */
+	private Schema loadSchema(List<String> schemaResources) {
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		try (InputStream xmlSchema = openSchema("xml.xsd"); InputStream coreSchema = openSchema(schemaResource)) {
-			// Disable any external access and supply the bundled xml.xsd together
-			// with the core schema, so the schemas are read only from the package.
+		try {
+			// Disable any external access and supply every schema from the package, so
+			// imports are resolved only against the bundled sources (xml.xsd plus any
+			// module the core imports) and nothing is fetched from outside the package.
 			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 			factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-			return factory.newSchema(new Source[] {
-					new StreamSource(xmlSchema),
-					new StreamSource(coreSchema)
-			});
+
+			List<Source> sources = new ArrayList<>();
+			sources.add(readSchema("xml.xsd"));
+			for (String schemaResource : schemaResources) {
+				sources.add(readSchema(schemaResource));
+			}
+			return factory.newSchema(sources.toArray(new Source[0]));
 		}
-		catch (SAXException | IOException e) {
+		catch (SAXException e) {
 			throw new XliffMessageSourceValidationException(
-					String.format("Unable to load XLIFF schema \"%s\": %s", schemaResource, e.getMessage())
+					String.format("Unable to load XLIFF schema %s: %s", schemaResources, e.getMessage())
+			);
+		}
+	}
+
+	/** Reads a bundled schema fully into memory so that no open stream outlives this method. */
+	private static Source readSchema(String name) {
+		try (InputStream in = openSchema(name)) {
+			return new StreamSource(new ByteArrayInputStream(in.readAllBytes()));
+		}
+		catch (IOException e) {
+			throw new XliffMessageSourceValidationException(
+					String.format("Unable to read bundled schema \"%s\": %s", name, e.getMessage())
 			);
 		}
 	}

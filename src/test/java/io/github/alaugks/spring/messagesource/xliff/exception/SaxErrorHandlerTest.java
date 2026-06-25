@@ -3,39 +3,36 @@
 
 package io.github.alaugks.spring.messagesource.xliff.exception;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-
 import org.junit.jupiter.api.Test;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 class SaxErrorHandlerTest {
 
 	@Test
 	void test_warning() {
 		var handler = new SaxErrorHandler();
-		assertThrows(
-				XliffMessageSourceSAXParseException.Warning.class,
+		assertThatThrownBy(
 				() -> handler.warning(new SAXParseException("Warning", mock(Locator.class)))
-		);
+		).isInstanceOf(XliffMessageSourceSAXParseException.Warning.class);
 	}
 
 	@Test
 	void test_error() {
 		var handler = new SaxErrorHandler();
-		assertThrows(
-				XliffMessageSourceSAXParseException.Error.class,
+		assertThatThrownBy(
 				() -> handler.error(new SAXParseException("Error", mock(Locator.class)))
-		);
+		).isInstanceOf(XliffMessageSourceSAXParseException.Error.class);
 	}
 
 	@Test
 	void test_fatal_error() {
 		var handler = new SaxErrorHandler();
-		assertThrows(
-				XliffMessageSourceSAXParseException.FatalError.class,
+		assertThatThrownBy(
 				() -> handler.fatalError(new SAXParseException("FatalError", mock(Locator.class)))
-		);
+		).isInstanceOf(XliffMessageSourceSAXParseException.FatalError.class);
 	}
 }

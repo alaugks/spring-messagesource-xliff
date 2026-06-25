@@ -110,10 +110,10 @@ public class XliffCatalog extends AbstractCatalog {
 
 			Map<String, String> units = switch (version) {
 				case "1.2" -> new Xliff12Document(root).getUnits();
-				case "2.0", "2.1" -> new Xliff2xDocument(root).getUnits();
+				case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root).getUnits();
 				default -> throw new XliffMessageSourceVersionSupportException(
 						String.format(
-								"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0 and 2.1",
+								"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",
 								version
 						)
 				);
