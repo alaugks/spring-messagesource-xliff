@@ -118,14 +118,13 @@ public class XliffResourceMessageSource {
 					this.validateSchema
 			);
 
-			CatalogMessageSourceBuilder.Builder builder = CatalogMessageSourceBuilder
+			return CatalogMessageSourceBuilder
 				.builder(xliffCatalog, this.getDefaultLocale())
 				.defaultDomain(this.getDefaultDomain())
 				.parentMessageSource(this.getParentMessageSource())
 				.setUseICU4j(this.isICU4jEnabled())
-				.domainDivider(this.getDomainDivider());
-
-			return builder.build();
+				.domainDivider(this.getDomainDivider())
+				.build();
 		}
 	}
 }
