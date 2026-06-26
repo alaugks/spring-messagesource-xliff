@@ -35,10 +35,10 @@ public MessageSource messageSource() {
 
 The PGS module is declared via its namespace and applied with two attributes:
 
-| Attribute | On element | Meaning |
-|---|---|---|
-| `pgs:switch` | `<unit/>` | `type:variable`, the switch type (`plural`, `gender` or `select`) and the argument name. |
-| `pgs:case` | `<segment/>` | The case this segment matches (a CLDR keyword, an exact number, or a select value). |
+| Attribute    | On element   | Meaning                                                                                  |
+|--------------|--------------|------------------------------------------------------------------------------------------|
+| `pgs:switch` | `<unit/>`    | `type:variable`, the switch type (`plural`, `gender` or `select`) and the argument name. |
+| `pgs:case`   | `<segment/>` | The case this segment matches (a CLDR keyword, an exact number, or a select value).      |
 
 Declare the namespace on the root `<xliff/>` element:
 
