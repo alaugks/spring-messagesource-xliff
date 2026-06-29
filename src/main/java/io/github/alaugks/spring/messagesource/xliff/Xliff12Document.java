@@ -4,6 +4,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -75,6 +76,15 @@ public class Xliff12Document extends XliffDocument implements XliffDocumentInter
 				? target
 				: firstChildElement(transUnit, SOURCE);
 		transUnits.put(key, this.value(valueElement));
+	}
+
+	  private Locale targetLanguage() {
+		Element file = firstChildElement(this.root, "file");
+		if (file == null) {
+			return null;
+		}
+		String targetLanguage = file.getAttribute("target-language");
+		return targetLanguage.isEmpty() ? null : Locale.forLanguageTag(targetLanguage);
 	}
 }
 

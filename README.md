@@ -245,9 +245,9 @@ Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="
              |-messages.xliff      // Default domain and default language. messages_en.xliff also works.
              |-messages_de.xliff
              |-messages_en-US.xliff
-             |-payment.de.xliff
-             |-payment.en.xliff    // Default language. payment.xliff also works.
-             |-payment.en-US.xliff     
+             |-payment_de.xliff
+             |-payment_en.xliff    // Default language. payment.xliff also works.
+             |-payment_en-US.xliff     
 ```  
 
 #### XLIFF Files
