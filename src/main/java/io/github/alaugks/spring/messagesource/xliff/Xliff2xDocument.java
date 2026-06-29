@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -220,6 +221,11 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 */
 	private boolean isSegmentOrIgnorable(Node node) {
 		return this.isSegment(node) || "ignorable".equals(this.elementName(node));
+	}
+
+	private Locale targetLanguage() {
+		String trgLang = this.root.getAttribute("trgLang");
+		return trgLang.isEmpty() ? null : Locale.forLanguageTag(trgLang);
 	}
 }
 
