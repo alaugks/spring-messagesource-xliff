@@ -107,7 +107,7 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
         Sets a parent
         <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html"><code>MessageSource</code></a>
         to delegate to. When a code cannot be resolved in the XLIFF translations, the lookup falls back to the parent source.<br><br>
-        See <a href="README-Parent-MessageSource.md">Parent MessageSource</a> for usage in both directions.
+        ⚠️ See <a href="README-Parent-MessageSource.md">Parent MessageSource</a> for usage in either order.
       </td>
     </tr>
   </tbody>
@@ -241,7 +241,7 @@ The `order` attribute on `<target/>` defines the order in which target segments 
 
 XLIFF 2.2 adds the PGS module, which annotates a `<unit/>` with a `pgs:switch` so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument (e.g. a count or a gender). This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
 
-ℹ️ See [XLIFF 2.2 — PGS Module](README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
+⚠️ See [XLIFF 2.2 — PGS Module](README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
 
 #### Markup
 

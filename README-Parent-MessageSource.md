@@ -2,7 +2,7 @@
 
 A `MessageSource` can delegate to a **parent** `MessageSource`. When a code cannot be resolved in the primary source, the lookup falls back to the parent. This lets you combine the XLIFF translations with another source (for example a `ResourceBundleMessageSource`) and decide which one is asked first.
 
-This works in **both directions**:
+This works in **either order**:
 
 1. [XLIFF first, other source as fallback](#1-xliff-first-other-source-as-fallback) — the XLIFF `MessageSource` is primary and delegates to the other source.
 2. [Other source first, XLIFF as fallback](#2-other-source-first-xliff-as-fallback) — the other source is primary and delegates to the XLIFF `MessageSource`.
@@ -28,13 +28,13 @@ parent source ──found──► return message
 NoSuchMessageException
 ```
 
-The source that is asked **first wins** for codes that exist in both. Pick the direction based on which set of translations should take precedence.
+The source that is asked **first wins** for codes that exist in both. Pick the order based on which set of translations should take precedence.
 
 ## Table of Contents
 
 - [1. XLIFF first, other source as fallback](#1-xliff-first-other-source-as-fallback)
 - [2. Other source first, XLIFF as fallback](#2-other-source-first-xliff-as-fallback)
-- [Which direction should I use?](#which-direction-should-i-use)
+- [Which order should I use?](#which-order-should-i-use)
 
 ## 1. XLIFF first, other source as fallback
 
@@ -116,9 +116,9 @@ public class MessageSourceConfig {
 
 Lookup order: **`messages` ResourceBundle → XLIFF translations**.
 
-## Which direction should I use?
+## Which order should I use?
 
-| Goal                                                                                              | Direction                                            |
+| Goal                                                                                              | Order                                                |
 |---------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | XLIFF holds the translations; the other source only provides a few extra/legacy codes.            | [1. XLIFF first](#1-xliff-first-other-source-as-fallback) |
 | An existing `ResourceBundle` setup stays authoritative; XLIFF adds or gradually replaces codes.   | [2. Other source first](#2-other-source-first-xliff-as-fallback) |
