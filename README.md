@@ -50,14 +50,68 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 
 ## MessageSource Configuration
 
-| Method                                                            | Default                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-|-------------------------------------------------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `builder(Locale defaultLocale, LocationPattern locationPatterns)` | —                         | Entry point.<br><br>`defaultLocale` is the locale to fall back to when a translation is missing.<br><br>`locationPatterns` selects the XLIFF files (`String` or `List<String>`) via Spring's [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html), so all its patterns work. Only files ending in `xliff` or `xlf` are kept. |
-| `defaultDomain(String defaultDomain)`                             | `messages`                | The default domain; see [XLIFF Files](#xliff-files).                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `fileExtensions(List<String> fileExtensions)`                     | `List.of("xlf", "xliff")` | File extensions recognised as XLIFF files.                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `validateSchema(boolean validateSchema)`                          | `false`                   | Validate each file against its OASIS XSD before reading. `validateSchema(true)` rejects non-conforming files (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 `<trans-unit/>` without the required `id`). [For development or testing, it is recommended to enable validation.](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java)                                                                                                                                                                                                                         |
-| `enableICU4j()`                                                   | disabled                  | Format messages with ICU4J instead of the default `java.text.MessageFormat`. The default only understands numeric argument indices (`{0}`, `{1}`); ICU4J additionally supports named arguments and ICU plural/select/gender patterns (e.g. `{count, plural, …}`).                                                                                                                                                                                            |
-| `parentMessageSource(MessageSource parentMessageSource)`          | —                         | Sets a parent [`MessageSource`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) to delegate to. When a code cannot be resolved in the XLIFF translations, the lookup falls back to the parent source. See [Parent MessageSource](README-Parent-MessageSource.md) for usage in both directions.                                                                                                                                                                                       |
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>builder(Locale defaultLocale, LocationPattern locationPatterns)</code></td>
+      <td>—</td>
+      <td>
+        Entry point.
+        <br><br>
+        <code>defaultLocale</code> is the locale to fall back to when a translation is missing.
+        <br><br>
+        <code>locationPatterns</code> selects the XLIFF files (<code>String</code> or <code>List&lt;String&gt;</code>) via Spring's
+        <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html">PathMatchingResourcePatternResolver</a>,
+        so all its patterns work. Only files ending in <code>xliff</code> or <code>xlf</code> are kept.
+      </td>
+    </tr>
+    <tr>
+      <td><code>defaultDomain(String defaultDomain)</code></td>
+      <td><code>messages</code></td>
+      <td>The default domain; see <a href="#xliff-files">XLIFF Files</a>.</td>
+    </tr>
+    <tr>
+      <td><code>fileExtensions(List&lt;String&gt; fileExtensions)</code></td>
+      <td><code>List.of("xlf", "xliff")</code></td>
+      <td>File extensions recognised as XLIFF files.</td>
+    </tr>
+    <tr>
+      <td><code>validateSchema(boolean validateSchema)</code></td>
+      <td><code>false</code></td>
+      <td>
+        Validate each file against its OASIS XSD before reading. <code>validateSchema(true)</code> rejects non-conforming files
+        (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 <code>&lt;trans-unit/&gt;</code> without the required <code>id</code>).
+        <a href="https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java">For development or testing, it is recommended to enable validation.</a>
+      </td>
+    </tr>
+    <tr>
+      <td><code>enableICU4j()</code></td>
+      <td>disabled</td>
+      <td>
+        Format messages with ICU4J instead of the default <code>java.text.MessageFormat</code>. The default only understands
+        numeric argument indices (<code>{0}</code>, <code>{1}</code>); ICU4J additionally supports named arguments and ICU
+        plural/select/gender patterns (e.g. <code>{count, plural, …}</code>).
+      </td>
+    </tr>
+    <tr>
+      <td><code>parentMessageSource(MessageSource parentMessageSource)</code></td>
+      <td>—</td>
+      <td>
+        Sets a parent
+        <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html"><code>MessageSource</code></a>
+        to delegate to. When a code cannot be resolved in the XLIFF translations, the lookup falls back to the parent source.<br><br>
+        See <a href="README-Parent-MessageSource.md">Parent MessageSource</a> for usage in both directions.
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 > [!IMPORTANT]
 > The XLIFF 2.2 PGS module generates ICU patterns with named arguments (e.g. `{count, plural, …}`). These cannot be resolved by the default `java.text.MessageFormat` and fail at `getMessage()` time. When using the PGS module you **must** enable ICU4J via `enableICU4j()`.
