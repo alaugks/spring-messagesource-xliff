@@ -7,7 +7,7 @@ This works in **either order**:
 1. [XLIFF first, other source as fallback](#1-xliff-first-other-source-as-fallback) — the XLIFF `MessageSource` is primary and delegates to the other source.
 2. [Other source first, XLIFF as fallback](#2-other-source-first-xliff-as-fallback) — the other source is primary and delegates to the XLIFF `MessageSource`.
 
-See the main [README](README.md) for keys, filenames and the full `MessageSource` configuration.
+See the main [README](../README.md) for keys, filenames and the full `MessageSource` configuration.
 
 ## How resolution works
 

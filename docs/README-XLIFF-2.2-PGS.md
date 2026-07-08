@@ -2,7 +2,7 @@
 
 XLIFF 2.2 introduces the **PGS module** (Plural, Gender and Select). This library reads a PGS-annotated `<unit/>` and turns it into a translation that resolves to the right text depending on a runtime argument: the unit's `pgs:switch` becomes the argument and its `<segment/>`s become the cases.
 
-The key is the resource name (`name` / `id`) as for every other unit. See the main [README](README.md) for keys, filenames and the `MessageSource` configuration.
+The key is the resource name (`name` / `id`) as for every other unit. See the main [README](../README.md) for keys, filenames and the `MessageSource` configuration.
 
 ## Table of Contents
 
