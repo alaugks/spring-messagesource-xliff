@@ -96,7 +96,7 @@ public class MessageSourceConfig {
 
     @Bean
     public MessageSource messageSource() {
-        MessageSource xliffMessageSource = XliffResourceMessageSource
+        MessageSource parent = XliffResourceMessageSource
             .builder(
                 Locale.forLanguageTag("en"),
                 new LocationPattern("translations/*")
@@ -107,7 +107,7 @@ public class MessageSourceConfig {
         messageSource.setBasename("classpath:messages/messages");
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
         messageSource.setFallbackToSystemLocale(false);
-        messageSource.setParentMessageSource(xliffMessageSource);
+        messageSource.setParentMessageSource(parent);
 
         return messageSource;
     }
