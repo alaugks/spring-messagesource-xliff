@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Verifies the examples documented in docs/README-XLIFF-2.2-PGS.md. Each test mirrors a README
  * section and its getMessage() and Thymeleaf snippets against the messages(_de).xliff resources.
  */
-class Xliff22PgsReadmeExamplesTest {
+class ReadmeXliff22PgsExamplesTest {
 
 	private MessageSource messageSource;
 	private SpringTemplateEngine templateEngine;

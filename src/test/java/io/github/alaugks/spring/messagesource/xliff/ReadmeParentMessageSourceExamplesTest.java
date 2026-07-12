@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * README section and its parent-chain configuration against the translations_readme_parent/*
  * (XLIFF) and messages_readme_parent/messages (ResourceBundle) resources.
  */
-class ParentMessageSourceReadmeExamplesTest {
+class ReadmeParentMessageSourceExamplesTest {
 
 	private static final Locale DE = Locale.forLanguageTag("de");
 	private static final Locale EN = Locale.forLanguageTag("en");
