@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="2.2" srcLang="en" trgLang="de"
+    xmlns="urn:oasis:names:tc:xliff:document:2.2"
+    xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+    <file id="f1">
+        <unit id="tu1" name="file_deleted" pgs:switch="plural:count">
+            <segment pgs:case="0">
+                <source>You deleted no files.</source>
+                <target>You deleted no files.</target>
+            </segment>
+            <segment pgs:case="1">
+                <source>You deleted one file.</source>
+                <target>You deleted one file.</target>
+            </segment>
+            <segment pgs:case="other">
+                <source>You deleted <ph id="1" disp="count"/> files.</source>
+                <target>You deleted <ph id="1" disp="count"/> files.</target>
+            </segment>
+        </unit>
+        <unit id="tu2" name="cart_summary" pgs:switch="plural:count">
+            <segment pgs:case="one">
+                <source>There is one item in your shopping cart, ready for checkout.</source>
+                <target>There is one item in your shopping cart, ready for checkout.</target>
+            </segment>
+            <segment pgs:case="other">
+                <source>There are several items in your shopping cart, ready for checkout.</source>
+                <target>There are several items in your shopping cart, ready for checkout.</target>
+            </segment>
+        </unit>
+        <unit id="tu3" name="greeting" pgs:switch="gender:recipient_gender">
+            <segment pgs:case="feminine">
+                <source>How is she?</source>
+                <target>How is she?</target>
+            </segment>
+            <segment pgs:case="masculine">
+                <source>How is he?</source>
+                <target>How is he?</target>
+            </segment>
+            <segment pgs:case="other">
+                <source>How are they?</source>
+                <target>How are they?</target>
+            </segment>
+        </unit>
+    </file>
+</xliff>

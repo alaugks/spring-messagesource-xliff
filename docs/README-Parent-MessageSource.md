@@ -58,7 +58,7 @@ public class MessageSourceConfig {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource parent = new ResourceBundleMessageSource();
-        parent.setBasename("classpath:messages/messages");
+        parent.setBasename("messages/messages");
         parent.setDefaultEncoding(StandardCharsets.UTF_8.name());
         parent.setFallbackToSystemLocale(false);
 
@@ -104,7 +104,7 @@ public class MessageSourceConfig {
             .build();
 
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages/messages");
+        messageSource.setBasename("messages/messages");
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
         messageSource.setFallbackToSystemLocale(false);
         messageSource.setParentMessageSource(parent);
