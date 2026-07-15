@@ -1,6 +1,6 @@
 # XLIFF 2.2 — PGS Module (Plural, Gender and Select)
 
-XLIFF 2.2 introduces the **PGS module** (Plural, Gender and Select). This library reads a PGS-annotated `<unit/>` and turns it into a translation that resolves to the right text depending on a runtime argument: the unit's `pgs:switch` becomes the argument and its `<segment/>`s become the cases.
+XLIFF 2.2 introduces the **PGS module** (Plural, Gender and Select). This library reads a PGS-annotated `<unit/>` and turns it into a translation that resolves to the right text for a runtime argument. The unit's `pgs:switch` becomes the argument, its `<segment/>`s become the cases.
 
 The key is the resource name (`name` / `id`) as for every other unit. See the main [README](../README.md) for keys, filenames and the `MessageSource` configuration.
 
@@ -189,7 +189,7 @@ messageSource.getMessage(
 ## Gender and Select
 
 > [!NOTE]
-> ICU (and `icu4j`) has **no** dedicated gender construct — it only knows `select`. `gender` and `select` are therefore the **same** ICU construct; `gender` is merely a PGS-level alias that expresses intent. Internally a `gender:` switch is rewritten to a `select:` switch before the ICU pattern is generated, so both produce the identical ICU `select`. The only difference is the switch-type name you write in the `pgs:switch`.
+> ICU (and `icu4j`) has **no** dedicated gender construct, it only knows `select`. `gender` and `select` are therefore the **same** ICU construct. `gender` is merely a PGS-level alias that expresses intent. Internally a `gender:` switch is rewritten to a `select:` switch before the ICU pattern is generated, so both produce the identical ICU `select`. The only difference is the switch-type name you write in the `pgs:switch`.
 
 A `select:<variable>` switch maps directly to an ICU `select`: each `<segment/>`'s `pgs:case` is a value matched against the argument, and a segment without a `pgs:case` defaults to `other`. Use `select` for any value-based choice.
 

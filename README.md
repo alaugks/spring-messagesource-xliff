@@ -1,6 +1,6 @@
 # XLIFF MessageSource for Spring
 
-This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for using translations from XLIFF files. The package support XLIFF versions 1.2, 2.0, 2.1 and 2.2 (include [PGS Module](docs/README-XLIFF-2.2-PGS.md)). 
+This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for translations stored in XLIFF files. It supports XLIFF versions 1.2, 2.0, 2.1 and 2.2, including the [PGS Module](docs/README-XLIFF-2.2-PGS.md).
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.2.0)
@@ -190,7 +190,7 @@ Each `<trans-unit/>` has exactly one `<source/>` and one optional `<target/>`. T
 
 #### XLIFF 2.x — Segmentation
 
-A `<unit/>` holds one or more `<segment/>` elements (a single segment is the common case). Multiple segments are reassembled into one string; `<ignorable/>` between them holds non-translatable content, typically whitespace.
+A `<unit/>` holds one or more `<segment/>` elements. A single segment is the common case. Multiple segments are reassembled into one string. An `<ignorable/>` between them holds non-translatable content, typically whitespace.
 
 The reassembly rules are:
 * Each `<segment/>` contributes its `<target/>` text, falling back to `<source/>` when no `<target/>` is present.
@@ -217,7 +217,7 @@ The reassembly rules are:
 
 #### XLIFF 2.x — Segments Order
 
-The `order` attribute on `<target/>` defines the order in which target segments are composed. Segments are sorted ascending by their `order` value; `<ignorable/>` elements always keep their document position.
+The `order` attribute on `<target/>` defines how target segments are composed. Segments are sorted ascending by their `order` value. An `<ignorable/>` element always keeps its document position.
 
 ```xml
 <unit id="1" name="example">
@@ -239,7 +239,7 @@ The `order` attribute on `<target/>` defines the order in which target segments 
 
 #### XLIFF 2.2 — PGS Module (Plural, Gender and Select)
 
-XLIFF 2.2 adds the PGS module, which annotates a `<unit/>` with a `pgs:switch` so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument (e.g. a count or a gender). This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
+XLIFF 2.2 adds the PGS module. It annotates a `<unit/>` with a `pgs:switch`, so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument, for example a count or a gender. This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
 
 ⚠️ See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
 

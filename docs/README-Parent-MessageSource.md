@@ -1,11 +1,11 @@
 # Parent MessageSource
 
-A `MessageSource` can delegate to a **parent** `MessageSource`. When a code cannot be resolved in the primary source, the lookup falls back to the parent. This lets you combine the XLIFF translations with another source (for example a `ResourceBundleMessageSource`) and decide which one is asked first.
+A `MessageSource` can delegate to a **parent** `MessageSource`. When a code cannot be resolved in the primary source, the lookup falls back to the parent. This combines the XLIFF translations with another source, for example a `ResourceBundleMessageSource`. You decide which source is asked first.
 
 This works in **either order**:
 
-1. [XLIFF first, other source as fallback](#1-xliff-first-other-source-as-fallback) — the XLIFF `MessageSource` is primary and delegates to the other source.
-2. [Other source first, XLIFF as fallback](#2-other-source-first-xliff-as-fallback) — the other source is primary and delegates to the XLIFF `MessageSource`.
+1. [XLIFF first, other source as fallback](#1-xliff-first-other-source-as-fallback). The XLIFF `MessageSource` is primary and delegates to the other source.
+2. [Other source first, XLIFF as fallback](#2-other-source-first-xliff-as-fallback). The other source is primary and delegates to the XLIFF `MessageSource`.
 
 See the main [README](../README.md) for keys, filenames and the full `MessageSource` configuration.
 
