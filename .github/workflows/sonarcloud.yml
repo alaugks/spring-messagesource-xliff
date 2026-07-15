@@ -5,11 +5,17 @@ on:
     branches:
       - main
       - 'snapshot/**'
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - main
       - 'snapshot/**'
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   workflow_dispatch:
 permissions:
   contents: read
