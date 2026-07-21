@@ -60,6 +60,7 @@ public class MessageSourceConfig {
         ResourceBundleMessageSource parent = new ResourceBundleMessageSource();
         parent.setBasename("messages/messages");
         parent.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        parent.setDefaultLocale(Locale.forLanguageTag("en"));
         parent.setFallbackToSystemLocale(false);
 
         return XliffResourceMessageSource
@@ -106,8 +107,9 @@ public class MessageSourceConfig {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("messages/messages");
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
-        messageSource.setFallbackToSystemLocale(false);
-        messageSource.setParentMessageSource(parent);
+		messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
+		messageSource.setFallbackToSystemLocale(false);
+		messageSource.setParentMessageSource(parent);
 
         return messageSource;
     }

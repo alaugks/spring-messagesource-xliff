@@ -32,6 +32,7 @@ class ReadmeParentMessageSourceExamplesTest {
 		ResourceBundleMessageSource parent = new ResourceBundleMessageSource();
 		parent.setBasename("messages_readme_parent/messages");
 		parent.setDefaultEncoding(StandardCharsets.UTF_8.name());
+		parent.setDefaultLocale(Locale.forLanguageTag("en"));
 		parent.setFallbackToSystemLocale(false);
 
 		return XliffResourceMessageSource
@@ -48,6 +49,7 @@ class ReadmeParentMessageSourceExamplesTest {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		messageSource.setBasename("messages_readme_parent/messages");
 		messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
+		messageSource.setDefaultLocale(Locale.forLanguageTag("en"));
 		messageSource.setFallbackToSystemLocale(false);
 		messageSource.setParentMessageSource(parent);
 
