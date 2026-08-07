@@ -4,6 +4,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import javax.xml.XMLConstants;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,7 +51,7 @@ public abstract class XliffDocument {
 	 * @param root the root element of a parsed XML document.
 	 * @return the declared XLIFF version string, or {@code null}.
 	 */
-	public static String readVersion(Element root) {
+	public static @Nullable String readVersion(Element root) {
 		String localName = root.getLocalName();
 		String name = localName != null ? localName : root.getNodeName();
 		if (!"xliff".equals(name)) {
@@ -66,7 +67,7 @@ public abstract class XliffDocument {
 	 *
 	 * @return the declared XLIFF version string, or {@code null}.
 	 */
-	public String getXliffVersion() {
+	public @Nullable String getXliffVersion() {
 		return readVersion(this.root);
 	}
 
@@ -85,7 +86,7 @@ public abstract class XliffDocument {
 	 * @param values the candidate values, in priority order.
 	 * @return the first non-empty value, or {@code ""} if none qualifies.
 	 */
-	protected String firstNonEmpty(String... values) {
+	protected String firstNonEmpty(@Nullable String... values) {
 		for (String value : values) {
 			if (value != null && !value.isEmpty()) {
 				return value;
@@ -101,7 +102,7 @@ public abstract class XliffDocument {
 	 * @param localName the local name to match.
 	 * @return the first matching child element, or {@code null} if none.
 	 */
-	protected static Element firstChildElement(Element parent, String localName) {
+	protected static @Nullable Element firstChildElement(Element parent, String localName) {
 		Node child = parent.getFirstChild();
 		while (child != null) {
 			if (child.getNodeType() == Node.ELEMENT_NODE && localName.equals(elementName(child))) {
@@ -132,7 +133,7 @@ public abstract class XliffDocument {
 	 * @return the (conditionally trimmed) text content; {@code ""} when
 	 *         {@code element} is {@code null}.
 	 */
-	protected String value(Element element) {
+	protected String value(@Nullable Element element) {
 		String raw = this.rawValue(element);
 		return element != null && this.isPreserveSpace(element) ? raw : raw.trim();
 	}
@@ -144,7 +145,7 @@ public abstract class XliffDocument {
 	 * @return the text content, or {@code ""} when {@code element} is
 	 *         {@code null}.
 	 */
-	protected String rawValue(Element element) {
+	protected String rawValue(@Nullable Element element) {
 		if (element == null) {
 			return "";
 		}
@@ -163,7 +164,7 @@ public abstract class XliffDocument {
 	 * @return {@code true} if the effective {@code xml:space} is
 	 *         {@code "preserve"}.
 	 */
-	protected boolean isPreserveSpace(Element element) {
+	protected boolean isPreserveSpace(@Nullable Element element) {
 		Node node = element;
 		while (node instanceof Element current) {
 			String space = this.xmlSpace(current);

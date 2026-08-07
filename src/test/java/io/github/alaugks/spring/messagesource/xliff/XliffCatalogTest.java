@@ -3,8 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
-import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
+import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoader;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
@@ -26,11 +25,13 @@ class XliffCatalogTest {
 	@Test
 	void test_get_trans_units() {
 
-		var ressourceLoader = new ResourcesLoader(
-				Locale.forLanguageTag("en"),
-				new LocationPattern(List.of("translations/messages.xliff", "translations/messages_de.xliff")),
-				List.of("xlf", "xliff")
-		);
+		var ressourceLoader = ResourceLoader
+				.builder(
+						Locale.forLanguageTag("en"),
+						List.of("translations/messages.xliff", "translations/messages_de.xliff")
+				)
+				.fileExtensions(List.of("xlf", "xliff"))
+				.build();
 
 		var catalog = new XliffCatalog(ressourceLoader.getTranslationFiles(), true);
 		var transUnits = catalog.getTransUnits();
@@ -42,7 +43,7 @@ class XliffCatalogTest {
 	@Test
 	void test_parse_error() {
 		var xliffCatalog = TestHelper.getXliffCatalog(
-				new LocationPattern(List.of("fixtures/parse_error.xliff")),
+				List.of("fixtures/parse_error.xliff"),
 				Locale.forLanguageTag("en")
 		);
 
@@ -53,11 +54,10 @@ class XliffCatalogTest {
 	@Test
 	void test_no_xliff_document() {
 
-		var ressourceLoader = new ResourcesLoader(
-				Locale.forLanguageTag("en"),
-				new LocationPattern(List.of("fixtures/no-xliff.xml")),
-				List.of("xml")
-		);
+		var ressourceLoader = ResourceLoader
+				.builder(Locale.forLanguageTag("en"), List.of("fixtures/no-xliff.xml"))
+				.fileExtensions(List.of("xml"))
+				.build();
 
 		var transUnits = new XliffCatalog(
 				ressourceLoader.getTranslationFiles(),
@@ -70,7 +70,7 @@ class XliffCatalogTest {
 	@Test
 	void test_version_not_supported() {
 		var xliffCatalog = TestHelper.getXliffCatalog(
-				new LocationPattern(List.of("fixtures/xliff10.xliff")),
+				List.of("fixtures/xliff10.xliff"),
 				Locale.forLanguageTag("en"),
 				false
 		);
@@ -88,7 +88,7 @@ class XliffCatalogTest {
 	@MethodSource("provider_supported_versions")
 	void test_version_supported(String ressourcePath, String expected) {
 		var catalog = TestHelper.getXliffCatalog(
-				new LocationPattern(List.of(ressourcePath)),
+				List.of(ressourcePath),
 				Locale.forLanguageTag("en")
 		);
 
@@ -106,7 +106,7 @@ class XliffCatalogTest {
 	@Test
 	void test_schema_validation_invalid_throws() {
 		var xliffCatalog = TestHelper.getXliffCatalog(
-				new LocationPattern(List.of("fixtures/schemainvalid.xliff")),
+				List.of("fixtures/schemainvalid.xliff"),
 				Locale.forLanguageTag("en")
 		);
 
@@ -115,11 +115,10 @@ class XliffCatalogTest {
 
 	@Test
 	void test_schema_validation_disabled_skips_validation() {
-		var ressourceLoader = new ResourcesLoader(
-				Locale.forLanguageTag("en"),
-				new LocationPattern(List.of("fixtures/schemainvalid.xliff")),
-				List.of("xlf", "xliff")
-		);
+		var ressourceLoader = ResourceLoader
+				.builder(Locale.forLanguageTag("en"), List.of("fixtures/schemainvalid.xliff"))
+				.fileExtensions(List.of("xlf", "xliff"))
+				.build();
 
 		var transUnits = new XliffCatalog(ressourceLoader.getTranslationFiles(), false).getTransUnits();
 
@@ -130,7 +129,7 @@ class XliffCatalogTest {
 	@MethodSource("provider_standard_compliant_fixtures")
 	void test_fixtures_are_schema_valid(String resourcePath) {
 		var catalog = TestHelper.getXliffCatalog(
-				new LocationPattern(List.of(resourcePath)),
+				List.of(resourcePath),
 				Locale.forLanguageTag("en")
 		);
 

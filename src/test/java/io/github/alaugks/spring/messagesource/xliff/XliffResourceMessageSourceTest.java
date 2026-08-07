@@ -3,7 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.List;
 import java.util.Locale;
@@ -24,7 +23,7 @@ class XliffResourceMessageSourceTest {
 	@MethodSource("provider_message")
 	void test_get_message(String code, Object[] args, Locale locale, String expected) {
 		var messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.validateSchema(true)
 			.build();
 
@@ -49,7 +48,7 @@ class XliffResourceMessageSourceTest {
 	@MethodSource({"provider_message", "provider_message_icu4j"})
 	void test_get_message_enabled_icu4j(String code, Object[] args, Locale locale, String expected) {
 		var messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.enableICU4j()
 			.validateSchema(true)
 			.build();
@@ -71,11 +70,9 @@ class XliffResourceMessageSourceTest {
 		var messageSource = XliffResourceMessageSource
 				.builder(
 						Locale.forLanguageTag("en"),
-						new LocationPattern(
-								List.of(
-										"translations_en/*",
-										"translations_de/*"
-								)
+						List.of(
+								"translations_en/*",
+								"translations_de/*"
 						)
 				)
 				.validateSchema(true)
@@ -96,7 +93,7 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_default_domain() {
 		var messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+				.builder(Locale.forLanguageTag("en"), "translations/*")
 				.defaultDomain("payment")
 				.validateSchema(true)
 				.build();
@@ -111,7 +108,7 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_file_extensions() {
 		var messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+				.builder(Locale.forLanguageTag("en"), "translations/*")
 				.fileExtensions(List.of("xlf"))
 				.validateSchema(true)
 				.build();
@@ -127,7 +124,7 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_validate_schema_enabled_throws() {
 		var builder = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), new LocationPattern("fixtures/schemainvalid.xliff"))
+				.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
 				.validateSchema(true);
 
 		assertThatThrownBy(builder::build).isInstanceOf(XliffMessageSourceValidationException.class);
@@ -136,7 +133,7 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_validate_schema_disabled_by_default() {
 		var messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), new LocationPattern("fixtures/schemainvalid.xliff"))
+				.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
 				.defaultDomain("schemainvalid")
 				.build();
 
@@ -150,7 +147,7 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_default_domain_divider() {
 		var messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.validateSchema(true)
 			.domainDivider("__")
 			.build();

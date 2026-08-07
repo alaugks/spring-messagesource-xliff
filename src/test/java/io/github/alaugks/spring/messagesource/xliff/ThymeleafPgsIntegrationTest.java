@@ -3,7 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import java.util.Locale;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,7 @@ class ThymeleafPgsIntegrationTest {
 	@BeforeEach
 	void setUp() {
 		MessageSource messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.enableICU4j()
 			.build();
 

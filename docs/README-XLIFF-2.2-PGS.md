@@ -24,7 +24,7 @@ public MessageSource messageSource() {
     return XliffResourceMessageSource
         .builder(
             Locale.forLanguageTag("en"),
-            new LocationPattern("translations/*")
+            "translations/*"
         )
         .enableICU4j() // required for PGS
         .build();

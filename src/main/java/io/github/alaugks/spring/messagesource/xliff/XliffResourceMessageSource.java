@@ -7,7 +7,7 @@ import io.github.alaugks.spring.messagesource.catalog.AbstractCatalogMessageSour
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
-import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
+import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoader;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,6 +21,8 @@ public class XliffResourceMessageSource {
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * Creates a new {@link Builder} for assembling an XLIFF-backed Spring
 	 * {@code MessageSource}.
 	 *
@@ -42,13 +44,62 @@ public class XliffResourceMessageSource {
 	 *                        XLIFF files are located.
 	 * @return a new builder pre-configured with the given defaults.
 	 */
+	@Deprecated(since = "3.4.0")
 	public static Builder builder(Locale defaultLocale, LocationPattern locationPattern) {
+		return new Builder(defaultLocale, locationPattern.getLocationPatterns());
+	}
+
+	/**
+	 * Creates a new {@link Builder} for assembling an XLIFF-backed Spring
+	 * {@code MessageSource}.
+	 *
+	 * <pre>{@code
+	 *	return XliffResourceMessageSource
+	 *		.builder(
+	 *			Locale.forLanguageTag("en"),
+	 *			"translations/*"
+	 *		)
+	 *		.build();
+	 * }
+	 * </pre>
+	 *
+	 * @param defaultLocale   the locale to fall back to when a translation is
+	 *                        not available in the requested locale.
+	 * @param locationPattern Spring resource pattern(s) describing where the
+	 *                        XLIFF files are located.
+	 * @return a new builder pre-configured with the given defaults.
+	 */
+	public static Builder builder(Locale defaultLocale, String locationPattern) {
+		return new Builder(defaultLocale, List.of(locationPattern));
+	}
+
+	/**
+	 * Creates a new {@link Builder} for assembling an XLIFF-backed Spring
+	 * {@code MessageSource}.
+	 *
+	 * <pre>{@code
+	 *	return XliffResourceMessageSource
+	 *		.builder(
+	 *			Locale.forLanguageTag("en"),
+	 *			List.of("translations_de/*", "translations_en/*")
+	 *		)
+	 *		.build();
+	 * }
+	 * </pre>
+	 *
+	 * @param defaultLocale   the locale to fall back to when a translation is
+	 *                        not available in the requested locale.
+	 * @param locationPattern Spring resource pattern(s) describing where the
+	 *                        XLIFF files are located.
+	 * @return a new builder pre-configured with the given defaults.
+	 */
+	public static Builder builder(Locale defaultLocale, List<String> locationPattern) {
 		return new Builder(defaultLocale, locationPattern);
 	}
 
 	public static final class Builder extends AbstractCatalogMessageSourceBuilder<Builder> {
 
-		private final LocationPattern locationPattern;
+		private final List<String> locationPattern;
 
 		private List<String> fileExtensions = List.of("xlf", "xliff");
 
@@ -63,7 +114,7 @@ public class XliffResourceMessageSource {
 		 * @param locationPattern Spring resource pattern(s) describing where
 		 *                        the XLIFF files are located.
 		 */
-		public Builder(Locale defaultLocale, LocationPattern locationPattern) {
+		public Builder(Locale defaultLocale, List<String> locationPattern) {
 			super(defaultLocale);
 			this.locationPattern = locationPattern;
 		}
@@ -107,11 +158,10 @@ public class XliffResourceMessageSource {
 		 * @return the configured message source builder.
 		 */
 		public CatalogMessageSourceBuilder build() {
-			ResourcesLoader resourcesLoader = new ResourcesLoader(
-					this.getDefaultLocale(),
-					this.locationPattern,
-					this.fileExtensions
-			);
+			ResourceLoader resourcesLoader = ResourceLoader
+				.builder(this.getDefaultLocale(), this.locationPattern)
+				.fileExtensions(this.fileExtensions)
+				.build();
 
 			CatalogInterface xliffCatalog = new XliffCatalog(
 					resourcesLoader.getTranslationFiles(),
@@ -119,7 +169,7 @@ public class XliffResourceMessageSource {
 			);
 
 			return CatalogMessageSourceBuilder
-				.builder(xliffCatalog, this.getDefaultLocale())
+				.builder(this.getDefaultLocale(), xliffCatalog)
 				.defaultDomain(this.getDefaultDomain())
 				.parentMessageSource(this.getParentMessageSource())
 				.useICU4j(this.isICU4jEnabled())

@@ -60,7 +60,7 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
   </thead>
   <tbody>
     <tr>
-      <td><code>builder(Locale defaultLocale, LocationPattern locationPatterns)</code></td>
+      <td><code>builder(Locale defaultLocale, String locationPattern)</code><br><code>builder(Locale defaultLocale, List&lt;String&gt; locationPatterns)</code></td>
       <td>—</td>
       <td>
         Entry point.
@@ -126,7 +126,6 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 * The XLIFF files are stored in `src/main/resources/translations`.
 
 ```java
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -141,7 +140,7 @@ public class MessageSourceConfig {
        return XliffResourceMessageSource
            .builder(
                Locale.forLanguageTag("en"),
-               new LocationPattern("translations/*")
+               "translations/*"
            )
            .build();
     }

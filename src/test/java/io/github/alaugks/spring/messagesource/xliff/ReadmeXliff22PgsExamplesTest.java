@@ -3,7 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -31,7 +30,7 @@ class ReadmeXliff22PgsExamplesTest {
 	@BeforeEach
 	void set_up() {
 		this.messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations_readme_pgs/*"))
+			.builder(Locale.forLanguageTag("en"), "translations_readme_pgs/*")
 			.enableICU4j()
 			.validateSchema(true)
 			.build();

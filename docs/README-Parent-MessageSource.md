@@ -43,7 +43,6 @@ The XLIFF `MessageSource` is the primary source. A code is looked up in the XLIF
 Use `parentMessageSource(...)` on the builder:
 
 ```java
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -66,7 +65,7 @@ public class MessageSourceConfig {
         return XliffResourceMessageSource
             .builder(
                 Locale.forLanguageTag("en"),
-                new LocationPattern("translations/*")
+                "translations/*"
             )
             .parentMessageSource(parent)
             .build();
@@ -83,7 +82,6 @@ The other `MessageSource` is the primary source. A code is looked up there first
 Build the XLIFF `MessageSource` and set it as the parent of the primary source via `setParentMessageSource(...)`:
 
 ```java
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -100,7 +98,7 @@ public class MessageSourceConfig {
         MessageSource parent = XliffResourceMessageSource
             .builder(
                 Locale.forLanguageTag("en"),
-                new LocationPattern("translations/*")
+                "translations/*"
             )
             .build();
 

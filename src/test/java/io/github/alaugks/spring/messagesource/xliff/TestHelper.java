@@ -1,8 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
-import io.github.alaugks.spring.messagesource.catalog.resources.ResourcesLoader;
+import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoader;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -12,15 +11,18 @@ import org.w3c.dom.Document;
 
 public class TestHelper {
 
-    public static XliffCatalog getXliffCatalog(LocationPattern files, Locale locale, boolean validateSchema) {
+    public static XliffCatalog getXliffCatalog(List<String> locationPatterns, Locale locale, boolean validateSchema) {
         return new XliffCatalog(
-            new ResourcesLoader(locale, files, List.of("xlf", "xliff")).getTranslationFiles(),
+            ResourceLoader.builder(locale, locationPatterns)
+                .fileExtensions(List.of("xlf", "xliff"))
+                .build()
+                .getTranslationFiles(),
             validateSchema
         );
     }
 
-    public static XliffCatalog getXliffCatalog(LocationPattern files, Locale locale) {
-        return getXliffCatalog(files, locale, true);
+    public static XliffCatalog getXliffCatalog(List<String> locationPatterns, Locale locale) {
+        return getXliffCatalog(locationPatterns, locale, true);
     }
 
     public static String findInTransUnits(List<TransUnitInterface> transUnits, String locale, String code) {

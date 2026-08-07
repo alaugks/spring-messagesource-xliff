@@ -3,6 +3,8 @@
 
 package io.github.alaugks.spring.messagesource.xliff.exception;
 
+import org.jspecify.annotations.Nullable;
+
 public class XliffMessageSourceRuntimeException extends RuntimeException {
 
 	/**
@@ -11,7 +13,7 @@ public class XliffMessageSourceRuntimeException extends RuntimeException {
 	 *
 	 * @param cause the underlying exception to wrap; may be {@code null}.
 	 */
-	public XliffMessageSourceRuntimeException(Throwable cause) {
+	public XliffMessageSourceRuntimeException(@Nullable Throwable cause) {
 		super(cause);
 	}
 }
