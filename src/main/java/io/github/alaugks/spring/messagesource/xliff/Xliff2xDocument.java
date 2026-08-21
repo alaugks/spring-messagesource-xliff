@@ -107,8 +107,8 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 */
 	private boolean isPreservesWhitespace(List<Element> elements) {
 		for (Element element : elements) {
-			if (this.isPreserveSpace(this.firstChildElement(element, TARGET))
-				|| this.isPreserveSpace(this.firstChildElement(element, SOURCE))
+			if (this.isPreserveSpace(firstChildElement(element, TARGET))
+				|| this.isPreserveSpace(firstChildElement(element, SOURCE))
 			) {
 				return true;
 			}
@@ -144,11 +144,11 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 		for (Element element : elements) {
 			if (this.isSegment(element)) {
 				Element segment = segments.next();
-				Element target = this.firstChildElement(segment, TARGET);
-				value.append(this.rawValue(target != null ? target : this.firstChildElement(segment, SOURCE)));
+				Element target = firstChildElement(segment, TARGET);
+				value.append(this.rawValue(target != null ? target : firstChildElement(segment, SOURCE)));
 			}
 			else {
-				value.append(this.rawValue(this.firstChildElement(element, SOURCE)));
+				value.append(this.rawValue(firstChildElement(element, SOURCE)));
 			}
 		}
 		return value.toString();
@@ -179,7 +179,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 */
 	private boolean hasTargetOrder(List<Element> segments) {
 		for (Element segment : segments) {
-			Element target = this.firstChildElement(segment, TARGET);
+			Element target = firstChildElement(segment, TARGET);
 			if (target != null && !target.getAttribute("order").isBlank()) {
 				return true;
 			}
@@ -194,7 +194,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 * each other (the sort is stable).
 	 */
 	private int targetOrder(Element segment) {
-		Element target = this.firstChildElement(segment, TARGET);
+		Element target = firstChildElement(segment, TARGET);
 		if (target != null) {
 			String order = target.getAttribute("order").trim();
 			if (!order.isEmpty()) {
@@ -213,14 +213,14 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 * Returns whether the node is a <segment> element.
 	 */
 	private boolean isSegment(Node node) {
-		return "segment".equals(this.elementName(node));
+		return "segment".equals(elementName(node));
 	}
 
 	/**
 	 * Returns whether the node is a <segment> or <ignorable> element.
 	 */
 	private boolean isSegmentOrIgnorable(Node node) {
-		return this.isSegment(node) || "ignorable".equals(this.elementName(node));
+		return this.isSegment(node) || "ignorable".equals(elementName(node));
 	}
 
 	private Locale targetLanguage() {
