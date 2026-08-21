@@ -13,7 +13,7 @@ class XliffDocumentTest {
 
 	@Test
 	void test_get_xliff_version_from_version_attribute() {
-		var xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
+		Xliff2xDocument xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="2.1" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
 				    <file id="f1">
@@ -32,7 +32,7 @@ class XliffDocumentTest {
 
 	@Test
 	void test_get_xliff_version_null_when_no_version_attribute() {
-		var xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
+		Xliff2xDocument xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
 				    <file id="f1">

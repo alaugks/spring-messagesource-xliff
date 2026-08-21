@@ -7,7 +7,7 @@ import io.github.alaugks.spring.messagesource.catalog.AbstractCatalogMessageSour
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
 import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
-import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoader;
+import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoaderBuilder;
 import java.util.List;
 import java.util.Locale;
 
@@ -158,7 +158,7 @@ public class XliffResourceMessageSource {
 		 * @return the configured message source builder.
 		 */
 		public CatalogMessageSourceBuilder build() {
-			ResourceLoader resourcesLoader = ResourceLoader
+			ResourceLoaderBuilder resourcesLoader = ResourceLoaderBuilder
 				.builder(this.getDefaultLocale(), this.locationPattern)
 				.fileExtensions(this.fileExtensions)
 				.build();

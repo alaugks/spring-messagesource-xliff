@@ -1,7 +1,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
-import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoader;
+import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoaderBuilder;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -13,7 +13,7 @@ public class TestHelper {
 
     public static XliffCatalog getXliffCatalog(List<String> locationPatterns, Locale locale, boolean validateSchema) {
         return new XliffCatalog(
-            ResourceLoader.builder(locale, locationPatterns)
+            ResourceLoaderBuilder.builder(locale, locationPatterns)
                 .fileExtensions(List.of("xlf", "xliff"))
                 .build()
                 .getTranslationFiles(),
