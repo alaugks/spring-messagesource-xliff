@@ -1,9 +1,9 @@
 # XLIFF MessageSource for Spring
 
-This package provides a [MessageSource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for translations stored in XLIFF files. It supports XLIFF versions 1.2, 2.0, 2.1 and 2.2, including the [PGS Module](docs/README-XLIFF-2.2-PGS.md).
+This package provides a [MessageSource interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for translations stored in XLIFF files. It supports XLIFF versions 1.2, 2.0, 2.1 and 2.2, including the [PGS Module](docs/README-XLIFF-2.2-PGS.md).
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.2.1)
 
 ## Table of Contents
 
@@ -37,14 +37,14 @@ This package provides a [MessageSource](https://docs.spring.io/spring-framework/
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.1</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '3.2.0'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '3.2.1'
 ```
 
 
@@ -60,7 +60,7 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
   </thead>
   <tbody>
     <tr>
-      <td><code>builder(Locale defaultLocale, LocationPattern locationPatterns)</code></td>
+      <td><code>builder(Locale defaultLocale, String locationPattern)</code><br><code>builder(Locale defaultLocale, List&lt;String&gt; locationPatterns)</code></td>
       <td>—</td>
       <td>
         Entry point.
@@ -126,7 +126,6 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 * The XLIFF files are stored in `src/main/resources/translations`.
 
 ```java
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -141,7 +140,7 @@ public class MessageSourceConfig {
        return XliffResourceMessageSource
            .builder(
                Locale.forLanguageTag("en"),
-               new LocationPattern("translations/*")
+               "translations/*"             // or List.of(...)
            )
            .build();
     }
@@ -299,9 +298,9 @@ Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="
              |-messages.xliff      // Default domain and default language. messages_en.xliff also works.
              |-messages_de.xliff
              |-messages_en-US.xliff
-             |-payment.de.xliff
-             |-payment.en.xliff    // Default language. payment.xliff also works.
-             |-payment.en-US.xliff     
+             |-payment_de.xliff
+             |-payment_en.xliff    // Default language. payment.xliff also works.
+             |-payment_en-US.xliff     
 ```  
 
 #### XLIFF Files

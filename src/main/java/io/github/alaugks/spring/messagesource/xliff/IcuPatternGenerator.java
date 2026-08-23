@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -51,7 +52,7 @@ final class IcuPatternGenerator {
 	}
 
 	/** Parses a single pgs:switch value (a type:variable token), mapping the PGS type to its ICU counterpart; returns null when malformed. */
-	private PgsSwitch parseSwitch(String pgsSwitch) {
+	private @Nullable PgsSwitch parseSwitch(String pgsSwitch) {
 		String pgsSwitchValue = pgsSwitch.trim();
 		int colon = pgsSwitchValue.indexOf(':');
 		if (colon > 0 && colon < pgsSwitchValue.length() - 1) {

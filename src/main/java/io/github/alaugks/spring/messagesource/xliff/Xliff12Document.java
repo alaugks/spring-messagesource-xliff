@@ -76,5 +76,6 @@ public class Xliff12Document extends XliffDocument implements XliffDocumentInter
 				: firstChildElement(transUnit, SOURCE);
 		transUnits.put(key, this.value(valueElement));
 	}
+
 }
 

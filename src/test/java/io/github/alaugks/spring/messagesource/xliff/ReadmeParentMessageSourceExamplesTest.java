@@ -3,7 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -36,14 +35,14 @@ class ReadmeParentMessageSourceExamplesTest {
 		parent.setFallbackToSystemLocale(false);
 
 		return XliffResourceMessageSource
-			.builder(EN, new LocationPattern("translations_readme_parent/*"))
+			.builder(EN, "translations_readme_parent/*")
 			.parentMessageSource(parent)
 			.build();
 	}
 
 	private static MessageSource bundle_first_config() {
 		MessageSource parent = XliffResourceMessageSource
-			.builder(EN, new LocationPattern("translations_readme_parent/*"))
+			.builder(EN, "translations_readme_parent/*")
 			.build();
 
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();

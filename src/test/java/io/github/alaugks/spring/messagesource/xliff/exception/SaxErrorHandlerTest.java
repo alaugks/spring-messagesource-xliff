@@ -14,7 +14,7 @@ class SaxErrorHandlerTest {
 
 	@Test
 	void test_warning() {
-		var handler = new SaxErrorHandler();
+		SaxErrorHandler handler = new SaxErrorHandler();
 		assertThatThrownBy(
 				() -> handler.warning(new SAXParseException("Warning", mock(Locator.class)))
 		).isInstanceOf(XliffMessageSourceSAXParseException.Warning.class);
@@ -22,7 +22,7 @@ class SaxErrorHandlerTest {
 
 	@Test
 	void test_error() {
-		var handler = new SaxErrorHandler();
+		SaxErrorHandler handler = new SaxErrorHandler();
 		assertThatThrownBy(
 				() -> handler.error(new SAXParseException("Error", mock(Locator.class)))
 		).isInstanceOf(XliffMessageSourceSAXParseException.Error.class);
@@ -30,7 +30,7 @@ class SaxErrorHandlerTest {
 
 	@Test
 	void test_fatal_error() {
-		var handler = new SaxErrorHandler();
+		SaxErrorHandler handler = new SaxErrorHandler();
 		assertThatThrownBy(
 				() -> handler.fatalError(new SAXParseException("FatalError", mock(Locator.class)))
 		).isInstanceOf(XliffMessageSourceSAXParseException.FatalError.class);
