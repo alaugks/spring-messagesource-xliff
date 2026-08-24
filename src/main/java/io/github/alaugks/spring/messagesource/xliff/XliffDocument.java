@@ -19,10 +19,19 @@ import org.w3c.dom.Node;
  */
 public abstract class XliffDocument {
 
+	/**
+	 * Local name of the {@code <source>} element.
+	 */
 	protected static final String SOURCE = "source";
 
+	/**
+	 * Local name of the {@code <target>} element.
+	 */
 	protected static final String TARGET = "target";
 
+	/**
+	 * Root element of the parsed XLIFF document.
+	 */
 	protected final Element root;
 
 	/**

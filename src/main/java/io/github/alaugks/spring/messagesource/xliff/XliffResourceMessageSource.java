@@ -11,6 +11,9 @@ import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoaderBu
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Entry point for assembling an XLIFF-backed Spring {@code MessageSource}.
+ */
 public class XliffResourceMessageSource {
 
 	/**
@@ -98,6 +101,9 @@ public class XliffResourceMessageSource {
 		return new Builder(defaultLocale, locationPattern);
 	}
 
+	/**
+	 * Builder for assembling an XLIFF-backed Spring {@code MessageSource}.
+	 */
 	public static final class Builder extends AbstractCatalogMessageSourceBuilder<Builder> {
 
 		private final List<String> locationPattern;
