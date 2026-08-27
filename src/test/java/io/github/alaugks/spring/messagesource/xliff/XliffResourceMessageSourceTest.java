@@ -4,6 +4,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
+import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.List;
 import java.util.Locale;
@@ -119,6 +120,22 @@ class XliffResourceMessageSourceTest {
 				"postcode",
 				null,
 				locale
+		)).isInstanceOf(NoSuchMessageException.class);
+	}
+
+	@Test
+	void test_file_extensions_Location_Deprecation() {
+		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+			.fileExtensions(List.of("xlf"))
+			.validateSchema(true)
+			.build();
+
+		Locale locale = Locale.forLanguageTag("en");
+		assertThatThrownBy(() -> messageSource.getMessage(
+			"postcode",
+			null,
+			locale
 		)).isInstanceOf(NoSuchMessageException.class);
 	}
 

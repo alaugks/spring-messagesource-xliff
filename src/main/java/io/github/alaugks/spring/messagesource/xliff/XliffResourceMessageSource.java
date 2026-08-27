@@ -21,7 +21,8 @@ public class XliffResourceMessageSource {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated since 3.2.0, use {@link #builder(Locale, String)} or
+	 * {@link #builder(Locale, List)} instead.
 	 *
 	 * Creates a new {@link Builder} for assembling an XLIFF-backed Spring
 	 * {@code MessageSource}.
@@ -44,7 +45,7 @@ public class XliffResourceMessageSource {
 	 *                        XLIFF files are located.
 	 * @return a new builder pre-configured with the given defaults.
 	 */
-	@Deprecated(since = "3.4.0")
+	@Deprecated(since = "3.2.0")
 	public static Builder builder(Locale defaultLocale, LocationPattern locationPattern) {
 		return new Builder(defaultLocale, locationPattern.getLocationPatterns());
 	}
