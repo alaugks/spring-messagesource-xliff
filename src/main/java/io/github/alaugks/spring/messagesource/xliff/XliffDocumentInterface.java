@@ -2,6 +2,9 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import java.util.Map;
 
+/**
+ * Reads translation units from a parsed XLIFF document.
+ */
 public interface XliffDocumentInterface {
 
     /**

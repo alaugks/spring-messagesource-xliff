@@ -9,7 +9,18 @@ import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSource
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
+/**
+ * SAX {@link ErrorHandler} that turns every warning, error, and fatal error
+ * into a corresponding runtime exception instead of allowing the parser to
+ * swallow or merely log it.
+ */
 public class SaxErrorHandler implements ErrorHandler {
+
+	/**
+	 * Creates a new error handler.
+	 */
+	public SaxErrorHandler() {
+	}
 
 	/**
 	 * Handles a SAX parser warning by wrapping it in a

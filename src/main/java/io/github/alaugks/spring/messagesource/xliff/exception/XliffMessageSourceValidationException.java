@@ -3,6 +3,10 @@
 
 package io.github.alaugks.spring.messagesource.xliff.exception;
 
+/**
+ * Thrown when an XLIFF document fails validation against its OASIS XSD
+ * schema.
+ */
 public class XliffMessageSourceValidationException extends RuntimeException {
 
 	/**

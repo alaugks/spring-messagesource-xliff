@@ -3,6 +3,10 @@
 
 package io.github.alaugks.spring.messagesource.xliff.exception;
 
+/**
+ * Base type for runtime exceptions that wrap a SAX parsing notification
+ * raised while processing an XLIFF document.
+ */
 public class XliffMessageSourceSAXParseException extends RuntimeException {
 
 	/**
@@ -15,6 +19,9 @@ public class XliffMessageSourceSAXParseException extends RuntimeException {
 		super(cause);
 	}
 
+	/**
+	 * A SAX warning reported by the parser.
+	 */
 	public static class Warning extends XliffMessageSourceSAXParseException {
 
 		/**
@@ -28,6 +35,9 @@ public class XliffMessageSourceSAXParseException extends RuntimeException {
 		}
 	}
 
+	/**
+	 * A recoverable SAX error reported by the parser.
+	 */
 	public static class Error extends XliffMessageSourceSAXParseException {
 
 		/**
@@ -41,6 +51,9 @@ public class XliffMessageSourceSAXParseException extends RuntimeException {
 		}
 	}
 
+	/**
+	 * A non-recoverable SAX error reported by the parser.
+	 */
 	public static class FatalError extends XliffMessageSourceSAXParseException {
 
 		/**

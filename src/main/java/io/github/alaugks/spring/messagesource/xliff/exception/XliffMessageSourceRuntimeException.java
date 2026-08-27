@@ -5,6 +5,10 @@ package io.github.alaugks.spring.messagesource.xliff.exception;
 
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Thrown when XLIFF content cannot be processed due to an unrecoverable
+ * parsing error.
+ */
 public class XliffMessageSourceRuntimeException extends RuntimeException {
 
 	/**
