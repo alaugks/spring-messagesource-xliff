@@ -10,6 +10,7 @@ import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoaderBuilder;
 import java.util.List;
 import java.util.Locale;
+import org.springframework.util.Assert;
 
 /**
  * Entry point for assembling an XLIFF-backed Spring {@code MessageSource}.
@@ -24,7 +25,7 @@ public class XliffResourceMessageSource {
 	}
 
 	/**
-	 * @deprecated since 3.2.1, use {@link #builder(Locale, String)} or
+	 * @deprecated since 3.2.2, use {@link #builder(Locale, String)} or
 	 * {@link #builder(Locale, List)} instead.
 	 *
 	 * Creates a new {@link Builder} for assembling an XLIFF-backed Spring
@@ -48,7 +49,7 @@ public class XliffResourceMessageSource {
 	 *                        XLIFF files are located.
 	 * @return a new builder pre-configured with the given defaults.
 	 */
-	@Deprecated(since = "3.2.1")
+	@Deprecated(since = "3.2.2")
 	public static Builder builder(Locale defaultLocale, LocationPattern locationPattern) {
 		return new Builder(defaultLocale, locationPattern.getLocationPatterns());
 	}
@@ -112,6 +113,8 @@ public class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
+		private String domainDivider = ".";
+
 		/**
 		 * Creates a new builder with the given default locale and XLIFF file
 		 * location pattern.
@@ -158,6 +161,23 @@ public class XliffResourceMessageSource {
 		}
 
 		/**
+		 * @deprecated since 3.2.2. This feature is being discontinued without replacement.
+		 *
+		 * Sets the domain divider to be used when building domain-based message catalogs.
+		 * Default is {@code .}
+		 *
+		 * @param domainDivider the domain divider string; must not be {@code null}
+		 * @return this builder
+		 */
+		@Override
+		@Deprecated(since = "3.2.2")
+		public Builder domainDivider(String domainDivider) {
+			Assert.notNull(domainDivider, "Argument domainDivider must not be null");
+			this.domainDivider = domainDivider;
+			return this;
+		}
+
+		/**
 		 * Assembles the configured {@link CatalogMessageSourceBuilder} backed
 		 * by an {@link XliffCatalog} loaded from the configured location
 		 * pattern.
@@ -180,7 +200,7 @@ public class XliffResourceMessageSource {
 				.defaultDomain(this.getDefaultDomain())
 				.parentMessageSource(this.getParentMessageSource())
 				.useICU4j(this.isICU4jEnabled())
-				.domainDivider(this.getDomainDivider())
+				.domainDivider(this.domainDivider)
 				.build();
 		}
 	}
