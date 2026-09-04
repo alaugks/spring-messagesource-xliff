@@ -2,8 +2,11 @@
 
 This package provides a [MessageSource interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for translations stored in XLIFF files. It supports XLIFF versions 1.2, 2.0, 2.1 and 2.2, including the [PGS Module](docs/README-XLIFF-2.2-PGS.md).
 
+> [!IMPORTANT]
+> Upgrading from 3.x? Domains have been removed. See [Migration: 3.x → 4.0 — Domain Removed](docs/README-Migration-3.x-to-4.0.md).
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.2.2)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.0.0-SNAPSHOT)
 
 ## Table of Contents
 
@@ -37,14 +40,14 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>3.2.2</version>
+    <version>4.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '3.2.2'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.0.0-SNAPSHOT'
 ```
 
 
@@ -71,11 +74,6 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
         <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html">PathMatchingResourcePatternResolver</a>,
         so all its patterns work. Only files ending in <code>xliff</code> or <code>xlf</code> are kept.
       </td>
-    </tr>
-    <tr>
-      <td><code>defaultDomain(String defaultDomain)</code></td>
-      <td><code>messages</code></td>
-      <td>The default domain; see <a href="#xliff-files">XLIFF Files</a>.</td>
     </tr>
     <tr>
       <td><code>fileExtensions(List&lt;String&gt; fileExtensions)</code></td>
@@ -150,7 +148,7 @@ public class MessageSourceConfig {
 
 ## XLIFF Files
 
-* Translations can be split into files by domain (default domain `messages`, configurable via `defaultDomain`).
+* Translations can be split across multiple files; the key is always taken from the unit itself (see [Translation Key](#translation-key)), the filename has no effect on it. Since the key is what's looked up, `resname` / `name` must be unique across all files.
 * Files live in the resource folder with extension `xliff` or `xlf`.
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
 * Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `validateSchema(true)`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
@@ -275,37 +273,36 @@ Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="
 
 ### Structure of the Translation Filename
 
+The `<name>` part is freely choosable and has no functional meaning; it's not used to derive keys and files aren't otherwise linked by it (see [XLIFF Files](#xliff-files)). What matters is that the locale is recognised as a suffix of the filename:
+
 ```
 # Default language
-<domain>.xlf    // <domain>_<language>.xlf also works.
+<name>.xlf    // <name>_<language>.xlf also works.
 
-# Domain + Language
-<domain>[-._]<language>.xlf
+# Name + Language
+<name>[-._]<language>.xlf
 
-# Domain + Language + Region
-<domain>[-._]<language>[-_]<region>.xlf
+# Name + Language + Region
+<name>[-._]<language>[-_]<region>.xlf
 ```
 
 ### Example with XLIFF Files
 
-* Default domain is `messages`.
 * Default locale is `en` without region.
 * Translations are provided for the locale `en`, `de` and `en-US`.
 
 ```
 [resources]
      |-[translations]
-             |-messages.xliff      // Default domain and default language. messages_en.xliff also works.
+             |-messages.xliff   // messages_en.xliff also works.
              |-messages_de.xliff
              |-messages_en-US.xliff
-             |-payment_de.xliff
-             |-payment_en.xliff    // Default language. payment.xliff also works.
-             |-payment_en-US.xliff     
 ```  
 
 #### XLIFF Files
 
-XLIFF versions can be mixed. Example using XLIFF 1.2 and 2.1:
+> [!TIP]
+> Trans-units can be organized across multiple XLIFF files however you like (e.g. by feature or module); this example keeps everything in one file per locale. Only requirement: `resname` / `name` must be unique across all files, since it is the key.
 
 ##### messages.xliff
 
@@ -325,6 +322,14 @@ XLIFF versions can be mixed. Example using XLIFF 1.2 and 2.1:
             <trans-unit id="2" resname="postcode">
                 <source>Postcode</source>
                 <target>Postcode</target>
+            </trans-unit>
+            <trans-unit id="3" resname="payment.headline">
+                <source>Payment</source>
+                <target>Payment</target>
+            </trans-unit>
+            <trans-unit id="4" resname="payment.expiry_date">
+                <source>Expiry date</source>
+                <target>Expiry date</target>
             </trans-unit>
         </body>
     </file>
@@ -350,6 +355,14 @@ XLIFF versions can be mixed. Example using XLIFF 1.2 and 2.1:
                 <source>Postcode</source>
                 <target>Postleitzahl</target>
             </trans-unit>
+            <trans-unit id="3" resname="payment.headline">
+                <source>Payment</source>
+                <target>Zahlung</target>
+            </trans-unit>
+            <trans-unit id="4" resname="payment.expiry_date">
+                <source>Expiry date</source>
+                <target>Ablaufdatum</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
@@ -370,76 +383,11 @@ XLIFF versions can be mixed. Example using XLIFF 1.2 and 2.1:
                 <source>Postcode</source>
                 <target>Zip code</target>
             </trans-unit>
-        </body>
-    </file>
-</xliff>
-```
-
-##### payment.xliff
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"
-       version="2.1"
-       srcLang="en"
-       trgLang="en">
-    <file id="payment">
-        <unit id="1" name="headline">
-            <segment>
-                <source>Payment</source>
-                <target>Payment</target>
-            </segment>
-        </unit>
-        <unit id="2" name="expiry_date">
-            <segment>
-                <source>Expiry date</source>
-                <target>Expiry date</target>
-            </segment>
-        </unit>
-    </file>
-</xliff>
-```
-
-##### payment_de.xliff
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"
-       version="2.1"
-       srcLang="en"
-       trgLang="de">
-    <file id="payment_de">
-        <unit id="1" name="headline">
-            <segment>
-                <source>Payment</source>
-                <target>Zahlung</target>
-            </segment>
-        </unit>
-        <unit id="2" name="expiry_date">
-            <segment>
-                <source>Expiry date</source>
-                <target>Ablaufdatum</target>
-            </segment>
-        </unit>
-    </file>
-</xliff>
-```
-
-##### payment_en-US.xliff
-
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"
-       version="2.1"
-       srcLang="en"
-       trgLang="en-US">
-    <file id="payment_en-US">
-        <unit id="2" name="expiry_date">
-            <segment>
+            <trans-unit id="4" resname="payment.expiry_date">
                 <source>Expiry date</source>
                 <target>Expiration date</target>
-            </segment>
-        </unit>
+            </trans-unit>
+        </body>
     </file>
 </xliff>
 ```
@@ -455,19 +403,19 @@ Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / 
     <th>en</th>
     <th>en-US</th>
     <th>de</th>
-    <th>jp***</th>
+    <th>jp**</th>
   </tr>
   </thead>
   <tbody>
   <tr>
-    <td>headline*<br>messages.headline</td>
+    <td>headline</td>
     <td>Headline</td>
-    <td>Headline**</td>
+    <td>Headline*</td>
     <td>Überschrift</td>
     <td>Headline</td>
   </tr>
   <tr>
-    <td>postcode*<br>messages.postcode</td>
+    <td>postcode</td>
     <td>Postcode</td>
     <td>Zip code</td>
     <td>Postleitzahl</td>
@@ -476,7 +424,7 @@ Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / 
   <tr>
     <td>payment.headline</td>
     <td>Payment</td>
-    <td>Payment**</td>
+    <td>Payment*</td>
     <td>Zahlung</td>
     <td>Payment</td>
   </tr>
@@ -490,11 +438,9 @@ Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / 
   </tbody>
 </table>
 
-> *Default domain is `messages`.
->
-> **Example of a fallback from Language_Region (`en-US`) to Language (`en`). The `id` does not exist in `en-US`, so it tries to select the translation with locale `en`.
+> *Example of a fallback from Language_Region (`en-US`) to Language (`en`). The `id` does not exist in `en-US`, so it tries to select the translation with locale `en`.
 > 
-> ***There is no translation for Japanese (`jp`). The default locale translations (`en`) are selected.
+> **There is no translation for Japanese (`jp`). The default locale translations (`en`) are selected.
 
 ### Unsupported XLIFF Features
 

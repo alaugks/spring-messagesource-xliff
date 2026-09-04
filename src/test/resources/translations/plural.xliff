@@ -3,7 +3,7 @@
     xmlns="urn:oasis:names:tc:xliff:document:2.2"
     xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
     <file id="f1">
-        <unit id="tu1" name="file_deleted" pgs:switch="plural:count">
+        <unit id="tu1" name="plural.file_deleted" pgs:switch="plural:count">
             <segment pgs:case="0">
                 <source>You deleted no files.</source>
                 <target>You deleted no files.</target>
@@ -17,7 +17,7 @@
                 <target>You deleted <ph id="1" disp="count"/> files.</target>
             </segment>
         </unit>
-        <unit id="tu2" name="greeting" pgs:switch="gender:recipient_gender">
+        <unit id="tu2" name="plural.greeting" pgs:switch="gender:recipient_gender">
             <segment pgs:case="feminine">
                 <source>How is she?</source>
                 <target>How is she?</target>
@@ -31,7 +31,7 @@
                 <target>How are they?</target>
             </segment>
         </unit>
-        <unit id="tu1" name="multiple_placeholder" pgs:switch="plural:count">
+        <unit id="tu1" name="plural.multiple_placeholder" pgs:switch="plural:count">
             <segment pgs:case="0">
                 <source>You deleted no files.</source>
                 <target>You deleted no files.</target>

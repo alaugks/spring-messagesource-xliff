@@ -4,7 +4,6 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.List;
 import java.util.Locale;
@@ -85,26 +84,11 @@ class XliffResourceMessageSourceTest {
 
 	static Stream<Arguments> provider_builder_with_location_pattern_multiple_folder() {
 		return Stream.of(
-				Arguments.of("messages.postcode", Locale.forLanguageTag("en"), "Postcode"),
+				Arguments.of("postcode", Locale.forLanguageTag("en"), "Postcode"),
 				Arguments.of("payment.expiry_date", Locale.forLanguageTag("en"), "Expiry date"),
-				Arguments.of("messages.postcode", Locale.forLanguageTag("de"), "Postleitzahl"),
+				Arguments.of("postcode", Locale.forLanguageTag("de"), "Postleitzahl"),
 				Arguments.of("payment.expiry_date", Locale.forLanguageTag("de"), "Ablaufdatum")
 		);
-	}
-
-	@Test
-	void test_default_domain() {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), "translations/*")
-				.defaultDomain("payment")
-				.validateSchema(true)
-				.build();
-
-		assertThat(messageSource.getMessage(
-				"expiry_date",
-				null,
-				Locale.forLanguageTag("en-US")
-		)).isEqualTo("Expiration date");
 	}
 
 	@Test
@@ -124,22 +108,6 @@ class XliffResourceMessageSourceTest {
 	}
 
 	@Test
-	void test_file_extensions_Location_Deprecation() {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
-			.fileExtensions(List.of("xlf"))
-			.validateSchema(true)
-			.build();
-
-		Locale locale = Locale.forLanguageTag("en");
-		assertThatThrownBy(() -> messageSource.getMessage(
-			"postcode",
-			null,
-			locale
-		)).isInstanceOf(NoSuchMessageException.class);
-	}
-
-	@Test
 	void test_validate_schema_enabled_throws() {
 		XliffResourceMessageSource.Builder builder = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
@@ -152,7 +120,6 @@ class XliffResourceMessageSourceTest {
 	void test_validate_schema_disabled_by_default() {
 		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
 				.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
-				.defaultDomain("schemainvalid")
 				.build();
 
 		assertThat(messageSource.getMessage(
@@ -162,18 +129,4 @@ class XliffResourceMessageSourceTest {
 		)).isEqualTo("Target");
 	}
 
-	@Test
-	void test_default_domain_divider() {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), "translations/*")
-			.validateSchema(true)
-			.domainDivider("__")
-			.build();
-
-		assertThat(messageSource.getMessage(
-			"messages__postcode",
-			null,
-			Locale.forLanguageTag("de")
-		)).isEqualTo("Postleitzahl");
-	}
 }

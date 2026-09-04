@@ -126,8 +126,7 @@ public class XliffCatalog extends AbstractCatalog {
 					new TransUnit(
 							xliffFile.locale(),
 							code,
-							value,
-							xliffFile.domain()
+							value
 					)
 			));
 		}

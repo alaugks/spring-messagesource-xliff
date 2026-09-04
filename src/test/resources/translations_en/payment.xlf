@@ -6,7 +6,7 @@
           source-language="en"
           target-language="en">
         <body>
-            <trans-unit id="expiry_date" resname="expiry_date">
+            <trans-unit id="payment.expiry_date" resname="payment.expiry_date">
                 <source>
                   Expiry date
                 </source>

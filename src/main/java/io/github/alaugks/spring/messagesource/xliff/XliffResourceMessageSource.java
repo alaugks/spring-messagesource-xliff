@@ -6,11 +6,9 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.catalog.AbstractCatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
 import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoaderBuilder;
 import java.util.List;
 import java.util.Locale;
-import org.springframework.util.Assert;
 
 /**
  * Entry point for assembling an XLIFF-backed Spring {@code MessageSource}.
@@ -22,36 +20,6 @@ public class XliffResourceMessageSource {
 	 */
 	private XliffResourceMessageSource() {
 		throw new IllegalStateException("Not instantiable");
-	}
-
-	/**
-	 * @deprecated since 3.2.2, use {@link #builder(Locale, String)} or
-	 * {@link #builder(Locale, List)} instead.
-	 *
-	 * Creates a new {@link Builder} for assembling an XLIFF-backed Spring
-	 * {@code MessageSource}.
-	 *
-	 * <pre>{@code
-	 *	import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
-	 *
-	 *	return XliffResourceMessageSource
-	 *		.builder(
-	 *			Locale.forLanguageTag("en"),
-	 *			new LocationPattern("translations/*")
-	 *		)
-	 *		.build();
-	 * }
-	 * </pre>
-	 *
-	 * @param defaultLocale   the locale to fall back to when a translation is
-	 *                        not available in the requested locale.
-	 * @param locationPattern Spring resource pattern(s) describing where the
-	 *                        XLIFF files are located.
-	 * @return a new builder pre-configured with the given defaults.
-	 */
-	@Deprecated(since = "3.2.2")
-	public static Builder builder(Locale defaultLocale, LocationPattern locationPattern) {
-		return new Builder(defaultLocale, locationPattern.getLocationPatterns());
 	}
 
 	/**
@@ -113,8 +81,6 @@ public class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
-		private String domainDivider = ".";
-
 		/**
 		 * Creates a new builder with the given default locale and XLIFF file
 		 * location pattern.
@@ -161,23 +127,6 @@ public class XliffResourceMessageSource {
 		}
 
 		/**
-		 * @deprecated since 3.2.2. This feature is being discontinued without replacement.
-		 *
-		 * Sets the domain divider to be used when building domain-based message catalogs.
-		 * Default is {@code .}
-		 *
-		 * @param domainDivider the domain divider string; must not be {@code null}
-		 * @return this builder
-		 */
-		@Override
-		@Deprecated(since = "3.2.2")
-		public Builder domainDivider(String domainDivider) {
-			Assert.notNull(domainDivider, "Argument domainDivider must not be null");
-			this.domainDivider = domainDivider;
-			return this;
-		}
-
-		/**
 		 * Assembles the configured {@link CatalogMessageSourceBuilder} backed
 		 * by an {@link XliffCatalog} loaded from the configured location
 		 * pattern.
@@ -197,10 +146,8 @@ public class XliffResourceMessageSource {
 
 			return CatalogMessageSourceBuilder
 				.builder(this.getDefaultLocale(), xliffCatalog)
-				.defaultDomain(this.getDefaultDomain())
 				.parentMessageSource(this.getParentMessageSource())
 				.useICU4j(this.isICU4jEnabled())
-				.domainDivider(this.domainDivider)
 				.build();
 		}
 	}
