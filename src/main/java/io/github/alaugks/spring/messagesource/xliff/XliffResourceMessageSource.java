@@ -115,6 +115,8 @@ public class XliffResourceMessageSource {
 
 		private String domainDivider = ".";
 
+		private String defaultDomain = CatalogMessageSourceBuilder.DEFAULT_DOMAIN;
+
 		/**
 		 * Creates a new builder with the given default locale and XLIFF file
 		 * location pattern.
@@ -178,6 +180,24 @@ public class XliffResourceMessageSource {
 		}
 
 		/**
+		 * @deprecated since 3.2.3. This feature is being discontinued without replacement in version 4.0.0.
+		 *
+		 * Sets the default domain. Codes stored under this domain are also accessible via
+		 * their name without the domain prefix; codes stored under any other domain require the
+		 * {@code <domain>.<code>} prefix.
+		 *
+		 * @param defaultDomain the default domain; must not be {@code null}
+		 * @return this builder
+		 */
+		@Override
+		@Deprecated(since = "3.2.3")
+		public Builder defaultDomain(String defaultDomain) {
+			Assert.notNull(defaultDomain, "Argument defaultDomain must not be null");
+			this.defaultDomain = defaultDomain;
+			return this;
+		}
+
+		/**
 		 * Assembles the configured {@link CatalogMessageSourceBuilder} backed
 		 * by an {@link XliffCatalog} loaded from the configured location
 		 * pattern.
@@ -197,7 +217,7 @@ public class XliffResourceMessageSource {
 
 			return CatalogMessageSourceBuilder
 				.builder(this.getDefaultLocale(), xliffCatalog)
-				.defaultDomain(this.getDefaultDomain())
+				.defaultDomain(this.defaultDomain)
 				.parentMessageSource(this.getParentMessageSource())
 				.useICU4j(this.isICU4jEnabled())
 				.domainDivider(this.domainDivider)
