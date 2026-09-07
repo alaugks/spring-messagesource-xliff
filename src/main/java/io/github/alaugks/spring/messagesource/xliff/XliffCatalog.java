@@ -3,10 +3,9 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.catalog.AbstractCatalog;
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnit;
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
-import io.github.alaugks.spring.messagesource.catalog.records.TranslationFileInterface;
+import io.github.alaugks.spring.messagesource.base.records.TransUnit;
+import io.github.alaugks.spring.messagesource.base.records.TransUnitInterface;
+import io.github.alaugks.spring.messagesource.base.records.TranslationFileInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
@@ -25,9 +24,13 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * {@link AbstractCatalog} implementation that reads translation units from files.
+ * The {@code XliffCatalog} class provides support for managing and parsing
+ * a collection of XLIFF translation files. It extracts translation units
+ * while optionally validating files against their associated XLIFF schemas.
+ * The process is optimized for lazy evaluation, parsing the documents
+ * and extracting their units only when requested.
  */
-public class XliffCatalog extends AbstractCatalog {
+public class XliffCatalog {
 
 	private final List<TranslationFileInterface> translationFiles;
 
@@ -65,7 +68,6 @@ public class XliffCatalog extends AbstractCatalog {
 	 *                                                   unsupported XLIFF
 	 *                                                   version.
 	 */
-	@Override
 	public List<TransUnitInterface> getTransUnits() {
 		try {
 			return this.parseXliffDocuments(this.translationFiles);

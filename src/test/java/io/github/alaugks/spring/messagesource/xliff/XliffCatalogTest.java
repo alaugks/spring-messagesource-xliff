@@ -3,8 +3,8 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
-import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoaderBuilder;
+import io.github.alaugks.spring.messagesource.base.records.TransUnitInterface;
+import io.github.alaugks.spring.messagesource.base.resources.ResourceLoaderBuilder;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;

@@ -3,10 +3,9 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.AbstractCatalogMessageSourceBuilder;
-import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
-import io.github.alaugks.spring.messagesource.catalog.catalog.CatalogInterface;
-import io.github.alaugks.spring.messagesource.catalog.resources.ResourceLoaderBuilder;
+import io.github.alaugks.spring.messagesource.base.AbstractBaseMessageSourceBuilder;
+import io.github.alaugks.spring.messagesource.base.BaseMessageSourceBuilder;
+import io.github.alaugks.spring.messagesource.base.resources.ResourceLoaderBuilder;
 import java.util.List;
 import java.util.Locale;
 
@@ -73,7 +72,7 @@ public class XliffResourceMessageSource {
 	/**
 	 * Builder for assembling an XLIFF-backed Spring {@code MessageSource}.
 	 */
-	public static final class Builder extends AbstractCatalogMessageSourceBuilder<Builder> {
+	public static final class Builder extends AbstractBaseMessageSourceBuilder<Builder> {
 
 		private final List<String> locationPattern;
 
@@ -127,25 +126,25 @@ public class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Assembles the configured {@link CatalogMessageSourceBuilder} backed
+		 * Assembles the configured {@link BaseMessageSourceBuilder} backed
 		 * by an {@link XliffCatalog} loaded from the configured location
 		 * pattern.
 		 *
 		 * @return the configured message source builder.
 		 */
-		public CatalogMessageSourceBuilder build() {
+		public BaseMessageSourceBuilder build() {
 			ResourceLoaderBuilder resourcesLoader = ResourceLoaderBuilder
 				.builder(this.getDefaultLocale(), this.locationPattern)
 				.fileExtensions(this.fileExtensions)
 				.build();
 
-			CatalogInterface xliffCatalog = new XliffCatalog(
+			XliffCatalog xliffCatalog = new XliffCatalog(
 					resourcesLoader.getTranslationFiles(),
 					this.validateSchema
 			);
 
-			return CatalogMessageSourceBuilder
-				.builder(this.getDefaultLocale(), xliffCatalog)
+			return BaseMessageSourceBuilder
+				.builder(this.getDefaultLocale(), xliffCatalog.getTransUnits())
 				.parentMessageSource(this.getParentMessageSource())
 				.useICU4j(this.isICU4jEnabled())
 				.build();
