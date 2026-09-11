@@ -31,6 +31,30 @@ class XliffResourceMessageSourceTest {
 		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
 	}
 
+	@ParameterizedTest
+	@MethodSource("provider_message")
+	void test_get_message_useXliffLanguageAttribute(String code, Object[] args, Locale locale, String expected) {
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), "translations_attr/*")
+			.validateSchema(true)
+			.useXliffLanguageAttribute()
+			.build();
+
+		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_message")
+	void test_get_message_targetLocaleResolver(String code, Object[] args, Locale locale, String expected) {
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), "translations_attr/*")
+			.validateSchema(true)
+			.targetLocaleResolver(new ResourceLanguageAttrParser())
+			.build();
+
+		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
+	}
+
 	static Stream<Arguments> provider_message() {
 		return Stream.of(
 			Arguments.of("postcode", null, Locale.forLanguageTag("en"), "Postcode"),
@@ -128,5 +152,4 @@ class XliffResourceMessageSourceTest {
 				Locale.forLanguageTag("en")
 		)).isEqualTo("Target");
 	}
-
 }

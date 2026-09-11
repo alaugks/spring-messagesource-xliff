@@ -6,8 +6,11 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.base.AbstractBaseMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.base.BaseMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.base.resources.ResourceLoaderBuilder;
+import io.github.alaugks.spring.messagesource.base.resources.TargetLocaleResolverInterface;
 import java.util.List;
 import java.util.Locale;
+import org.jspecify.annotations.Nullable;
+import org.springframework.util.Assert;
 
 /**
  * Entry point for assembling an XLIFF-backed Spring {@code MessageSource}.
@@ -80,6 +83,8 @@ public class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
+		@Nullable private TargetLocaleResolverInterface targetLocaleResolver;
+
 		/**
 		 * Creates a new builder with the given default locale and XLIFF file
 		 * location pattern.
@@ -126,6 +131,38 @@ public class XliffResourceMessageSource {
 		}
 
 		/**
+		 * Configures the builder to use the XLIFF language attribute for determining
+		 * the target locale of XLIFF files.
+		 *
+		 * This method sets the {@code fileNameParser} field to an instance of
+		 * {@link ResourceLanguageAttrParser}, enabling the extraction of the target
+		 * locale directly from the language-related attributes defined in the XLIFF
+		 * document.
+		 *
+		 * @return this builder instance for method chaining.
+		 */
+		public Builder useXliffLanguageAttribute() {
+			this.targetLocaleResolver = new ResourceLanguageAttrParser();
+			return this;
+		}
+
+		/**
+		 * Assigns a custom implementation of {@link TargetLocaleResolverInterface} to resolve the
+		 * target locale of XLIFF files.
+		 *
+		 * @param targetLocaleResolver an implementation of {@link TargetLocaleResolverInterface}
+		 *                               used to resolve the target locale of XLIFF files; must
+		 *                               not be null.
+		 * @return this builder instance for method chaining.
+		 */
+		public Builder targetLocaleResolver(TargetLocaleResolverInterface targetLocaleResolver) {
+			Assert.notNull(targetLocaleResolver, "targetLocaleResolver must not be null");
+
+			this.targetLocaleResolver = targetLocaleResolver;
+			return this;
+		}
+
+		/**
 		 * Assembles the configured {@link BaseMessageSourceBuilder} backed
 		 * by an {@link XliffCatalog} loaded from the configured location
 		 * pattern.
@@ -136,6 +173,7 @@ public class XliffResourceMessageSource {
 			ResourceLoaderBuilder resourcesLoader = ResourceLoaderBuilder
 				.builder(this.getDefaultLocale(), this.locationPattern)
 				.fileExtensions(this.fileExtensions)
+				.targetLocaleResolver(this.targetLocaleResolver)
 				.build();
 
 			XliffCatalog xliffCatalog = new XliffCatalog(

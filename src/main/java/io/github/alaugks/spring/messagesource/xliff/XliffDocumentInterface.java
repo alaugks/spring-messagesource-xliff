@@ -14,4 +14,12 @@ public interface XliffDocumentInterface {
      *         not an XLIFF document.
      */
     Map<String, String> getUnits();
+
+    /**
+     * Extracts the declared source and target language from the document.
+     *
+     * @return the declared languages; both {@code null} when absent or when
+     *         the document is not an XLIFF document.
+     */
+    XliffLanguages getLanguages();
 }

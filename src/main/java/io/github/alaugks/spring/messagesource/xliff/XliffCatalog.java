@@ -3,9 +3,9 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import io.github.alaugks.spring.messagesource.base.records.TransFileInterface;
 import io.github.alaugks.spring.messagesource.base.records.TransUnit;
 import io.github.alaugks.spring.messagesource.base.records.TransUnitInterface;
-import io.github.alaugks.spring.messagesource.base.records.TranslationFileInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
  */
 public class XliffCatalog {
 
-	private final List<TranslationFileInterface> translationFiles;
+	private final List<TransFileInterface> translationFiles;
 
 	private final boolean validateSchema;
 
@@ -46,7 +46,7 @@ public class XliffCatalog {
 	 * @param validateSchema   whether each document is validated against its
 	 *                         OASIS XSD schema before its units are extracted.
 	 */
-	public XliffCatalog(List<TranslationFileInterface> translationFiles, boolean validateSchema) {
+	public XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema) {
 		this.translationFiles = translationFiles;
 		this.validateSchema = validateSchema;
 	}
@@ -81,7 +81,7 @@ public class XliffCatalog {
 	 * Parses the XLIFF files into a flat list of translation units, using a
 	 * namespace-aware, XXE-hardened parser.
 	 */
-	private List<TransUnitInterface> parseXliffDocuments(List<TranslationFileInterface> xliffFiles)
+	private List<TransUnitInterface> parseXliffDocuments(List<TransFileInterface> xliffFiles)
 		throws ParserConfigurationException, IOException {
 
 		List<TransUnitInterface> transUnits = new ArrayList<>();
@@ -91,7 +91,7 @@ public class XliffCatalog {
 		factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
-		for (TranslationFileInterface xliffFile : xliffFiles) {
+		for (TransFileInterface xliffFile : xliffFiles) {
 			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 			documentBuilder.setErrorHandler(new SaxErrorHandler());
 			Document document;

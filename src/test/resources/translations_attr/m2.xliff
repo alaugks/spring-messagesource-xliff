@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="global"
+          datatype="plaintext"
+          source-language="en"
+          target-language="de">
+        <body>
+            <trans-unit id="postcode" resname="postcode">
+                <source>
+                  Postcode
+                </source>
+                <target>
+                  Postleitzahl
+                </target>
+            </trans-unit>
+            <trans-unit id="format_plural">
+                <source>
+                    <![CDATA[There {0,choice,0#are no files|1#is one file|1<are {0,number,integer} files}.]]></source>
+                <target>
+                    <![CDATA[Es gibt {0,choice,0#keine Datei|1#eine Datei|1<{0,number,integer} Dateien}.]]></target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

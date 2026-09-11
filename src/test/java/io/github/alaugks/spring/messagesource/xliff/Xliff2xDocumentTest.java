@@ -3,6 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -53,6 +54,47 @@ class Xliff2xDocumentTest {
 			.containsEntry("unit_name_c", "Target C")
 			// No unit/@name and no unit/@id => the unit is skipped.
 			.doesNotContainKey("Source D");
+	}
+
+	@Test
+	void test_get_languages_from_src_lang_and_trg_lang_attributes() {
+		XliffLanguages languages = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1">
+				        <unit id="unit-id">
+				            <segment>
+				                <source>source</source>
+				                <target>target</target>
+				            </segment>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getLanguages();
+
+		assertThat(languages).isEqualTo(new XliffLanguages(Locale.forLanguageTag("en"), Locale.forLanguageTag("de")));
+	}
+
+	@Test
+	void test_get_languages_null_when_attributes_absent() {
+		XliffLanguages languages = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1"></file>
+				</xliff>
+				""")).getLanguages();
+
+		assertThat(languages).isEqualTo(new XliffLanguages(null, null));
+	}
+
+	@Test
+	void test_get_languages_null_when_not_an_xliff_document() {
+		XliffLanguages languages = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<translations></translations>
+				""")).getLanguages();
+
+		assertThat(languages).isEqualTo(new XliffLanguages(null, null));
 	}
 
 	@Test

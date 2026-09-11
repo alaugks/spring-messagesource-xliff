@@ -3,6 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -145,6 +146,45 @@ class Xliff12DocumentTest {
 
 		// <mrk> is not processed, but its text content is part of the value.
 		assertThat(units).containsEntry("unit-id", "Hallo Welt!");
+	}
+
+	@Test
+	void test_get_languages_from_source_language_and_target_language_attributes() {
+		XliffLanguages languages = new Xliff12Document(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+				    <file original="messages" datatype="plaintext" source-language="en" target-language="de">
+				        <body>
+				            <trans-unit id="unit-id">
+				                <source>source</source>
+				                <target>target</target>
+				            </trans-unit>
+				        </body>
+				    </file>
+				</xliff>
+				""")).getLanguages();
+
+		assertThat(languages).isEqualTo(new XliffLanguages(Locale.forLanguageTag("en"), Locale.forLanguageTag("de")));
+	}
+
+	@Test
+	void test_get_languages_null_when_no_file_element() {
+		XliffLanguages languages = new Xliff12Document(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2"></xliff>
+				""")).getLanguages();
+
+		assertThat(languages).isEqualTo(new XliffLanguages(null, null));
+	}
+
+	@Test
+	void test_get_languages_null_when_not_an_xliff_document() {
+		XliffLanguages languages = new Xliff12Document(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<translations></translations>
+				""")).getLanguages();
+
+		assertThat(languages).isEqualTo(new XliffLanguages(null, null));
 	}
 
 	@Test

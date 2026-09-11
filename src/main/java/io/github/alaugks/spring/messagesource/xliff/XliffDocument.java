@@ -3,6 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import java.util.Locale;
 import javax.xml.XMLConstants;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
@@ -102,6 +103,19 @@ public abstract class XliffDocument {
 			}
 		}
 		return "";
+	}
+
+	/**
+	 * Parses an attribute value as a BCP 47 language tag, as declared by
+	 * {@code source-language}/{@code target-language} (XLIFF 1.2) and
+	 * {@code srcLang}/{@code trgLang} (XLIFF 2.x).
+	 *
+	 * @param value the attribute value, as returned by
+	 *              {@link Element#getAttribute(String)}.
+	 * @return the parsed locale, or {@code null} when the value is empty.
+	 */
+	protected static @Nullable Locale toLocale(String value) {
+		return value.isEmpty() ? null : Locale.forLanguageTag(value);
 	}
 
 	/**

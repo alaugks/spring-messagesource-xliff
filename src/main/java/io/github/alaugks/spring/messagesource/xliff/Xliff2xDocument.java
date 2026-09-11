@@ -73,6 +73,25 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	}
 
 	/**
+	 * Extracts the declared source and target language from the document's
+	 * {@code srcLang}/{@code trgLang} attributes, read from the root
+	 * {@code <xliff>} element.
+	 *
+	 * @return the declared languages; both {@code null} when absent or when
+	 *         the document is not an XLIFF document.
+	 */
+	@Override
+	public XliffLanguages getLanguages() {
+		if (!this.isXliffDocument()) {
+			return new XliffLanguages(null, null);
+		}
+		return new XliffLanguages(
+				toLocale(this.root.getAttribute("srcLang")),
+				toLocale(this.root.getAttribute("trgLang"))
+		);
+	}
+
+	/**
 	 * Adds the unit's key and value to the map, skipping it when it has no key
 	 * or no segments.
 	 */

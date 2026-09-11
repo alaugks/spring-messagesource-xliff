@@ -59,6 +59,31 @@ public class Xliff12Document extends XliffDocument implements XliffDocumentInter
 	}
 
 	/**
+	 * Extracts the declared source and target language from the document's
+	 * {@code source-language}/{@code target-language} attributes, read from
+	 * the first {@code <file>} element.
+	 *
+	 * @return the declared languages; both {@code null} when absent or when
+	 *         the document is not an XLIFF document.
+	 */
+	@Override
+	public XliffLanguages getLanguages() {
+		if (!this.isXliffDocument()) {
+			return new XliffLanguages(null, null);
+		}
+
+		Element file = (Element) this.root.getElementsByTagName("file").item(0);
+		if (file == null) {
+			return new XliffLanguages(null, null);
+		}
+
+		return new XliffLanguages(
+				toLocale(file.getAttribute("source-language")),
+				toLocale(file.getAttribute("target-language"))
+		);
+	}
+
+	/**
 	 * Adds the trans-unit's key and value to the map, skipping it when it has no key.
 	 */
 	private void addTransUnit(Element transUnit, Map<String, String> transUnits) {

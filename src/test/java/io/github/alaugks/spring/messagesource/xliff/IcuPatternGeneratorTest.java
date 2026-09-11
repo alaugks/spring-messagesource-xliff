@@ -6,7 +6,11 @@ package io.github.alaugks.spring.messagesource.xliff;
 import com.ibm.icu.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -244,5 +248,162 @@ class IcuPatternGeneratorTest {
 		assertThat(
 			new MessageFormat(icuPattern, Locale.forLanguageTag("ar")).format(Map.of("count", 30))
 		).isEqualTo("# 30% {Rabatt'}");
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_no_unit_generated")
+	void test_yields_no_unit(String xml) {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument(xml)).getUnits();
+
+		assertThat(units).doesNotContainKey("count");
+	}
+
+	static Stream<Arguments> provider_no_unit_generated() {
+		return Stream.of(
+			Arguments.of("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="invalid">
+				            <segment pgs:case="0"><target>null</target></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				"""),
+			Arguments.of("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:">
+				            <segment pgs:case="0"><target>null</target></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				"""),
+			Arguments.of("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:count">
+				            <notes><note>no segments here</note></notes>
+				        </unit>
+				    </file>
+				</xliff>
+				""")
+		);
+	}
+
+	@Test
+	void test_case_falls_back_to_source_when_target_is_missing() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:count">
+				            <segment pgs:case="other"><source>fallback</source></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {fallback}}");
+	}
+
+	@Test
+	void test_case_is_empty_when_source_and_target_are_missing() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:count">
+				            <segment pgs:case="0"/>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, =0 {}}");
+	}
+
+	@Test
+	void test_comment_inside_target_contributes_nothing() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:count">
+				            <segment pgs:case="other"><target>Text<!-- comment -->More</target></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {TextMore}}");
+	}
+
+	@Test
+	void test_non_ph_inline_element_recurses_into_its_text() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:count">
+				            <segment pgs:case="other"><target>Hello <pc id="1">World</pc>!</target></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {Hello World!}}");
+	}
+
+	@Test
+	void test_placeholder_without_disp_attribute_contributes_nothing() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:count">
+				            <segment pgs:case="other"><target>Before<ph id="1"/>After</target></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {BeforeAfter}}");
+	}
+
+	@Test
+	void test_escapes_adjacent_metacharacters_including_pipe() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:count">
+				            <segment pgs:case="other"><target>Special {}| chars</target></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {Special '{}|' chars}}");
 	}
 }
