@@ -18,7 +18,7 @@ import org.w3c.dom.Node;
  * and the {@link #readVersion(Element)} factory helper used before the correct
  * subclass can be chosen.
  */
-public abstract class XliffDocument {
+abstract class XliffDocument {
 
 	/**
 	 * Local name of the {@code <source>} element.

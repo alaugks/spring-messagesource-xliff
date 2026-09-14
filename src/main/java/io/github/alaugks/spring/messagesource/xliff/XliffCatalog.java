@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
  * The process is optimized for lazy evaluation, parsing the documents
  * and extracting their units only when requested.
  */
-public final class XliffCatalog {
+class XliffCatalog {
 
 	private final List<TransFileInterface> translationFiles;
 

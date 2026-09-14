@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
  * Shared setup for parsing XLIFF content with a namespace-aware,
  * XXE-hardened DOM parser.
  */
-final class XliffDocumentParser {
+class XliffDocumentParser {
 
 	private XliffDocumentParser() {
 	}

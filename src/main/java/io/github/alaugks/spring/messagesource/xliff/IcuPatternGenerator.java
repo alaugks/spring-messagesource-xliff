@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
  * and {@code other} yields
  * {@code {count, plural, =0 {…} =1 {…} other {…}}}.
  */
-final class IcuPatternGenerator {
+class IcuPatternGenerator {
 
 	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
 

@@ -46,7 +46,7 @@ import org.xml.sax.SAXParseException;
  * unmodified OASIS schema; the original document keeps its PGS attributes for
  * the reader.
  */
-final class XliffSchemaValidator {
+class XliffSchemaValidator {
 
 	private static final String SCHEMA_PATH = "schema/";
 

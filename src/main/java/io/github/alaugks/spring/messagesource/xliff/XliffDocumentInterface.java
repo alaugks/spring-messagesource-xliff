@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Reads translation units from a parsed XLIFF document.
  */
-public interface XliffDocumentInterface {
+interface XliffDocumentInterface {
 
     /**
      * Extracts the translation units from the document.
