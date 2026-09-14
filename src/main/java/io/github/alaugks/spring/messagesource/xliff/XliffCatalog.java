@@ -6,21 +6,16 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.base.records.TransFileInterface;
 import io.github.alaugks.spring.messagesource.base.records.TransUnit;
 import io.github.alaugks.spring.messagesource.base.records.TransUnitInterface;
-import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -87,23 +82,16 @@ public final class XliffCatalog {
 
 		List<TransUnitInterface> transUnits = new ArrayList<>();
 
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setNamespaceAware(true);
-		factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-		factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		DocumentBuilderFactory factory = XliffDocumentParser.newDocumentBuilderFactory();
 
 		for (TransFileInterface xliffFile : xliffFiles) {
-			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-			documentBuilder.setErrorHandler(new SaxErrorHandler());
-			Document document;
+			Element root;
 			try {
-				document = documentBuilder.parse(new ByteArrayInputStream(Objects.requireNonNull(xliffFile.content())));
+				root = XliffDocumentParser.parseRootElement(factory, Objects.requireNonNull(xliffFile.content()));
 			}
 			catch (SAXException e) {
 				throw new XliffMessageSourceRuntimeException(e);
 			}
-
-			Element root = document.getDocumentElement();
 
 			String version = XliffDocument.readVersion(root);
 			if (version == null) {
@@ -111,7 +99,7 @@ public final class XliffCatalog {
 			}
 
 			if (this.validateSchema) {
-				this.schemaValidator.validate(document, version);
+				this.schemaValidator.validate(root.getOwnerDocument(), version);
 			}
 
 			Map<String, String> units = switch (version) {

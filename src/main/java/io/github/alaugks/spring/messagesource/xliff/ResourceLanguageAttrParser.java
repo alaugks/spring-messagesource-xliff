@@ -3,18 +3,12 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.base.records.TransFileTargetLocale;
 import io.github.alaugks.spring.messagesource.base.records.TransFileTargetLocaleInterface;
 import io.github.alaugks.spring.messagesource.base.resources.TargetLocaleResolverInterface;
-import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -26,24 +20,13 @@ public final class ResourceLanguageAttrParser implements TargetLocaleResolverInt
 		Element root;
 
 		try {
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setNamespaceAware(true);
-			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-
-			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-			documentBuilder.setErrorHandler(new SaxErrorHandler());
-			Document document;
-			document = documentBuilder.parse(new ByteArrayInputStream(resource.getContentAsByteArray()));
-
-			root = document.getDocumentElement();
+			root = XliffDocumentParser.parseRootElement(
+				XliffDocumentParser.newDocumentBuilderFactory(),
+				resource.getContentAsByteArray()
+			);
 		}
 		catch (SAXException | IOException | ParserConfigurationException e) {
 			throw new XliffMessageSourceRuntimeException(e);
-		}
-
-		if (root == null) {
-			return null;
 		}
 
 		String version = XliffDocument.readVersion(root);
