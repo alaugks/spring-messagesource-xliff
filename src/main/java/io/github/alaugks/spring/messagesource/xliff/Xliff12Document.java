@@ -22,7 +22,7 @@ import org.w3c.dom.NodeList;
  * interpreted). It is trimmed unless the element's effective {@code xml:space}
  * is {@code "preserve"}.
  */
-public class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
+public final class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
 
 	/**
 	 * Creates a reader for the given XLIFF 1.2 root element.

@@ -15,7 +15,7 @@ import org.springframework.util.Assert;
 /**
  * Entry point for assembling an XLIFF-backed Spring {@code MessageSource}.
  */
-public class XliffResourceMessageSource {
+public final class XliffResourceMessageSource {
 
 	/**
 	 * Utility class — not intended to be instantiated.

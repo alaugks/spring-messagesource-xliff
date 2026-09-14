@@ -29,7 +29,7 @@ import org.w3c.dom.NodeList;
  * The concatenated value is trimmed unless the unit, or one of its elements,
  * declares an effective {@code xml:space} of {@code "preserve"}.
  */
-public class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
+public final class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
 	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";

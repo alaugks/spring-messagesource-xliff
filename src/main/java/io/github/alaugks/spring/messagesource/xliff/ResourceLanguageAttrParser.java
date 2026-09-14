@@ -18,7 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-public class ResourceLanguageAttrParser implements TargetLocaleResolverInterface {
+public final class ResourceLanguageAttrParser implements TargetLocaleResolverInterface {
 
 	@Override
 	public @Nullable TransFileTargetLocaleInterface resolve(Resource resource) {

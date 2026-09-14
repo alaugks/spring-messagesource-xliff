@@ -14,7 +14,7 @@ import org.xml.sax.SAXParseException;
  * into a corresponding runtime exception instead of allowing the parser to
  * swallow or merely log it.
  */
-public class SaxErrorHandler implements ErrorHandler {
+public final class SaxErrorHandler implements ErrorHandler {
 
 	/**
 	 * Creates a new error handler.

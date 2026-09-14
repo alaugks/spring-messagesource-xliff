@@ -22,7 +22,7 @@ public class XliffMessageSourceSAXParseException extends RuntimeException {
 	/**
 	 * A SAX warning reported by the parser.
 	 */
-	public static class Warning extends XliffMessageSourceSAXParseException {
+	public static final class Warning extends XliffMessageSourceSAXParseException {
 
 		/**
 		 * Creates a new exception representing a SAX warning emitted by the
@@ -38,7 +38,7 @@ public class XliffMessageSourceSAXParseException extends RuntimeException {
 	/**
 	 * A recoverable SAX error reported by the parser.
 	 */
-	public static class Error extends XliffMessageSourceSAXParseException {
+	public static final class Error extends XliffMessageSourceSAXParseException {
 
 		/**
 		 * Creates a new exception representing a recoverable SAX error emitted
@@ -54,7 +54,7 @@ public class XliffMessageSourceSAXParseException extends RuntimeException {
 	/**
 	 * A non-recoverable SAX error reported by the parser.
 	 */
-	public static class FatalError extends XliffMessageSourceSAXParseException {
+	public static final class FatalError extends XliffMessageSourceSAXParseException {
 
 		/**
 		 * Creates a new exception representing a non-recoverable SAX error
