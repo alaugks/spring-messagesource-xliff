@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,7 +31,7 @@ import org.xml.sax.SAXException;
  * The process is optimized for lazy evaluation, parsing the documents
  * and extracting their units only when requested.
  */
-public class XliffCatalog {
+public final class XliffCatalog {
 
 	private final List<TransFileInterface> translationFiles;
 
@@ -96,7 +97,7 @@ public class XliffCatalog {
 			documentBuilder.setErrorHandler(new SaxErrorHandler());
 			Document document;
 			try {
-				document = documentBuilder.parse(new ByteArrayInputStream(xliffFile.content()));
+				document = documentBuilder.parse(new ByteArrayInputStream(Objects.requireNonNull(xliffFile.content())));
 			}
 			catch (SAXException e) {
 				throw new XliffMessageSourceRuntimeException(e);
