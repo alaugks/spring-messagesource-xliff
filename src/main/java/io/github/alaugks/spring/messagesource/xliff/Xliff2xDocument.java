@@ -81,11 +81,11 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 *         the document is not an XLIFF document.
 	 */
 	@Override
-	public XliffLanguages getLanguages() {
+	public XliffLanguageAttr getLanguages() {
 		if (!this.isXliffDocument()) {
-			return new XliffLanguages(null, null);
+			return new XliffLanguageAttr(null, null);
 		}
-		return new XliffLanguages(
+		return new XliffLanguageAttr(
 				toLocale(this.root.getAttribute("srcLang")),
 				toLocale(this.root.getAttribute("trgLang"))
 		);

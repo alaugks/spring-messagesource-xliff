@@ -67,17 +67,17 @@ class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
 	 *         the document is not an XLIFF document.
 	 */
 	@Override
-	public XliffLanguages getLanguages() {
+	public XliffLanguageAttr getLanguages() {
 		if (!this.isXliffDocument()) {
-			return new XliffLanguages(null, null);
+			return new XliffLanguageAttr(null, null);
 		}
 
 		Element file = (Element) this.root.getElementsByTagName("file").item(0);
 		if (file == null) {
-			return new XliffLanguages(null, null);
+			return new XliffLanguageAttr(null, null);
 		}
 
-		return new XliffLanguages(
+		return new XliffLanguageAttr(
 				toLocale(file.getAttribute("source-language")),
 				toLocale(file.getAttribute("target-language"))
 		);

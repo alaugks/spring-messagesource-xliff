@@ -21,5 +21,5 @@ interface XliffDocumentInterface {
      * @return the declared languages; both {@code null} when absent or when
      *         the document is not an XLIFF document.
      */
-    XliffLanguages getLanguages();
+    XliffLanguageAttr getLanguages();
 }

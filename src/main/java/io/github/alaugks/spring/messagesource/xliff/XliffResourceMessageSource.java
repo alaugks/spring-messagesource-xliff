@@ -135,14 +135,14 @@ public final class XliffResourceMessageSource {
 		 * the target locale of XLIFF files.
 		 *
 		 * This method sets the {@code fileNameParser} field to an instance of
-		 * {@link ResourceLanguageAttrParser}, enabling the extraction of the target
+		 * {@link XliffLanguageAttrParser}, enabling the extraction of the target
 		 * locale directly from the language-related attributes defined in the XLIFF
 		 * document.
 		 *
 		 * @return this builder instance for method chaining.
 		 */
 		public Builder useXliffLanguageAttribute() {
-			this.targetLocaleResolver = new ResourceLanguageAttrParser();
+			this.targetLocaleResolver = new XliffLanguageAttrParser();
 			return this;
 		}
 

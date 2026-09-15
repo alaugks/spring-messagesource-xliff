@@ -58,7 +58,7 @@ class Xliff2xDocumentTest {
 
 	@Test
 	void test_get_languages_from_src_lang_and_trg_lang_attributes() {
-		XliffLanguages languages = new Xliff2xDocument(TestHelper.parseDocument("""
+		XliffLanguageAttr languages = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
 				    <file id="f1">
@@ -72,29 +72,29 @@ class Xliff2xDocumentTest {
 				</xliff>
 				""")).getLanguages();
 
-		assertThat(languages).isEqualTo(new XliffLanguages(Locale.forLanguageTag("en"), Locale.forLanguageTag("de")));
+		assertThat(languages).isEqualTo(new XliffLanguageAttr(Locale.forLanguageTag("en"), Locale.forLanguageTag("de")));
 	}
 
 	@Test
 	void test_get_languages_null_when_attributes_absent() {
-		XliffLanguages languages = new Xliff2xDocument(TestHelper.parseDocument("""
+		XliffLanguageAttr languages = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0">
 				    <file id="f1"></file>
 				</xliff>
 				""")).getLanguages();
 
-		assertThat(languages).isEqualTo(new XliffLanguages(null, null));
+		assertThat(languages).isEqualTo(new XliffLanguageAttr(null, null));
 	}
 
 	@Test
 	void test_get_languages_null_when_not_an_xliff_document() {
-		XliffLanguages languages = new Xliff2xDocument(TestHelper.parseDocument("""
+		XliffLanguageAttr languages = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
 				<translations></translations>
 				""")).getLanguages();
 
-		assertThat(languages).isEqualTo(new XliffLanguages(null, null));
+		assertThat(languages).isEqualTo(new XliffLanguageAttr(null, null));
 	}
 
 	@Test

@@ -15,7 +15,7 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-class ResourceLanguageAttrParser implements TargetLocaleResolverInterface {
+class XliffLanguageAttrParser implements TargetLocaleResolverInterface {
 
 	@Override
 	public @Nullable TransFileTargetLocaleInterface resolve(Resource resource) {
@@ -37,7 +37,7 @@ class ResourceLanguageAttrParser implements TargetLocaleResolverInterface {
 			return null;
 		}
 
-		XliffLanguages langAttr = switch (version) {
+		XliffLanguageAttr langAttr = switch (version) {
 			case "1.2" -> new Xliff12Document(root).getLanguages();
 			case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root).getLanguages();
 			default -> throw new XliffMessageSourceVersionSupportException(

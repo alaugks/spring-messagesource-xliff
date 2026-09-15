@@ -15,7 +15,7 @@ import org.springframework.core.io.Resource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ResourceLanguageAttrParserTest {
+class XliffLanguageAttrParserTest {
 
 	private static Resource resource(String xml) {
 		return new ByteArrayResource(xml.strip().getBytes(StandardCharsets.UTF_8));
@@ -39,7 +39,7 @@ class ResourceLanguageAttrParserTest {
 
 	@Test
 	void test_parse_xliff_1_2_returns_filename_from_target_language() {
-		TransFileTargetLocaleInterface filename = new ResourceLanguageAttrParser().resolve(
+		TransFileTargetLocaleInterface filename = new XliffLanguageAttrParser().resolve(
 			new ClassPathResource("fixtures/xliff12.xliff")
 		);
 
@@ -48,7 +48,7 @@ class ResourceLanguageAttrParserTest {
 
 	@Test
 	void test_parse_xliff_2_x_returns_filename_from_trg_lang() {
-		TransFileTargetLocaleInterface filename = new ResourceLanguageAttrParser().resolve(
+		TransFileTargetLocaleInterface filename = new XliffLanguageAttrParser().resolve(
 			new ClassPathResource("fixtures/xliff20.xliff")
 		);
 
@@ -57,7 +57,7 @@ class ResourceLanguageAttrParserTest {
 
 	@Test
 	void test_parse_extracts_region_from_language_tag() {
-		TransFileTargetLocaleInterface filename = new ResourceLanguageAttrParser().resolve(
+		TransFileTargetLocaleInterface filename = new XliffLanguageAttrParser().resolve(
 				xliff20Resource(" trgLang=\"de-AT\"")
 		);
 
@@ -66,7 +66,7 @@ class ResourceLanguageAttrParserTest {
 
 	@Test
 	void test_parse_returns_null_when_not_an_xliff_document() {
-		TransFileTargetLocaleInterface filename = new ResourceLanguageAttrParser().resolve(
+		TransFileTargetLocaleInterface filename = new XliffLanguageAttrParser().resolve(
 			new ClassPathResource("fixtures/no-xliff.xml")
 		);
 
@@ -77,7 +77,7 @@ class ResourceLanguageAttrParserTest {
 	void test_parse_throws_for_unsupported_version() {
 		Resource resource = new ClassPathResource("fixtures/xliff10.xliff");
 
-		ResourceLanguageAttrParser r = new ResourceLanguageAttrParser();
+		XliffLanguageAttrParser r = new XliffLanguageAttrParser();
 
 		assertThatThrownBy(() -> r.resolve(resource))
 				.isInstanceOf(XliffMessageSourceVersionSupportException.class)
@@ -90,7 +90,7 @@ class ResourceLanguageAttrParserTest {
 	void test_parse_throws_when_target_language_is_absent() {
 		Resource resource = xliff20Resource("");
 
-		ResourceLanguageAttrParser r = new ResourceLanguageAttrParser();
+		XliffLanguageAttrParser r = new XliffLanguageAttrParser();
 
 		assertThatThrownBy(() -> r.resolve(resource))
 				.isInstanceOf(XliffMessageSourceVersionSupportException.class)

@@ -16,6 +16,6 @@ import org.jspecify.annotations.Nullable;
  *                        {@code trgLang} (XLIFF 2.x) value, parsed as a BCP 47
  *                        language tag; {@code null} if absent.
  */
-record XliffLanguages(@Nullable Locale sourceLanguage, @Nullable Locale targetLanguage) {
+record XliffLanguageAttr(@Nullable Locale sourceLanguage, @Nullable Locale targetLanguage) {
 
 }

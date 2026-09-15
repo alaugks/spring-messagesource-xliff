@@ -49,7 +49,7 @@ class XliffResourceMessageSourceTest {
 		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations_attr/*")
 			.validateSchema(true)
-			.targetLocaleResolver(new ResourceLanguageAttrParser())
+			.targetLocaleResolver(new XliffLanguageAttrParser())
 			.build();
 
 		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
