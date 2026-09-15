@@ -230,6 +230,25 @@ class Xliff2xDocumentTest {
 	}
 
 	@Test
+	void test_value_preserved_via_source_when_no_target() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1">
+				        <unit id="unit-id" name="unit-attr-name">
+				            <segment id="segment-id">
+				                <source xml:space="preserve">   spaced value   </source>
+				            </segment>
+				        </unit>
+				    </file>
+				</xliff>
+				""", true)).getUnits();
+
+		// No <target> to fall back to <source>; its own xml:space="preserve" still applies.
+		assertThat(units).containsEntry("unit-attr-name", "   spaced value   ");
+	}
+
+	@Test
 	void test_value_not_trimmed_when_xml_space_preserve() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
 				<?xml version="1.0" encoding="utf-8"?>
@@ -284,6 +303,46 @@ class Xliff2xDocumentTest {
 				""", false)).getUnits();
 
 		assertThat(units).isEmpty();
+	}
+
+	@Test
+	void test_unit_skipped_when_it_has_no_segments_or_ignorables() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1">
+				        <unit id="1" name="name-value">
+				            <notes>
+				                <note>Some note</note>
+				            </notes>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).isEmpty();
+	}
+
+	@Test
+	void test_non_segment_child_element_ignored() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1">
+				        <unit id="1" name="name-value">
+				            <notes>
+				                <note>Some note</note>
+				            </notes>
+				            <segment>
+				                <source>Hello</source>
+				                <target>Hallo</target>
+				            </segment>
+				        </unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		assertThat(units).containsEntry("name-value", "Hallo");
 	}
 
 	@Test
@@ -395,6 +454,59 @@ class Xliff2xDocumentTest {
 				""")).getUnits();
 
 		assertThat(units).containsEntry("disclaimer", "Welt! Hallo");
+	}
+
+	@Test
+	void test_multiple_segments_by_order_missing_target_element() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1">
+						<unit id="1" name="name-value">
+							<segment>
+								<source>Hello</source>
+								<target order="1">Hallo</target>
+							</segment>
+							<ignorable>
+								<source> </source>
+							</ignorable>
+							<segment>
+								<source>World!</source>
+							</segment>
+						</unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		// The segment without a <target> has no order attribute to read; it sorts after the explicitly ordered one.
+		assertThat(units).containsEntry("name-value", "Hallo World!");
+	}
+
+	@Test
+	void test_multiple_segments_by_order_non_numeric_order_value() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1">
+						<unit id="1" name="name-value">
+							<segment>
+								<source>World!</source>
+								<target order="abc">Welt!</target>
+							</segment>
+							<ignorable>
+								<source> </source>
+							</ignorable>
+							<segment>
+								<source>Hello</source>
+								<target order="1">Hallo</target>
+							</segment>
+						</unit>
+				    </file>
+				</xliff>
+				""")).getUnits();
+
+		// A non-numeric order value is treated as absent; that segment sorts after the explicitly ordered one.
+		assertThat(units).containsEntry("name-value", "Hallo Welt!");
 	}
 
 	@Test
