@@ -6,7 +6,7 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 > Upgrading from 3.x? Domains have been removed. See [Migration: 3.x → 4.0 — Domain Removed](docs/README-Migration-3.x-to-4.0.md).
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.0.0-SNAPSHOT)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.0.1-SNAPSHOT)
 
 ## Table of Contents
 
@@ -42,14 +42,14 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.0.0-SNAPSHOT'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.0.1-SNAPSHOT'
 ```
 
 
