@@ -21,7 +21,7 @@ public final class XliffResourceMessageSource {
 	 * Utility class — not intended to be instantiated.
 	 */
 	private XliffResourceMessageSource() {
-		throw new IllegalStateException("Not instantiable");
+		throw new UnsupportedOperationException("XliffResourceMessageSource not supported.");
 	}
 
 	/**

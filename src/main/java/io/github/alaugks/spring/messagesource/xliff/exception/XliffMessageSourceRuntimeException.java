@@ -20,4 +20,14 @@ public final class XliffMessageSourceRuntimeException extends RuntimeException {
 	public XliffMessageSourceRuntimeException(@Nullable Throwable cause) {
 		super(cause);
 	}
+
+	/**
+	 * Creates a new runtime exception with the specified detail message.
+	 *
+	 * @param message the detail message providing additional information about
+	 *                the exception.
+	 */
+	public XliffMessageSourceRuntimeException(String message) {
+		super(message);
+	}
 }

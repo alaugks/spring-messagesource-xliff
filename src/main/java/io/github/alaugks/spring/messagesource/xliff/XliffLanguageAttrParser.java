@@ -42,17 +42,18 @@ class XliffLanguageAttrParser implements TargetLocaleResolverInterface {
 			case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root).getLanguages();
 			default -> throw new XliffMessageSourceVersionSupportException(
 				String.format(
-					"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",
-					version
+					"XLIFF version \"%s\" not supported in file \"%s\". Supported versions: 1.2, 2.0, 2.1 and 2.2.",
+					version,
+					resource.getFilename()
 				)
 			);
 		};
 
 		if (langAttr.targetLanguage() == null) {
-			throw new XliffMessageSourceVersionSupportException(
+			throw new XliffMessageSourceRuntimeException(
 				String.format(
-					"Target language not defined in XLIFF file: %s",
-					version
+					"Target language not defined in XLIFF file \"%s\"",
+					resource.getFilename()
 				)
 			);
 		}

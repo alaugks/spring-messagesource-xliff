@@ -20,6 +20,7 @@ public final class SaxErrorHandler implements ErrorHandler {
 	 * Creates a new error handler.
 	 */
 	public SaxErrorHandler() {
+		throw new UnsupportedOperationException("SAX error handler not supported.");
 	}
 
 	/**
