@@ -43,7 +43,7 @@ class XliffLanguageAttrParser implements TargetLocaleResolverInterface {
 				String.format(
 					"XLIFF version \"%s\" not supported in file \"%s\". Supported versions: 1.2, 2.0, 2.1 and 2.2.",
 					version,
-					resource.getFilename()
+					resource.getDescription()
 				)
 			);
 		};
@@ -52,7 +52,7 @@ class XliffLanguageAttrParser implements TargetLocaleResolverInterface {
 			throw new XliffMessageSourceRuntimeException(
 				String.format(
 					"Target language not defined in XLIFF file \"%s\"",
-					resource.getFilename()
+					resource.getDescription()
 				)
 			);
 		}

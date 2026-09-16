@@ -5,6 +5,7 @@ package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.base.records.TransFileTargetLocale;
 import io.github.alaugks.spring.messagesource.base.records.TransFileTargetLocaleInterface;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
@@ -82,7 +83,7 @@ class XliffLanguageAttrParserTest {
 		assertThatThrownBy(() -> r.resolve(resource))
 			.isInstanceOf(XliffMessageSourceVersionSupportException.class)
 			.hasMessage(
-				"XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2"
+				"XLIFF version \"1.0\" not supported in file \"class path resource [fixtures/xliff10.xliff]\". Supported versions: 1.2, 2.0, 2.1 and 2.2."
 			);
 	}
 
@@ -93,7 +94,9 @@ class XliffLanguageAttrParserTest {
 		XliffLanguageAttrParser r = new XliffLanguageAttrParser();
 
 		assertThatThrownBy(() -> r.resolve(resource))
-			.isInstanceOf(XliffMessageSourceVersionSupportException.class)
-			.hasMessage("Target language not defined in XLIFF file: 2.0");
+			.isInstanceOf(XliffMessageSourceRuntimeException.class)
+			.hasMessage(
+				"Target language not defined in XLIFF file \"Byte array resource [resource loaded from byte array]\""
+			);
 	}
 }
