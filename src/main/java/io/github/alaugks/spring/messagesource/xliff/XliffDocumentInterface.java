@@ -7,19 +7,19 @@ import java.util.Map;
  */
 interface XliffDocumentInterface {
 
-    /**
-     * Extracts the translation units from the document.
-     *
-     * @return ordered map of key to translated text; empty if the document is
-     *         not an XLIFF document.
-     */
-    Map<String, String> getUnits();
+	/**
+	 * Extracts the translation units from the document.
+	 *
+	 * @return ordered map of key to translated text; empty if the document is
+	 *         not an XLIFF document.
+	 */
+	Map<String, String> getUnits();
 
-    /**
-     * Extracts the declared source and target language from the document.
-     *
-     * @return the declared languages; both {@code null} when absent or when
-     *         the document is not an XLIFF document.
-     */
-    XliffLanguageAttr getLanguages();
+	/**
+	 * Extracts the declared source and target language from the document.
+	 *
+	 * @return the declared languages; both {@code null} when absent or when
+	 *         the document is not an XLIFF document.
+	 */
+	XliffLanguageAttr getLanguages();
 }

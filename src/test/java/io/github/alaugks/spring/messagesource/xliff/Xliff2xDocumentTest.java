@@ -14,35 +14,35 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_extract_key_resolution_and_source_fallback() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit_id_a" name="unit_name_a">
-				            <segment>
-				                <source>Source A</source>
-				                <target>Target A</target>
-				            </segment>
-				        </unit>
-				        <unit id="unit_id_b">
-				            <segment>
-				                <source>Source B</source>
-				            </segment>
-				        </unit>
-				        <unit name="unit_name_c">
-				            <segment>
-				                <source>Source C</source>
-				                <target>Target C</target>
-				            </segment>
-				        </unit>
-				        <unit>
-				            <segment>
-				                <source>Source D</source>
-				                <target>Target D</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit_id_a" name="unit_name_a">
+			            <segment>
+			                <source>Source A</source>
+			                <target>Target A</target>
+			            </segment>
+			        </unit>
+			        <unit id="unit_id_b">
+			            <segment>
+			                <source>Source B</source>
+			            </segment>
+			        </unit>
+			        <unit name="unit_name_c">
+			            <segment>
+			                <source>Source C</source>
+			                <target>Target C</target>
+			            </segment>
+			        </unit>
+			        <unit>
+			            <segment>
+			                <source>Source D</source>
+			                <target>Target D</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units)
 			// unit/@name takes precedence over unit/@id.
@@ -59,30 +59,31 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_get_languages_from_src_lang_and_trg_lang_attributes() {
 		XliffLanguageAttr languages = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id">
-				            <segment>
-				                <source>source</source>
-				                <target>target</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getLanguages();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id">
+			            <segment>
+			                <source>source</source>
+			                <target>target</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getLanguages();
 
-		assertThat(languages).isEqualTo(new XliffLanguageAttr(Locale.forLanguageTag("en"), Locale.forLanguageTag("de")));
+		assertThat(languages).isEqualTo(
+			new XliffLanguageAttr(Locale.forLanguageTag("en"), Locale.forLanguageTag("de")));
 	}
 
 	@Test
 	void test_get_languages_null_when_attributes_absent() {
 		XliffLanguageAttr languages = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1"></file>
-				</xliff>
-				""")).getLanguages();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1"></file>
+			</xliff>
+			""")).getLanguages();
 
 		assertThat(languages).isEqualTo(new XliffLanguageAttr(null, null));
 	}
@@ -90,9 +91,9 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_get_languages_null_when_not_an_xliff_document() {
 		XliffLanguageAttr languages = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<translations></translations>
-				""")).getLanguages();
+			<?xml version="1.0" encoding="utf-8"?>
+			<translations></translations>
+			""")).getLanguages();
 
 		assertThat(languages).isEqualTo(new XliffLanguageAttr(null, null));
 	}
@@ -100,48 +101,48 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_value_text_newline_and_cdata() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="element">
-				            <segment>
-				                <source>value</source>
-				                <target>value</target>
-				            </segment>
-				        </unit>
-				        <unit id="element-newline">
-				            <segment>
-				                <source>
-				                    value
-				                </source>
-				                <target>
-				                    value
-				                </target>
-				            </segment>
-				        </unit>
-				        <unit id="element-with-cdata">
-				            <segment>
-				                <source><![CDATA[value]]></source>
-				                <target><![CDATA[value]]></target>
-				            </segment>
-				        </unit>
-				        <unit id="element-with-cdata-newline">
-				            <segment>
-				                <source>
-				                    <![CDATA[
-				                            value
-				                        ]]>
-				                </source>
-				                <target>
-				                    <![CDATA[
-				                            value
-				                        ]]>
-				                </target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""", true)).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="element">
+			            <segment>
+			                <source>value</source>
+			                <target>value</target>
+			            </segment>
+			        </unit>
+			        <unit id="element-newline">
+			            <segment>
+			                <source>
+			                    value
+			                </source>
+			                <target>
+			                    value
+			                </target>
+			            </segment>
+			        </unit>
+			        <unit id="element-with-cdata">
+			            <segment>
+			                <source><![CDATA[value]]></source>
+			                <target><![CDATA[value]]></target>
+			            </segment>
+			        </unit>
+			        <unit id="element-with-cdata-newline">
+			            <segment>
+			                <source>
+			                    <![CDATA[
+			                            value
+			                        ]]>
+			                </source>
+			                <target>
+			                    <![CDATA[
+			                            value
+			                        ]]>
+			                </target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""", true)).getUnits();
 
 		// Surrounding whitespace, newlines and CDATA wrappers are trimmed away.
 		assertThat(units)
@@ -154,18 +155,18 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_attribute_name() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id" name="unit-attr-name">
-				            <segment id="segment-id">
-				                <source>source</source>
-				                <target>target</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id" name="unit-attr-name">
+			            <segment id="segment-id">
+			                <source>source</source>
+			                <target>target</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("unit-attr-name", "target");
 	}
@@ -174,18 +175,18 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_attribute_name_html() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id" name="unit-attr-name">
-				            <segment id="segment-id">
-				                <source><![CDATA[<span>source</span>]]></source>
-				                <target><![CDATA[<span>target</span>]]></target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id" name="unit-attr-name">
+			            <segment id="segment-id">
+			                <source><![CDATA[<span>source</span>]]></source>
+			                <target><![CDATA[<span>target</span>]]></target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("unit-attr-name", "<span>target</span>");
 	}
@@ -193,18 +194,18 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_mrk_content_included_in_value() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id" name="unit-attr-name">
-				            <segment id="segment-id">
-				                <source>Hello world!</source>
-				                <target>Hallo <mrk id="m1" type="term">Welt</mrk>!</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""", true)).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id" name="unit-attr-name">
+			            <segment id="segment-id">
+			                <source>Hello world!</source>
+			                <target>Hallo <mrk id="m1" type="term">Welt</mrk>!</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""", true)).getUnits();
 
 		// <mrk> is not processed, but its text content is part of the value.
 		assertThat(units).containsEntry("unit-attr-name", "Hallo Welt!");
@@ -213,18 +214,18 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_value_trimmed_by_default() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id" name="unit-attr-name">
-				            <segment id="segment-id">
-				                <source>source</source>
-				                <target>   spaced value   </target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""", true)).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id" name="unit-attr-name">
+			            <segment id="segment-id">
+			                <source>source</source>
+			                <target>   spaced value   </target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""", true)).getUnits();
 
 		assertThat(units).containsEntry("unit-attr-name", "spaced value");
 	}
@@ -232,17 +233,17 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_value_preserved_via_source_when_no_target() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id" name="unit-attr-name">
-				            <segment id="segment-id">
-				                <source xml:space="preserve">   spaced value   </source>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""", true)).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id" name="unit-attr-name">
+			            <segment id="segment-id">
+			                <source xml:space="preserve">   spaced value   </source>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""", true)).getUnits();
 
 		// No <target> to fall back to <source>; its own xml:space="preserve" still applies.
 		assertThat(units).containsEntry("unit-attr-name", "   spaced value   ");
@@ -251,18 +252,18 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_value_not_trimmed_when_xml_space_preserve() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id" name="unit-attr-name">
-				            <segment id="segment-id">
-				                <source>source</source>
-				                <target xml:space="preserve">   spaced value   </target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""", true)).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id" name="unit-attr-name">
+			            <segment id="segment-id">
+			                <source>source</source>
+			                <target xml:space="preserve">   spaced value   </target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""", true)).getUnits();
 
 		assertThat(units).containsEntry("unit-attr-name", "   spaced value   ");
 	}
@@ -270,18 +271,18 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_attribute_fallback_id() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id">
-				            <segment id="segment-id">
-				                <source>source</source>
-				                <target>target</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id">
+			            <segment id="segment-id">
+			                <source>source</source>
+			                <target>target</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("unit-id", "target");
 	}
@@ -289,18 +290,18 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_unit_skipped_when_no_unit_id_nor_name() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit>
-				            <segment id="segment-id">
-				                <source>source</source>
-				                <target>target</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""", false)).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit>
+			            <segment id="segment-id">
+			                <source>source</source>
+			                <target>target</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""", false)).getUnits();
 
 		assertThat(units).isEmpty();
 	}
@@ -308,17 +309,17 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_unit_skipped_when_it_has_no_segments_or_ignorables() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="1" name="name-value">
-				            <notes>
-				                <note>Some note</note>
-				            </notes>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="1" name="name-value">
+			            <notes>
+			                <note>Some note</note>
+			            </notes>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).isEmpty();
 	}
@@ -326,21 +327,21 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_non_segment_child_element_ignored() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="1" name="name-value">
-				            <notes>
-				                <note>Some note</note>
-				            </notes>
-				            <segment>
-				                <source>Hello</source>
-				                <target>Hallo</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="1" name="name-value">
+			            <notes>
+			                <note>Some note</note>
+			            </notes>
+			            <segment>
+			                <source>Hello</source>
+			                <target>Hallo</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("name-value", "Hallo");
 	}
@@ -348,25 +349,25 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_multiple_segments() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-						<unit id="1" name="name-value">
-							<segment>
-								<source>Hello</source>
-								<target>Hallo</target>
-							</segment>
-							<ignorable>
-								<source> </source>
-							</ignorable>
-							<segment>
-								<source>World!</source>
-								<target>Welt!</target>
-							</segment>
-						</unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+					<unit id="1" name="name-value">
+						<segment>
+							<source>Hello</source>
+							<target>Hallo</target>
+						</segment>
+						<ignorable>
+							<source> </source>
+						</ignorable>
+						<segment>
+							<source>World!</source>
+							<target>Welt!</target>
+						</segment>
+					</unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("name-value", "Hallo Welt!");
 	}
@@ -374,25 +375,25 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_multiple_segments_by_order() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-						<unit id="1" name="name-value">
-							<segment>
-								<source>World!</source>
-								<target order="2">Welt!</target>
-							</segment>
-							<ignorable>
-								<source> </source>
-							</ignorable>
-							<segment>
-								<source>Hello</source>
-								<target order="1">Hallo</target>
-							</segment>
-						</unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+					<unit id="1" name="name-value">
+						<segment>
+							<source>World!</source>
+							<target order="2">Welt!</target>
+						</segment>
+						<ignorable>
+							<source> </source>
+						</ignorable>
+						<segment>
+							<source>Hello</source>
+							<target order="1">Hallo</target>
+						</segment>
+					</unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("name-value", "Hallo Welt!");
 	}
@@ -400,32 +401,32 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_multiple_segments_by_order_and_without_order_attr() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-						<unit id="1" name="name-value">
-							<segment>
-								<source>I am here.</source>
-								<target>Ich bin hier.</target>
-							</segment>
-							<ignorable>
-								<source> </source>
-							</ignorable>
-							<segment>
-								<source>World!</source>
-								<target order="2">Welt!</target>
-							</segment>
-							<ignorable>
-								<source> </source>
-							</ignorable>
-							<segment>
-								<source>Hello</source>
-								<target order="1">Hallo</target>
-							</segment>
-						</unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+					<unit id="1" name="name-value">
+						<segment>
+							<source>I am here.</source>
+							<target>Ich bin hier.</target>
+						</segment>
+						<ignorable>
+							<source> </source>
+						</ignorable>
+						<segment>
+							<source>World!</source>
+							<target order="2">Welt!</target>
+						</segment>
+						<ignorable>
+							<source> </source>
+						</ignorable>
+						<segment>
+							<source>Hello</source>
+							<target order="1">Hallo</target>
+						</segment>
+					</unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("name-value", "Hallo Welt! Ich bin hier.");
 	}
@@ -433,25 +434,25 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_multiple_segments_by_order_same_order_number() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-						<unit id="1" name="disclaimer">
-							<segment>
-								<source>World!</source>
-								<target order="2">Welt!</target>
-							</segment>
-							<ignorable>
-								<source> </source>
-							</ignorable>
-							<segment>
-								<source>Hello</source>
-								<target order="2">Hallo</target>
-							</segment>
-						</unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+					<unit id="1" name="disclaimer">
+						<segment>
+							<source>World!</source>
+							<target order="2">Welt!</target>
+						</segment>
+						<ignorable>
+							<source> </source>
+						</ignorable>
+						<segment>
+							<source>Hello</source>
+							<target order="2">Hallo</target>
+						</segment>
+					</unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("disclaimer", "Welt! Hallo");
 	}
@@ -459,24 +460,24 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_multiple_segments_by_order_missing_target_element() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-						<unit id="1" name="name-value">
-							<segment>
-								<source>Hello</source>
-								<target order="1">Hallo</target>
-							</segment>
-							<ignorable>
-								<source> </source>
-							</ignorable>
-							<segment>
-								<source>World!</source>
-							</segment>
-						</unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+					<unit id="1" name="name-value">
+						<segment>
+							<source>Hello</source>
+							<target order="1">Hallo</target>
+						</segment>
+						<ignorable>
+							<source> </source>
+						</ignorable>
+						<segment>
+							<source>World!</source>
+						</segment>
+					</unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		// The segment without a <target> has no order attribute to read; it sorts after the explicitly ordered one.
 		assertThat(units).containsEntry("name-value", "Hallo World!");
@@ -485,25 +486,25 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_multiple_segments_by_order_non_numeric_order_value() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-						<unit id="1" name="name-value">
-							<segment>
-								<source>World!</source>
-								<target order="abc">Welt!</target>
-							</segment>
-							<ignorable>
-								<source> </source>
-							</ignorable>
-							<segment>
-								<source>Hello</source>
-								<target order="1">Hallo</target>
-							</segment>
-						</unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+					<unit id="1" name="name-value">
+						<segment>
+							<source>World!</source>
+							<target order="abc">Welt!</target>
+						</segment>
+						<ignorable>
+							<source> </source>
+						</ignorable>
+						<segment>
+							<source>Hello</source>
+							<target order="1">Hallo</target>
+						</segment>
+					</unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		// A non-numeric order value is treated as absent; that segment sorts after the explicitly ordered one.
 		assertThat(units).containsEntry("name-value", "Hallo Welt!");
@@ -512,17 +513,17 @@ class Xliff2xDocumentTest {
 	@Test
 	void test_segment_id_never_used_unit_skipped_when_no_unit_id_nor_name_optional() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id" name="unit-attr-name">
-				            <segment id="segment-id">
-				                <source>source</source>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id" name="unit-attr-name">
+			            <segment id="segment-id">
+			                <source>source</source>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("unit-attr-name", "source");
 	}

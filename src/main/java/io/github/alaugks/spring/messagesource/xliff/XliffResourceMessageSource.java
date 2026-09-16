@@ -83,7 +83,8 @@ public final class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
-		@Nullable private TargetLocaleResolverInterface targetLocaleResolver;
+		@Nullable
+		private TargetLocaleResolverInterface targetLocaleResolver;
 
 		/**
 		 * Creates a new builder with the given default locale and XLIFF file
@@ -177,8 +178,8 @@ public final class XliffResourceMessageSource {
 				.build();
 
 			XliffCatalog xliffCatalog = new XliffCatalog(
-					resourcesLoader.getTranslationFiles(),
-					this.validateSchema
+				resourcesLoader.getTranslationFiles(),
+				this.validateSchema
 			);
 
 			return BaseMessageSourceBuilder

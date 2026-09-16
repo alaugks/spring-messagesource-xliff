@@ -67,8 +67,7 @@ class XliffCatalog {
 	public List<TransUnitInterface> getTransUnits() {
 		try {
 			return this.parseXliffDocuments(this.translationFiles);
-		}
-		catch (ParserConfigurationException | IOException e) {
+		} catch (ParserConfigurationException | IOException e) {
 			throw new FatalError(e);
 		}
 	}
@@ -88,8 +87,7 @@ class XliffCatalog {
 			Element root;
 			try {
 				root = XliffDocumentParser.parseRootElement(factory, Objects.requireNonNull(xliffFile.content()));
-			}
-			catch (SAXException e) {
+			} catch (SAXException e) {
 				throw new XliffMessageSourceRuntimeException(e);
 			}
 
@@ -106,19 +104,19 @@ class XliffCatalog {
 				case "1.2" -> new Xliff12Document(root).getUnits();
 				case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root).getUnits();
 				default -> throw new XliffMessageSourceVersionSupportException(
-						String.format(
-								"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",
-								version
-						)
+					String.format(
+						"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",
+						version
+					)
 				);
 			};
 
 			units.forEach((code, value) -> transUnits.add(
-					new TransUnit(
-							xliffFile.locale(),
-							code,
-							value
-					)
+				new TransUnit(
+					xliffFile.locale(),
+					code,
+					value
+				)
 			));
 		}
 

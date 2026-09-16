@@ -26,12 +26,12 @@ class XliffCatalogTest {
 	@Test
 	void test_get_trans_units() {
 		ResourceLoaderBuilder ressourceLoader = ResourceLoaderBuilder
-				.builder(
-						Locale.forLanguageTag("en"),
-						List.of("translations/messages.xliff", "translations/messages_de.xliff")
-				)
-				.fileExtensions(List.of("xlf", "xliff"))
-				.build();
+			.builder(
+				Locale.forLanguageTag("en"),
+				List.of("translations/messages.xliff", "translations/messages_de.xliff")
+			)
+			.fileExtensions(List.of("xlf", "xliff"))
+			.build();
 
 		XliffCatalog xliffCatalog = new XliffCatalog(ressourceLoader.getTranslationFiles(), true);
 		List<TransUnitInterface> transUnits = xliffCatalog.getTransUnits();
@@ -43,8 +43,8 @@ class XliffCatalogTest {
 	@Test
 	void test_parse_error() {
 		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-				List.of("fixtures/parse_error.xliff"),
-				Locale.forLanguageTag("en")
+			List.of("fixtures/parse_error.xliff"),
+			Locale.forLanguageTag("en")
 		);
 
 		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(XliffMessageSourceSAXParseException.class);
@@ -55,13 +55,13 @@ class XliffCatalogTest {
 	void test_no_xliff_document() {
 
 		ResourceLoaderBuilder ressourceLoader = ResourceLoaderBuilder
-				.builder(Locale.forLanguageTag("en"), List.of("fixtures/no-xliff.xml"))
-				.fileExtensions(List.of("xml"))
-				.build();
+			.builder(Locale.forLanguageTag("en"), List.of("fixtures/no-xliff.xml"))
+			.fileExtensions(List.of("xml"))
+			.build();
 
 		List<TransUnitInterface> transUnits = new XliffCatalog(
-				ressourceLoader.getTranslationFiles(),
-				true
+			ressourceLoader.getTranslationFiles(),
+			true
 		).getTransUnits();
 
 		assertThat(transUnits).isEqualTo(List.of());
@@ -70,26 +70,26 @@ class XliffCatalogTest {
 	@Test
 	void test_version_not_supported() {
 		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-				List.of("fixtures/xliff10.xliff"),
-				Locale.forLanguageTag("en"),
-				false
+			List.of("fixtures/xliff10.xliff"),
+			Locale.forLanguageTag("en"),
+			false
 		);
 
 		assertThatThrownBy(
-				xliffCatalog::getTransUnits
+			xliffCatalog::getTransUnits
 		)
-		.isInstanceOf(XliffMessageSourceVersionSupportException.class)
-		.hasMessage(
+			.isInstanceOf(XliffMessageSourceVersionSupportException.class)
+			.hasMessage(
 				"XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2"
-		);
+			);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provider_supported_versions")
 	void test_version_supported(String ressourcePath, String expected) {
 		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-				List.of(ressourcePath),
-				Locale.forLanguageTag("en")
+			List.of(ressourcePath),
+			Locale.forLanguageTag("en")
 		);
 
 		assertThat(TestHelper.findInTransUnits(xliffCatalog.getTransUnits(), "en", "code-1")).isEqualTo(expected);
@@ -97,17 +97,17 @@ class XliffCatalogTest {
 
 	static Stream<Arguments> provider_supported_versions() {
 		return Stream.of(
-				Arguments.of("fixtures/xliff12.xliff", "Postcode (Xliff Version 1.2)"),
-				Arguments.of("fixtures/xliff20.xliff", "Postcode (Xliff Version 2.0)"),
-				Arguments.of("fixtures/xliff21.xliff", "Postcode (Xliff Version 2.1)")
+			Arguments.of("fixtures/xliff12.xliff", "Postcode (Xliff Version 1.2)"),
+			Arguments.of("fixtures/xliff20.xliff", "Postcode (Xliff Version 2.0)"),
+			Arguments.of("fixtures/xliff21.xliff", "Postcode (Xliff Version 2.1)")
 		);
 	}
 
 	@Test
 	void test_schema_validation_invalid_throws() {
 		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-				List.of("fixtures/schemainvalid.xliff"),
-				Locale.forLanguageTag("en")
+			List.of("fixtures/schemainvalid.xliff"),
+			Locale.forLanguageTag("en")
 		);
 
 		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(XliffMessageSourceValidationException.class);
@@ -116,11 +116,12 @@ class XliffCatalogTest {
 	@Test
 	void test_schema_validation_disabled_skips_validation() {
 		ResourceLoaderBuilder ressourceLoader = ResourceLoaderBuilder
-				.builder(Locale.forLanguageTag("en"), List.of("fixtures/schemainvalid.xliff"))
-				.fileExtensions(List.of("xlf", "xliff"))
-				.build();
+			.builder(Locale.forLanguageTag("en"), List.of("fixtures/schemainvalid.xliff"))
+			.fileExtensions(List.of("xlf", "xliff"))
+			.build();
 
-		List<TransUnitInterface> transUnits = new XliffCatalog(ressourceLoader.getTranslationFiles(), false).getTransUnits();
+		List<TransUnitInterface> transUnits = new XliffCatalog(ressourceLoader.getTranslationFiles(),
+			false).getTransUnits();
 
 		assertThat(TestHelper.findInTransUnits(transUnits, "en", "novalid")).isEqualTo("Target");
 	}
@@ -129,8 +130,8 @@ class XliffCatalogTest {
 	@MethodSource("provider_standard_compliant_fixtures")
 	void test_fixtures_are_schema_valid(String resourcePath) {
 		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-				List.of(resourcePath),
-				Locale.forLanguageTag("en")
+			List.of(resourcePath),
+			Locale.forLanguageTag("en")
 		);
 
 		assertThatCode(xliffCatalog::getTransUnits).doesNotThrowAnyException();
@@ -138,19 +139,19 @@ class XliffCatalogTest {
 
 	static Stream<Arguments> provider_standard_compliant_fixtures() {
 		return Stream.of(
-				Arguments.of("fixtures/xliff12.xliff"),
-				Arguments.of("fixtures/xliff20.xliff"),
-				Arguments.of("fixtures/xliff21.xliff"),
-				Arguments.of("translations/messages.xliff"),
-				Arguments.of("translations/messages_de.xliff"),
-				Arguments.of("translations/messages_en_US.xliff"),
-				Arguments.of("translations/payment.en.xlf"),
-				Arguments.of("translations/payment.de.xlf"),
-				Arguments.of("translations_en/messages.xliff"),
-				Arguments.of("translations_en/payment.xlf"),
-				Arguments.of("translations_de/messages_de.xliff"),
-				Arguments.of("translations_de/payment_de.xlf"),
-				Arguments.of("translations_en_US/messages_en_US.xliff")
+			Arguments.of("fixtures/xliff12.xliff"),
+			Arguments.of("fixtures/xliff20.xliff"),
+			Arguments.of("fixtures/xliff21.xliff"),
+			Arguments.of("translations/messages.xliff"),
+			Arguments.of("translations/messages_de.xliff"),
+			Arguments.of("translations/messages_en_US.xliff"),
+			Arguments.of("translations/payment.en.xlf"),
+			Arguments.of("translations/payment.de.xlf"),
+			Arguments.of("translations_en/messages.xliff"),
+			Arguments.of("translations_en/payment.xlf"),
+			Arguments.of("translations_de/messages_de.xliff"),
+			Arguments.of("translations_de/payment_de.xlf"),
+			Arguments.of("translations_en_US/messages_en_US.xliff")
 		);
 	}
 

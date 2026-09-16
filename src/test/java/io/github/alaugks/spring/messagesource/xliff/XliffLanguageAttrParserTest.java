@@ -23,18 +23,18 @@ class XliffLanguageAttrParserTest {
 
 	private static Resource xliff20Resource(String trgLangAttribute) {
 		return resource("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.0" srcLang="en"%s xmlns="urn:oasis:names:tc:xliff:document:2.0">
-				    <file id="f1">
-				        <unit id="unit-id">
-				            <segment>
-				                <source>source</source>
-				                <target>target</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""".formatted(trgLangAttribute));
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en"%s xmlns="urn:oasis:names:tc:xliff:document:2.0">
+			    <file id="f1">
+			        <unit id="unit-id">
+			            <segment>
+			                <source>source</source>
+			                <target>target</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""".formatted(trgLangAttribute));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ class XliffLanguageAttrParserTest {
 	@Test
 	void test_parse_extracts_region_from_language_tag() {
 		TransFileTargetLocaleInterface filename = new XliffLanguageAttrParser().resolve(
-				xliff20Resource(" trgLang=\"de-AT\"")
+			xliff20Resource(" trgLang=\"de-AT\"")
 		);
 
 		assertThat(filename).isEqualTo(new TransFileTargetLocale("de", "AT"));
@@ -80,10 +80,10 @@ class XliffLanguageAttrParserTest {
 		XliffLanguageAttrParser r = new XliffLanguageAttrParser();
 
 		assertThatThrownBy(() -> r.resolve(resource))
-				.isInstanceOf(XliffMessageSourceVersionSupportException.class)
-				.hasMessage(
-						"XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2"
-				);
+			.isInstanceOf(XliffMessageSourceVersionSupportException.class)
+			.hasMessage(
+				"XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2"
+			);
 	}
 
 	@Test
@@ -93,7 +93,7 @@ class XliffLanguageAttrParserTest {
 		XliffLanguageAttrParser r = new XliffLanguageAttrParser();
 
 		assertThatThrownBy(() -> r.resolve(resource))
-				.isInstanceOf(XliffMessageSourceVersionSupportException.class)
-				.hasMessage("Target language not defined in XLIFF file: 2.0");
+			.isInstanceOf(XliffMessageSourceVersionSupportException.class)
+			.hasMessage("Target language not defined in XLIFF file: 2.0");
 	}
 }

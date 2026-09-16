@@ -39,7 +39,8 @@ class ThymeleafPgsIntegrationTest {
 	@ParameterizedTest
 	@MethodSource("provider_plural_arguments")
 	void test_plural_resolves_in_thymeleaf(int count, Locale locale, String expected) {
-		String template = "<p th:text=\"#{plural.file_deleted(${ {'count' : %s} })}\">delete text value</p>".formatted(count);
+		String template = "<p th:text=\"#{plural.file_deleted(${ {'count' : %s} })}\">delete text value</p>".formatted(
+			count);
 		assertThat(this.process(template, locale)).isEqualTo("<p>%s</p>".formatted(expected));
 	}
 
@@ -57,7 +58,8 @@ class ThymeleafPgsIntegrationTest {
 	@ParameterizedTest
 	@MethodSource("provider_gender_arguments")
 	void test_gender_resolves_in_thymeleaf(String gender, Locale locale, String expected) {
-		String template = "<p th:text=\"#{plural.greeting(${ {'recipient_gender' : '%s'} })}\">gender value</p>".formatted(gender);
+		String template = "<p th:text=\"#{plural.greeting(${ {'recipient_gender' : '%s'} })}\">gender value</p>".formatted(
+			gender);
 		assertThat(this.process(template, locale)).isEqualTo("<p>%s</p>".formatted(expected));
 	}
 

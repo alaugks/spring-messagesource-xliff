@@ -86,8 +86,8 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			return new XliffLanguageAttr(null, null);
 		}
 		return new XliffLanguageAttr(
-				toLocale(this.root.getAttribute("srcLang")),
-				toLocale(this.root.getAttribute("trgLang"))
+			toLocale(this.root.getAttribute("srcLang")),
+			toLocale(this.root.getAttribute("trgLang"))
 		);
 	}
 
@@ -164,8 +164,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 				Element segment = segments.next();
 				Element target = firstChildElement(segment, TARGET);
 				value.append(this.rawValue(target != null ? target : firstChildElement(segment, SOURCE)));
-			}
-			else {
+			} else {
 				value.append(this.rawValue(firstChildElement(element, SOURCE)));
 			}
 		}
@@ -179,8 +178,8 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 */
 	private List<Element> orderedSegments(List<Element> elements) {
 		List<Element> segments = elements.stream()
-				.filter(this::isSegment)
-				.toList();
+			.filter(this::isSegment)
+			.toList();
 
 		if (!this.hasTargetOrder(segments)) {
 			return segments;
@@ -218,8 +217,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			if (!order.isEmpty()) {
 				try {
 					return Integer.parseInt(order);
-				}
-				catch (NumberFormatException e) {
+				} catch (NumberFormatException e) {
 					// Not a number; sort after the explicitly ordered segments.
 				}
 			}

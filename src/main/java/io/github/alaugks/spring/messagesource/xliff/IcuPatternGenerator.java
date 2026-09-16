@@ -149,8 +149,7 @@ class IcuPatternGenerator {
 			if (!disp.isEmpty()) {
 				out.append('{').append(disp).append('}');
 			}
-		}
-		else {
+		} else {
 			this.appendText(element, out);
 		}
 	}
@@ -164,12 +163,10 @@ class IcuPatternGenerator {
 			if (c == '\'') {
 				quoted = closeQuote(out, quoted);
 				out.append("''");
-			}
-			else if (c == '{' || c == '}' || c == '#' || c == '|') {
+			} else if (c == '{' || c == '}' || c == '#' || c == '|') {
 				quoted = openQuote(out, quoted);
 				out.append(c);
-			}
-			else {
+			} else {
 				quoted = closeQuote(out, quoted);
 				out.append(c);
 			}
@@ -196,5 +193,6 @@ class IcuPatternGenerator {
 
 	/** A PGS switch resolved to its ICU type and the ICU argument variable name. */
 	private record PgsSwitch(String icuType, String variable) {
+
 	}
 }

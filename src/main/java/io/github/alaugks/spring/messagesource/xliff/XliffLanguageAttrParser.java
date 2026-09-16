@@ -27,8 +27,7 @@ class XliffLanguageAttrParser implements TargetLocaleResolverInterface {
 				XliffDocumentParser.newDocumentBuilderFactory(),
 				resource.getContentAsByteArray()
 			);
-		}
-		catch (SAXException | IOException | ParserConfigurationException e) {
+		} catch (SAXException | IOException | ParserConfigurationException e) {
 			throw new XliffMessageSourceRuntimeException(e);
 		}
 

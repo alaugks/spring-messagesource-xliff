@@ -78,8 +78,8 @@ class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
 		}
 
 		return new XliffLanguageAttr(
-				toLocale(file.getAttribute("source-language")),
-				toLocale(file.getAttribute("target-language"))
+			toLocale(file.getAttribute("source-language")),
+			toLocale(file.getAttribute("target-language"))
 		);
 	}
 
@@ -88,8 +88,8 @@ class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
 	 */
 	private void addTransUnit(Element transUnit, Map<String, String> transUnits) {
 		String key = this.firstNonEmpty(
-				transUnit.getAttribute("resname"),
-				transUnit.getAttribute("id")
+			transUnit.getAttribute("resname"),
+			transUnit.getAttribute("id")
 		);
 		if (key.isEmpty()) {
 			return;
@@ -97,8 +97,8 @@ class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
 
 		Element target = firstChildElement(transUnit, TARGET);
 		Element valueElement = target != null
-				? target
-				: firstChildElement(transUnit, SOURCE);
+			? target
+			: firstChildElement(transUnit, SOURCE);
 		transUnits.put(key, this.value(valueElement));
 	}
 
