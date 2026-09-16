@@ -6,7 +6,11 @@ package io.github.alaugks.spring.messagesource.xliff;
 import com.ibm.icu.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,28 +22,28 @@ class IcuPatternGeneratorTest {
 		String icuPattern = "{count, plural, =0 {Sie haben keine Dateien gelöscht.} =1 {Sie haben eine Datei gelöscht.} other {Sie haben {count} Dateien gelöscht.}}";
 
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="file_deleted" pgs:switch="plural:count">
-				            <segment pgs:case="0">
-				                <source>You deleted no plural.</source>
-				                <target>Sie haben keine Dateien gelöscht.</target>
-				            </segment>
-				            <segment pgs:case="1">
-				                <source>You deleted one file.</source>
-				                <target>Sie haben eine Datei gelöscht.</target>
-				            </segment>
-				            <segment pgs:case="other">
-				                <source>You deleted <ph id="1" disp="count"/> plural.</source>
-				                <target>Sie haben <ph id="1" disp="count"/> Dateien gelöscht.</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="file_deleted" pgs:switch="plural:count">
+			            <segment pgs:case="0">
+			                <source>You deleted no plural.</source>
+			                <target>Sie haben keine Dateien gelöscht.</target>
+			            </segment>
+			            <segment pgs:case="1">
+			                <source>You deleted one file.</source>
+			                <target>Sie haben eine Datei gelöscht.</target>
+			            </segment>
+			            <segment pgs:case="other">
+			                <source>You deleted <ph id="1" disp="count"/> plural.</source>
+			                <target>Sie haben <ph id="1" disp="count"/> Dateien gelöscht.</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("file_deleted", icuPattern);
 
@@ -53,34 +57,36 @@ class IcuPatternGeneratorTest {
 		String icuPattern = "{count, plural, =0 {Sie haben keine Dateien gelöscht.} =1 {Sie haben eine Datei in der Kategorie {category} gelöscht.} other {Sie haben {count} Dateien in der Kategorie {category} gelöscht.}}";
 
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-						<unit id="tu1" name="multiple_placeholder" pgs:switch="plural:count">
-							<segment pgs:case="0">
-								<source>You deleted no files.</source>
-								<target>Sie haben keine Dateien gelöscht.</target>
-							</segment>
-							<segment pgs:case="1">
-								<source>You deleted one file.</source>
-								<target>Sie haben eine Datei in der Kategorie <ph id="2" disp="category"/> gelöscht.</target>
-							</segment>
-							<segment pgs:case="other">
-								<source>You deleted <ph id="1" disp="count"/> files in category <ph id="2" disp="category"/>.</source>
-								<target>Sie haben <ph id="1" disp="count"/> Dateien in der Kategorie <ph id="2" disp="category"/> gelöscht.</target>
-							</segment>
-						</unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+					<unit id="tu1" name="multiple_placeholder" pgs:switch="plural:count">
+						<segment pgs:case="0">
+							<source>You deleted no files.</source>
+							<target>Sie haben keine Dateien gelöscht.</target>
+						</segment>
+						<segment pgs:case="1">
+							<source>You deleted one file.</source>
+							<target>Sie haben eine Datei in der Kategorie <ph id="2" disp="category"/> gelöscht.</target>
+						</segment>
+						<segment pgs:case="other">
+							<source>You deleted <ph id="1" disp="count"/> files in category <ph id="2" disp="category"/>.</source>
+							<target>Sie haben <ph id="1" disp="count"/> Dateien in der Kategorie <ph id="2" disp="category"/> gelöscht.</target>
+						</segment>
+					</unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("multiple_placeholder", icuPattern);
 
 		MessageFormat messageFormat = new MessageFormat(icuPattern, Locale.forLanguageTag("de"));
-		assertThat(messageFormat.format(Map.of("count", 1000, "category", "FooBar"))).isEqualTo("Sie haben 1.000 Dateien in der Kategorie FooBar gelöscht.");
-		assertThat(messageFormat.format(Map.of("count", 1, "category", "FooBar"))).isEqualTo("Sie haben eine Datei in der Kategorie FooBar gelöscht.");
+		assertThat(messageFormat.format(Map.of("count", 1000, "category", "FooBar"))).isEqualTo(
+			"Sie haben 1.000 Dateien in der Kategorie FooBar gelöscht.");
+		assertThat(messageFormat.format(Map.of("count", 1, "category", "FooBar"))).isEqualTo(
+			"Sie haben eine Datei in der Kategorie FooBar gelöscht.");
 	}
 
 	// Arabic (ar) is one of the languages that actually use all six CLDR plural
@@ -91,22 +97,22 @@ class IcuPatternGeneratorTest {
 		String icuPattern = "{count, plural, zero {zero} one {one} two {two} few {few} many {many} other {other}}";
 
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="ar"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="count" pgs:switch="plural:count">
-				            <segment pgs:case="zero"><target>zero</target></segment>
-				            <segment pgs:case="one"><target>one</target></segment>
-				            <segment pgs:case="two"><target>two</target></segment>
-				            <segment pgs:case="few"><target>few</target></segment>
-				            <segment pgs:case="many"><target>many</target></segment>
-				            <segment pgs:case="other"><target>other</target></segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="ar"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="zero"><target>zero</target></segment>
+			            <segment pgs:case="one"><target>one</target></segment>
+			            <segment pgs:case="two"><target>two</target></segment>
+			            <segment pgs:case="few"><target>few</target></segment>
+			            <segment pgs:case="many"><target>many</target></segment>
+			            <segment pgs:case="other"><target>other</target></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("count", icuPattern);
 
@@ -135,20 +141,20 @@ class IcuPatternGeneratorTest {
 		String icuPattern = "{count, plural, =0 {null} =2 {zwei} =5 {fünf} other {viele}}";
 
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="count" pgs:switch="plural:count">
-				            <segment pgs:case="0"><target>null</target></segment>
-				            <segment pgs:case="2"><target>zwei</target></segment>
-				            <segment pgs:case="5"><target>fünf</target></segment>
-				            <segment pgs:case="other"><target>viele</target></segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="0"><target>null</target></segment>
+			            <segment pgs:case="2"><target>zwei</target></segment>
+			            <segment pgs:case="5"><target>fünf</target></segment>
+			            <segment pgs:case="other"><target>viele</target></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("count", icuPattern);
 
@@ -160,22 +166,22 @@ class IcuPatternGeneratorTest {
 	@Test
 	void test_segment_without_case_defaults_to_other() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="count" pgs:switch="plural:count">
-				            <segment pgs:case="one">
-				            	<target>eine</target>
-				            </segment>
-				            <segment>
-				            	<target>andere</target>
-							</segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="one">
+			            	<target>eine</target>
+			            </segment>
+			            <segment>
+			            	<target>andere</target>
+						</segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("count", "{count, plural, one {eine} other {andere}}");
 	}
@@ -185,29 +191,29 @@ class IcuPatternGeneratorTest {
 
 		String icuPattern = "{recipient_gender, select, feminine {Wie geht es ihr?} masculine {Wie geht es ihm?} other {Wie geht es ihnen?}}";
 
-        Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="greeting" pgs:switch="gender:recipient_gender">
-				            <segment pgs:case="feminine">
-				                <source>How is she?</source>
-				                <target>Wie geht es ihr?</target>
-				            </segment>
-				            <segment pgs:case="masculine">
-				                <source>How is he?</source>
-				                <target>Wie geht es ihm?</target>
-				            </segment>
-				            <segment pgs:case="other">
-				                <source>How are they?</source>
-				                <target>Wie geht es ihnen?</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="greeting" pgs:switch="gender:recipient_gender">
+			            <segment pgs:case="feminine">
+			                <source>How is she?</source>
+			                <target>Wie geht es ihr?</target>
+			            </segment>
+			            <segment pgs:case="masculine">
+			                <source>How is he?</source>
+			                <target>Wie geht es ihm?</target>
+			            </segment>
+			            <segment pgs:case="other">
+			                <source>How are they?</source>
+			                <target>Wie geht es ihnen?</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("greeting", icuPattern);
 
@@ -222,27 +228,184 @@ class IcuPatternGeneratorTest {
 		String icuPattern = "{count, plural, =30 {'#' 30% '{'Rabatt'''}'} other {'#' 50% '{'Rabatt'''}'}}";
 
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="discount" pgs:switch="plural:count">
-							<segment pgs:case="30">
-				            	<target># 30% {Rabatt'}</target>
-				            </segment>
-				            <segment pgs:case="other">
-				            	<target># 50% {Rabatt'}</target>
-				            </segment>
-				        </unit>
-				    </file>
-				</xliff>
-				""")).getUnits();
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="discount" pgs:switch="plural:count">
+						<segment pgs:case="30">
+			            	<target># 30% {Rabatt'}</target>
+			            </segment>
+			            <segment pgs:case="other">
+			            	<target># 50% {Rabatt'}</target>
+			            </segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).containsEntry("discount", icuPattern);
 
 		assertThat(
 			new MessageFormat(icuPattern, Locale.forLanguageTag("ar")).format(Map.of("count", 30))
 		).isEqualTo("# 30% {Rabatt'}");
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_no_unit_generated")
+	void test_yields_no_unit(String xml) {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument(xml)).getUnits();
+
+		assertThat(units).doesNotContainKey("count");
+	}
+
+	static Stream<Arguments> provider_no_unit_generated() {
+		return Stream.of(
+			Arguments.of("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="invalid">
+				            <segment pgs:case="0"><target>null</target></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				"""),
+			Arguments.of("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:">
+				            <segment pgs:case="0"><target>null</target></segment>
+				        </unit>
+				    </file>
+				</xliff>
+				"""),
+			Arguments.of("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.2" srcLang="en" trgLang="de"
+				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+				    <file id="f1">
+				        <unit id="tu1" name="count" pgs:switch="plural:count">
+				            <notes><note>no segments here</note></notes>
+				        </unit>
+				    </file>
+				</xliff>
+				""")
+		);
+	}
+
+	@Test
+	void test_case_falls_back_to_source_when_target_is_missing() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="other"><source>fallback</source></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {fallback}}");
+	}
+
+	@Test
+	void test_case_is_empty_when_source_and_target_are_missing() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="0"/>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, =0 {}}");
+	}
+
+	@Test
+	void test_comment_inside_target_contributes_nothing() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="other"><target>Text<!-- comment -->More</target></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {TextMore}}");
+	}
+
+	@Test
+	void test_non_ph_inline_element_recurses_into_its_text() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="other"><target>Hello <pc id="1">World</pc>!</target></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {Hello World!}}");
+	}
+
+	@Test
+	void test_placeholder_without_disp_attribute_contributes_nothing() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="other"><target>Before<ph id="1"/>After</target></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {BeforeAfter}}");
+	}
+
+	@Test
+	void test_escapes_adjacent_metacharacters_including_pipe() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <segment pgs:case="other"><target>Special {}| chars</target></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
+
+		assertThat(units).containsEntry("count", "{count, plural, other {Special '{}|' chars}}");
 	}
 }

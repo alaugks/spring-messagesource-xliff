@@ -3,33 +3,32 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.catalog.AbstractCatalog;
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnit;
-import io.github.alaugks.spring.messagesource.catalog.records.TransUnitInterface;
-import io.github.alaugks.spring.messagesource.catalog.records.TranslationFileInterface;
-import io.github.alaugks.spring.messagesource.xliff.exception.SaxErrorHandler;
+import io.github.alaugks.spring.messagesource.base.records.TransFileInterface;
+import io.github.alaugks.spring.messagesource.base.records.TransUnit;
+import io.github.alaugks.spring.messagesource.base.records.TransUnitInterface;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceSAXParseException.FatalError;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * {@link AbstractCatalog} implementation that reads translation units from files.
+ * The {@code XliffCatalog} class provides support for managing and parsing
+ * a collection of XLIFF translation files. It extracts translation units
+ * while optionally validating files against their associated XLIFF schemas.
+ * The process is optimized for lazy evaluation, parsing the documents
+ * and extracting their units only when requested.
  */
-public class XliffCatalog extends AbstractCatalog {
+class XliffCatalog {
 
-	private final List<TranslationFileInterface> translationFiles;
+	private final List<TransFileInterface> translationFiles;
 
 	private final boolean validateSchema;
 
@@ -43,7 +42,7 @@ public class XliffCatalog extends AbstractCatalog {
 	 * @param validateSchema   whether each document is validated against its
 	 *                         OASIS XSD schema before its units are extracted.
 	 */
-	public XliffCatalog(List<TranslationFileInterface> translationFiles, boolean validateSchema) {
+	public XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema) {
 		this.translationFiles = translationFiles;
 		this.validateSchema = validateSchema;
 	}
@@ -65,12 +64,10 @@ public class XliffCatalog extends AbstractCatalog {
 	 *                                                   unsupported XLIFF
 	 *                                                   version.
 	 */
-	@Override
 	public List<TransUnitInterface> getTransUnits() {
 		try {
 			return this.parseXliffDocuments(this.translationFiles);
-		}
-		catch (ParserConfigurationException | IOException e) {
+		} catch (ParserConfigurationException | IOException e) {
 			throw new FatalError(e);
 		}
 	}
@@ -79,28 +76,20 @@ public class XliffCatalog extends AbstractCatalog {
 	 * Parses the XLIFF files into a flat list of translation units, using a
 	 * namespace-aware, XXE-hardened parser.
 	 */
-	private List<TransUnitInterface> parseXliffDocuments(List<TranslationFileInterface> xliffFiles)
+	private List<TransUnitInterface> parseXliffDocuments(List<TransFileInterface> xliffFiles)
 		throws ParserConfigurationException, IOException {
 
 		List<TransUnitInterface> transUnits = new ArrayList<>();
 
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setNamespaceAware(true);
-		factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-		factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		DocumentBuilderFactory factory = XliffDocumentParser.newDocumentBuilderFactory();
 
-		for (TranslationFileInterface xliffFile : xliffFiles) {
-			DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-			documentBuilder.setErrorHandler(new SaxErrorHandler());
-			Document document;
+		for (TransFileInterface xliffFile : xliffFiles) {
+			Element root;
 			try {
-				document = documentBuilder.parse(new ByteArrayInputStream(xliffFile.content()));
-			}
-			catch (SAXException e) {
+				root = XliffDocumentParser.parseRootElement(factory, Objects.requireNonNull(xliffFile.content()));
+			} catch (SAXException e) {
 				throw new XliffMessageSourceRuntimeException(e);
 			}
-
-			Element root = document.getDocumentElement();
 
 			String version = XliffDocument.readVersion(root);
 			if (version == null) {
@@ -108,27 +97,26 @@ public class XliffCatalog extends AbstractCatalog {
 			}
 
 			if (this.validateSchema) {
-				this.schemaValidator.validate(document, version);
+				this.schemaValidator.validate(root.getOwnerDocument(), version);
 			}
 
 			Map<String, String> units = switch (version) {
 				case "1.2" -> new Xliff12Document(root).getUnits();
 				case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root).getUnits();
 				default -> throw new XliffMessageSourceVersionSupportException(
-						String.format(
-								"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",
-								version
-						)
+					String.format(
+						"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",
+						version
+					)
 				);
 			};
 
 			units.forEach((code, value) -> transUnits.add(
-					new TransUnit(
-							xliffFile.locale(),
-							code,
-							value,
-							xliffFile.domain()
-					)
+				new TransUnit(
+					xliffFile.locale(),
+					code,
+					value
+				)
 			));
 		}
 

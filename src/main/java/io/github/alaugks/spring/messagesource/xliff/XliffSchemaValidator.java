@@ -46,7 +46,7 @@ import org.xml.sax.SAXParseException;
  * unmodified OASIS schema; the original document keeps its PGS attributes for
  * the reader.
  */
-final class XliffSchemaValidator {
+class XliffSchemaValidator {
 
 	private static final String SCHEMA_PATH = "schema/";
 
@@ -55,10 +55,10 @@ final class XliffSchemaValidator {
 	private static final String PGS_ATTRIBUTES_XPATH = "//@*[namespace-uri()='" + PGS_NS + "']";
 
 	private static final Map<String, List<String>> SCHEMA_BY_VERSION = Map.of(
-			"1.2", List.of("xliff-core-1.2-transitional.xsd"),
-			"2.0", List.of("xliff-core-2.0.xsd"),
-			"2.1", List.of("xliff-core-2.0.xsd"),
-			"2.2", List.of("metadata.xsd", "xliff_core_2.2.xsd")
+		"1.2", List.of("xliff-core-1.2-transitional.xsd"),
+		"2.0", List.of("xliff-core-2.0.xsd"),
+		"2.1", List.of("xliff-core-2.0.xsd"),
+		"2.2", List.of("metadata.xsd", "xliff_core_2.2.xsd")
 	);
 
 	private final Map<String, Schema> schemaCache = new ConcurrentHashMap<>();
@@ -76,7 +76,7 @@ final class XliffSchemaValidator {
 		List<String> schemaResources = SCHEMA_BY_VERSION.get(version);
 		if (schemaResources == null) {
 			throw new XliffMessageSourceValidationException(
-					String.format("No schema available for version \"%s\"", version)
+				String.format("No schema available for version \"%s\"", version)
 			);
 		}
 
@@ -89,14 +89,13 @@ final class XliffSchemaValidator {
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			validator.validate(new DOMSource(withoutPgsAttributes(document)));
-		}
-		catch (SAXException | IOException e) {
+		} catch (SAXException | IOException e) {
 			throw new XliffMessageSourceValidationException(e.getMessage());
 		}
 
 		if (!errorHandler.errors.isEmpty()) {
 			throw new XliffMessageSourceValidationException(
-					String.join("", errorHandler.errors)
+				String.join("", errorHandler.errors)
 			);
 		}
 	}
@@ -110,14 +109,13 @@ final class XliffSchemaValidator {
 		Document copy = (Document) document.cloneNode(true);
 		try {
 			NodeList pgsAttributes = (NodeList) XPathFactory.newInstance()
-					.newXPath()
-					.evaluate(PGS_ATTRIBUTES_XPATH, copy, XPathConstants.NODESET);
+				.newXPath()
+				.evaluate(PGS_ATTRIBUTES_XPATH, copy, XPathConstants.NODESET);
 			for (int i = 0; i < pgsAttributes.getLength(); i++) {
 				Attr attribute = (Attr) pgsAttributes.item(i);
 				attribute.getOwnerElement().removeAttributeNode(attribute);
 			}
-		}
-		catch (XPathExpressionException e) {
+		} catch (XPathExpressionException e) {
 			throw new XliffMessageSourceValidationException(e.getMessage());
 		}
 		return copy;
@@ -139,10 +137,9 @@ final class XliffSchemaValidator {
 				sources.add(readSchema(schemaResource));
 			}
 			return factory.newSchema(sources.toArray(new Source[0]));
-		}
-		catch (SAXException e) {
+		} catch (SAXException e) {
 			throw new XliffMessageSourceValidationException(
-					String.format("Unable to load XLIFF schema %s: %s", schemaResources, e.getMessage())
+				String.format("Unable to load XLIFF schema %s: %s", schemaResources, e.getMessage())
 			);
 		}
 	}
@@ -151,10 +148,9 @@ final class XliffSchemaValidator {
 	private static Source readSchema(String name) {
 		try (InputStream in = openSchema(name)) {
 			return new StreamSource(new ByteArrayInputStream(in.readAllBytes()));
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new XliffMessageSourceValidationException(
-					String.format("Unable to read bundled schema \"%s\": %s", name, e.getMessage())
+				String.format("Unable to read bundled schema \"%s\": %s", name, e.getMessage())
 			);
 		}
 	}
@@ -166,7 +162,7 @@ final class XliffSchemaValidator {
 		InputStream in = XliffSchemaValidator.class.getResourceAsStream(SCHEMA_PATH + name);
 		if (in == null) {
 			throw new XliffMessageSourceValidationException(
-					String.format("Bundled schema resource \"%s%s\" not found.", SCHEMA_PATH, name)
+				String.format("Bundled schema resource \"%s%s\" not found.", SCHEMA_PATH, name)
 			);
 		}
 		return in;
@@ -216,11 +212,11 @@ final class XliffSchemaValidator {
 		 */
 		private static String format(String level, SAXParseException exception) {
 			return String.format(
-					"[%s] %s (line %d, column %d)%n",
-					level,
-					exception.getMessage(),
-					exception.getLineNumber(),
-					exception.getColumnNumber()
+				"[%s] %s (line %d, column %d)%n",
+				level,
+				exception.getMessage(),
+				exception.getLineNumber(),
+				exception.getColumnNumber()
 			);
 		}
 	}

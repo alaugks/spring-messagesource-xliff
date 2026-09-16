@@ -3,8 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.catalog.CatalogMessageSourceBuilder;
-import io.github.alaugks.spring.messagesource.catalog.resources.LocationPattern;
+import io.github.alaugks.spring.messagesource.base.BaseMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.List;
 import java.util.Locale;
@@ -24,9 +23,33 @@ class XliffResourceMessageSourceTest {
 	@ParameterizedTest
 	@MethodSource("provider_message")
 	void test_get_message(String code, Object[] args, Locale locale, String expected) {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.validateSchema(true)
+			.build();
+
+		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_message")
+	void test_get_message_useXliffLanguageAttribute(String code, Object[] args, Locale locale, String expected) {
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), "translations_attr/*")
+			.validateSchema(true)
+			.useXliffLanguageAttribute()
+			.build();
+
+		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_message")
+	void test_get_message_targetLocaleResolver(String code, Object[] args, Locale locale, String expected) {
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), "translations_attr/*")
+			.validateSchema(true)
+			.targetLocaleResolver(new XliffLanguageAttrParser())
 			.build();
 
 		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
@@ -49,7 +72,7 @@ class XliffResourceMessageSourceTest {
 	@ParameterizedTest
 	@MethodSource({"provider_message", "provider_message_icu4j"})
 	void test_get_message_enabled_icu4j(String code, Object[] args, Locale locale, String expected) {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.enableICU4j()
 			.validateSchema(true)
@@ -60,73 +83,45 @@ class XliffResourceMessageSourceTest {
 
 	static Stream<Arguments> provider_message_icu4j() {
 		return Stream.of(
-			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en"), "You deleted 2 files."),
-			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en-US"), "You deleted 2 files."),
-			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("de"), "Sie haben 2 Dateien gelöscht.")
+			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en"),
+				"You deleted 2 files."),
+			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en-US"),
+				"You deleted 2 files."),
+			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("de"),
+				"Sie haben 2 Dateien gelöscht.")
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("provider_builder_with_location_pattern_multiple_folder")
 	void test_builder_with_location_pattern_multiple_folder(String code, Locale locale, String expected) {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-				.builder(
-						Locale.forLanguageTag("en"),
-						List.of(
-								"translations_en/*",
-								"translations_de/*"
-						)
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
+			.builder(
+				Locale.forLanguageTag("en"),
+				List.of(
+					"translations_en/*",
+					"translations_de/*"
 				)
-				.validateSchema(true)
-				.build();
+			)
+			.validateSchema(true)
+			.build();
 
 		assertThat(messageSource.getMessage(code, null, locale)).isEqualTo(expected);
 	}
 
 	static Stream<Arguments> provider_builder_with_location_pattern_multiple_folder() {
 		return Stream.of(
-				Arguments.of("messages.postcode", Locale.forLanguageTag("en"), "Postcode"),
-				Arguments.of("payment.expiry_date", Locale.forLanguageTag("en"), "Expiry date"),
-				Arguments.of("messages.postcode", Locale.forLanguageTag("de"), "Postleitzahl"),
-				Arguments.of("payment.expiry_date", Locale.forLanguageTag("de"), "Ablaufdatum")
+			Arguments.of("postcode", Locale.forLanguageTag("en"), "Postcode"),
+			Arguments.of("payment.expiry_date", Locale.forLanguageTag("en"), "Expiry date"),
+			Arguments.of("postcode", Locale.forLanguageTag("de"), "Postleitzahl"),
+			Arguments.of("payment.expiry_date", Locale.forLanguageTag("de"), "Ablaufdatum")
 		);
 	}
 
 	@Test
-	void test_default_domain() {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), "translations/*")
-				.defaultDomain("payment")
-				.validateSchema(true)
-				.build();
-
-		assertThat(messageSource.getMessage(
-				"expiry_date",
-				null,
-				Locale.forLanguageTag("en-US")
-		)).isEqualTo("Expiration date");
-	}
-
-	@Test
 	void test_file_extensions() {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), "translations/*")
-				.fileExtensions(List.of("xlf"))
-				.validateSchema(true)
-				.build();
-
-		Locale locale = Locale.forLanguageTag("en");
-		assertThatThrownBy(() -> messageSource.getMessage(
-				"postcode",
-				null,
-				locale
-		)).isInstanceOf(NoSuchMessageException.class);
-	}
-
-	@Test
-	void test_file_extensions_Location_Deprecation() {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), new LocationPattern("translations/*"))
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.fileExtensions(List.of("xlf"))
 			.validateSchema(true)
 			.build();
@@ -142,38 +137,22 @@ class XliffResourceMessageSourceTest {
 	@Test
 	void test_validate_schema_enabled_throws() {
 		XliffResourceMessageSource.Builder builder = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
-				.validateSchema(true);
+			.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
+			.validateSchema(true);
 
 		assertThatThrownBy(builder::build).isInstanceOf(XliffMessageSourceValidationException.class);
 	}
 
 	@Test
 	void test_validate_schema_disabled_by_default() {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-				.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
-				.defaultDomain("schemainvalid")
-				.build();
-
-		assertThat(messageSource.getMessage(
-				"novalid",
-				null,
-				Locale.forLanguageTag("en")
-		)).isEqualTo("Target");
-	}
-
-	@Test
-	void test_default_domain_divider() {
-		CatalogMessageSourceBuilder messageSource = XliffResourceMessageSource
-			.builder(Locale.forLanguageTag("en"), "translations/*")
-			.validateSchema(true)
-			.domainDivider("__")
+		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
 			.build();
 
 		assertThat(messageSource.getMessage(
-			"messages__postcode",
+			"novalid",
 			null,
-			Locale.forLanguageTag("de")
-		)).isEqualTo("Postleitzahl");
+			Locale.forLanguageTag("en")
+		)).isEqualTo("Target");
 	}
 }

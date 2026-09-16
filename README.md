@@ -2,8 +2,11 @@
 
 This package provides a [MessageSource interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for translations stored in XLIFF files. It supports XLIFF versions 1.2, 2.0, 2.1 and 2.2, including the [PGS Module](docs/README-XLIFF-2.2-PGS.md).
 
+> [!IMPORTANT]
+> Upgrading from 3.x? Domains have been removed. See [Migration: 3.x → 4.0 — Domain Removed](docs/README-Migration-3.x-to-4.0.md).
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/3.2.3)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.0.0)
 
 ## Table of Contents
 
@@ -21,7 +24,9 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
     - [XLIFF 2.2 — PGS Module (Plural, Gender and Select)](#xliff-22--pgs-module-plural-gender-and-select)
     - [Markup](#markup)
     - [Whitespace](#whitespace)
-  - [Structure of the Translation Filename](#structure-of-the-translation-filename)
+  - [Determining the Target Locale](#determining-the-target-locale)
+    - [Filename Suffix](#filename-suffix)
+    - [XLIFF Language Attribute](#xliff-language-attribute)
   - [Example with XLIFF Files](#example-with-xliff-files)
     - [XLIFF Files](#xliff-files-1)
     - [Target value](#target-value)
@@ -37,14 +42,14 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>3.2.3</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '3.2.3'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.0.0'
 ```
 
 
@@ -84,6 +89,24 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
         Validate each file against its OASIS XSD before reading. <code>validateSchema(true)</code> rejects non-conforming files
         (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 <code>&lt;trans-unit/&gt;</code> without the required <code>id</code>).
         <a href="https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java">For development or testing, it is recommended to enable validation.</a>
+      </td>
+    </tr>
+    <tr>
+      <td><code>useXliffLanguageAttribute()</code></td>
+      <td>disabled</td>
+      <td>
+        Resolves a file's target locale from the XLIFF document's own language attribute
+        (<code>target-language</code> for XLIFF 1.2, <code>trgLang</code> for XLIFF 2.x) instead of the filename suffix.
+        <br><br>
+        ⚠️ See <a href="#determining-the-target-locale">Determining the Target Locale</a>.
+      </td>
+    </tr>
+    <tr>
+      <td><code>targetLocaleResolver(TargetLocaleResolverInterface targetLocaleResolver)</code></td>
+      <td>—</td>
+      <td>
+        Assigns a custom strategy for resolving a file's target locale, in place of both the filename suffix and
+        <code>useXliffLanguageAttribute()</code>.
       </td>
     </tr>
     <tr>
@@ -268,7 +291,11 @@ Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="
 
 **Result:** `separator` → `  ·  ` (with the surrounding spaces preserved)
 
-### Structure of the Translation Filename
+### Determining the Target Locale
+
+There are two ways a file's target locale is determined: by default from the filename suffix, or — when `useXliffLanguageAttribute()` is enabled on the builder — from the XLIFF document's own language attribute instead.
+
+#### Filename Suffix
 
 The `<name>` part is freely choosable and has no functional meaning; it's not used to derive keys and files aren't otherwise linked by it (see [XLIFF Files](#xliff-files)). What matters is that the locale is recognised as a suffix of the filename:
 
@@ -282,6 +309,48 @@ The `<name>` part is freely choosable and has no functional meaning; it's not us
 # Name + Language + Region
 <name>[-._]<language>[-_]<region>.xlf
 ```
+
+#### XLIFF Language Attribute
+
+Enable `useXliffLanguageAttribute()` on the builder to resolve a file's target locale from the document's own language attribute (`target-language` for XLIFF 1.2, `trgLang` for XLIFF 2.x) instead. The filename is then completely free-form — like the `<name>` part above, it has no functional meaning at all, so the locale suffix isn't needed either.
+
+```java
+return XliffResourceMessageSource
+    .builder(
+        Locale.forLanguageTag("en"),
+        "translations/*"
+    )
+    .useXliffLanguageAttribute()
+    .build();
+```
+
+```
+[resources]
+     |-[translations]
+             |-a.xliff   // target-language="en"
+             |-b.xliff   // target-language="de"
+```
+
+```xml
+<!-- b.xliff -->
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="messages"
+          datatype="plaintext"
+          source-language="en"
+          target-language="de">
+        <body>
+            <trans-unit id="1" resname="headline">
+                <source>Headline</source>
+                <target>Überschrift</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
+```
+
+For any other strategy (e.g. an external mapping), implement `TargetLocaleResolverInterface` and pass it to `targetLocaleResolver(...)`.
 
 ### Example with XLIFF Files
 

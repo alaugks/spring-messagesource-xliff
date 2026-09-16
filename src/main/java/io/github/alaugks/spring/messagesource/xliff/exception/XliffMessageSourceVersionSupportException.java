@@ -7,7 +7,7 @@ package io.github.alaugks.spring.messagesource.xliff.exception;
  * Thrown when an XLIFF document declares a version not supported by this
  * library.
  */
-public class XliffMessageSourceVersionSupportException extends RuntimeException {
+public final class XliffMessageSourceVersionSupportException extends RuntimeException {
 
 	/**
 	 * Creates a new exception indicating that the encountered XLIFF version is

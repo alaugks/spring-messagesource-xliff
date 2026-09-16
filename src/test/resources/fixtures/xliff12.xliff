@@ -8,7 +8,7 @@
           source-language="en"
           target-language="de">
         <body>
-            <trans-unit id="code-1" resname="code-1">
+            <trans-unit id="1" resname="code-1">
                 <source>Postcode (Xliff Version 1.2)</source>
                 <target>Postcode (Xliff Version 1.2)</target>
             </trans-unit>

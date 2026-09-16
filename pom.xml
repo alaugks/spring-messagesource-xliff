@@ -13,7 +13,7 @@
 
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>3.2.3</version>
+    <version>4.0.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -65,8 +65,8 @@
     <dependencies>
         <dependency>
             <groupId>io.github.alaugks</groupId>
-            <artifactId>spring-messagesource-catalog</artifactId>
-            <version>0.10.1</version>
+            <artifactId>spring-messagesource-base</artifactId>
+            <version>0.1.0</version>
         </dependency>
 
         <dependency>

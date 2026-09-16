@@ -85,7 +85,8 @@ class ReadmeXliff22PgsExamplesTest {
 	@ParameterizedTest
 	@MethodSource("provider_gender")
 	void test_gender_in_thymeleaf(String recipientGender, Locale locale, String expected) {
-		String template = "<p th:text=\"#{greeting(${ {'recipient_gender' : '%s'} })}\">gender value</p>".formatted(recipientGender);
+		String template = "<p th:text=\"#{greeting(${ {'recipient_gender' : '%s'} })}\">gender value</p>".formatted(
+			recipientGender);
 		assertThat(this.process(template, locale)).isEqualTo("<p>%s</p>".formatted(expected));
 	}
 
@@ -111,10 +112,14 @@ class ReadmeXliff22PgsExamplesTest {
 
 	static Stream<Arguments> provider_plural_cldr_keywords() {
 		return Stream.of(
-			Arguments.of(1, Locale.forLanguageTag("de"), "Ein Artikel liegt in Ihrem Warenkorb und ist bereit zur Kasse."),
-			Arguments.of(5, Locale.forLanguageTag("de"), "Mehrere Artikel liegen in Ihrem Warenkorb und sind bereit zur Kasse."),
-			Arguments.of(1, Locale.forLanguageTag("en"), "There is one item in your shopping cart, ready for checkout."),
-			Arguments.of(5, Locale.forLanguageTag("en"), "There are several items in your shopping cart, ready for checkout.")
+			Arguments.of(1, Locale.forLanguageTag("de"),
+				"Ein Artikel liegt in Ihrem Warenkorb und ist bereit zur Kasse."),
+			Arguments.of(5, Locale.forLanguageTag("de"),
+				"Mehrere Artikel liegen in Ihrem Warenkorb und sind bereit zur Kasse."),
+			Arguments.of(1, Locale.forLanguageTag("en"),
+				"There is one item in your shopping cart, ready for checkout."),
+			Arguments.of(5, Locale.forLanguageTag("en"),
+				"There are several items in your shopping cart, ready for checkout.")
 		);
 	}
 

@@ -29,7 +29,7 @@ import org.w3c.dom.NodeList;
  * The concatenated value is trimmed unless the unit, or one of its elements,
  * declares an effective {@code xml:space} of {@code "preserve"}.
  */
-public class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
+class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
 	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
@@ -70,6 +70,25 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 			}
 		}
 		return transUnits;
+	}
+
+	/**
+	 * Extracts the declared source and target language from the document's
+	 * {@code srcLang}/{@code trgLang} attributes, read from the root
+	 * {@code <xliff>} element.
+	 *
+	 * @return the declared languages; both {@code null} when absent or when
+	 *         the document is not an XLIFF document.
+	 */
+	@Override
+	public XliffLanguageAttr getLanguages() {
+		if (!this.isXliffDocument()) {
+			return new XliffLanguageAttr(null, null);
+		}
+		return new XliffLanguageAttr(
+			toLocale(this.root.getAttribute("srcLang")),
+			toLocale(this.root.getAttribute("trgLang"))
+		);
 	}
 
 	/**
@@ -145,8 +164,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 				Element segment = segments.next();
 				Element target = firstChildElement(segment, TARGET);
 				value.append(this.rawValue(target != null ? target : firstChildElement(segment, SOURCE)));
-			}
-			else {
+			} else {
 				value.append(this.rawValue(firstChildElement(element, SOURCE)));
 			}
 		}
@@ -160,8 +178,8 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 	 */
 	private List<Element> orderedSegments(List<Element> elements) {
 		List<Element> segments = elements.stream()
-				.filter(this::isSegment)
-				.toList();
+			.filter(this::isSegment)
+			.toList();
 
 		if (!this.hasTargetOrder(segments)) {
 			return segments;
@@ -199,8 +217,7 @@ public class Xliff2xDocument extends XliffDocument implements XliffDocumentInter
 			if (!order.isEmpty()) {
 				try {
 					return Integer.parseInt(order);
-				}
-				catch (NumberFormatException e) {
+				} catch (NumberFormatException e) {
 					// Not a number; sort after the explicitly ordered segments.
 				}
 			}

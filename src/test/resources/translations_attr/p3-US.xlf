@@ -6,12 +6,12 @@
           source-language="en"
           target-language="en-US">
         <body>
-            <trans-unit id="1" resname="postcode">
+            <trans-unit id="1" resname="payment.expiry_date">
                 <source>
-                  Postcode
+                    Expiry date
                 </source>
                 <target>
-                  Zip code
+                    Expiration date
                 </target>
             </trans-unit>
         </body>

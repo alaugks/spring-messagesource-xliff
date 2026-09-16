@@ -22,7 +22,7 @@ import org.w3c.dom.NodeList;
  * interpreted). It is trimmed unless the element's effective {@code xml:space}
  * is {@code "preserve"}.
  */
-public class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
+class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
 
 	/**
 	 * Creates a reader for the given XLIFF 1.2 root element.
@@ -59,12 +59,37 @@ public class Xliff12Document extends XliffDocument implements XliffDocumentInter
 	}
 
 	/**
+	 * Extracts the declared source and target language from the document's
+	 * {@code source-language}/{@code target-language} attributes, read from
+	 * the first {@code <file>} element.
+	 *
+	 * @return the declared languages; both {@code null} when absent or when
+	 *         the document is not an XLIFF document.
+	 */
+	@Override
+	public XliffLanguageAttr getLanguages() {
+		if (!this.isXliffDocument()) {
+			return new XliffLanguageAttr(null, null);
+		}
+
+		Element file = (Element) this.root.getElementsByTagName("file").item(0);
+		if (file == null) {
+			return new XliffLanguageAttr(null, null);
+		}
+
+		return new XliffLanguageAttr(
+			toLocale(file.getAttribute("source-language")),
+			toLocale(file.getAttribute("target-language"))
+		);
+	}
+
+	/**
 	 * Adds the trans-unit's key and value to the map, skipping it when it has no key.
 	 */
 	private void addTransUnit(Element transUnit, Map<String, String> transUnits) {
 		String key = this.firstNonEmpty(
-				transUnit.getAttribute("resname"),
-				transUnit.getAttribute("id")
+			transUnit.getAttribute("resname"),
+			transUnit.getAttribute("id")
 		);
 		if (key.isEmpty()) {
 			return;
@@ -72,8 +97,8 @@ public class Xliff12Document extends XliffDocument implements XliffDocumentInter
 
 		Element target = firstChildElement(transUnit, TARGET);
 		Element valueElement = target != null
-				? target
-				: firstChildElement(transUnit, SOURCE);
+			? target
+			: firstChildElement(transUnit, SOURCE);
 		transUnits.put(key, this.value(valueElement));
 	}
 

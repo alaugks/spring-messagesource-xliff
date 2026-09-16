@@ -9,7 +9,7 @@ import org.jspecify.annotations.Nullable;
  * Thrown when XLIFF content cannot be processed due to an unrecoverable
  * parsing error.
  */
-public class XliffMessageSourceRuntimeException extends RuntimeException {
+public final class XliffMessageSourceRuntimeException extends RuntimeException {
 
 	/**
 	 * Creates a new runtime exception that wraps an error encountered while
@@ -19,5 +19,15 @@ public class XliffMessageSourceRuntimeException extends RuntimeException {
 	 */
 	public XliffMessageSourceRuntimeException(@Nullable Throwable cause) {
 		super(cause);
+	}
+
+	/**
+	 * Creates a new runtime exception with the specified detail message.
+	 *
+	 * @param message the detail message providing additional information about
+	 *                the exception.
+	 */
+	public XliffMessageSourceRuntimeException(String message) {
+		super(message);
 	}
 }
