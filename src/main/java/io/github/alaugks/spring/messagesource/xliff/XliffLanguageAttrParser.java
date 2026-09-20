@@ -9,6 +9,7 @@ import io.github.alaugks.spring.messagesource.base.resources.TargetLocaleResolve
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceVersionSupportException;
 import java.io.IOException;
+import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
@@ -48,7 +49,8 @@ class XliffLanguageAttrParser implements TargetLocaleResolverInterface {
 			);
 		};
 
-		if (langAttr.targetLanguage() == null) {
+		Locale targetLanguage = langAttr.targetLanguage();
+		if (targetLanguage == null) {
 			throw new XliffMessageSourceRuntimeException(
 				String.format(
 					"Target language not defined in XLIFF file \"%s\"",
@@ -57,9 +59,6 @@ class XliffLanguageAttrParser implements TargetLocaleResolverInterface {
 			);
 		}
 
-		return new TransFileTargetLocale(
-			langAttr.targetLanguage().getLanguage(),
-			langAttr.targetLanguage().getCountry()
-		);
+		return new TransFileTargetLocale(targetLanguage);
 	}
 }

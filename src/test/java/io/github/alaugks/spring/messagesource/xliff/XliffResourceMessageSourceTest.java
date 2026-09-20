@@ -25,7 +25,7 @@ class XliffResourceMessageSourceTest {
 	void test_get_message(String code, Object[] args, Locale locale, String expected) {
 		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations/*")
-			.validateSchema(true)
+			.enableSchemaValidation()
 			.build();
 
 		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
@@ -36,7 +36,7 @@ class XliffResourceMessageSourceTest {
 	void test_get_message_useXliffLanguageAttribute(String code, Object[] args, Locale locale, String expected) {
 		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations_attr/*")
-			.validateSchema(true)
+			.enableSchemaValidation()
 			.useXliffLanguageAttribute()
 			.build();
 
@@ -48,7 +48,7 @@ class XliffResourceMessageSourceTest {
 	void test_get_message_targetLocaleResolver(String code, Object[] args, Locale locale, String expected) {
 		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations_attr/*")
-			.validateSchema(true)
+			.enableSchemaValidation()
 			.targetLocaleResolver(new XliffLanguageAttrParser())
 			.build();
 
@@ -75,7 +75,7 @@ class XliffResourceMessageSourceTest {
 		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.enableICU4j()
-			.validateSchema(true)
+			.enableSchemaValidation()
 			.build();
 
 		assertThat(messageSource.getMessage(code, args, locale)).isEqualTo(expected);
@@ -103,7 +103,7 @@ class XliffResourceMessageSourceTest {
 					"translations_de/*"
 				)
 			)
-			.validateSchema(true)
+			.enableSchemaValidation()
 			.build();
 
 		assertThat(messageSource.getMessage(code, null, locale)).isEqualTo(expected);
@@ -123,7 +123,7 @@ class XliffResourceMessageSourceTest {
 		BaseMessageSourceBuilder messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations/*")
 			.fileExtensions(List.of("xlf"))
-			.validateSchema(true)
+			.enableSchemaValidation()
 			.build();
 
 		Locale locale = Locale.forLanguageTag("en");
@@ -138,7 +138,7 @@ class XliffResourceMessageSourceTest {
 	void test_validate_schema_enabled_throws() {
 		XliffResourceMessageSource.Builder builder = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "fixtures/schemainvalid.xliff")
-			.validateSchema(true);
+			.enableSchemaValidation();
 
 		assertThatThrownBy(builder::build).isInstanceOf(XliffMessageSourceValidationException.class);
 	}

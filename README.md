@@ -6,7 +6,7 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 > Upgrading from 3.x? Domains have been removed. See [Migration: 3.x → 4.0 — Domain Removed](docs/README-Migration-3.x-to-4.0.md).
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.0.0)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.1.0)
 
 ## Table of Contents
 
@@ -42,94 +42,29 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>4.0.0</version>
+    <version>4.1.0</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.0.0'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.1.0'
 ```
 
 
 ## MessageSource Configuration
 
-<table>
-  <thead>
-    <tr>
-      <th>Method</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>builder(Locale defaultLocale, String locationPattern)</code><br><code>builder(Locale defaultLocale, List&lt;String&gt; locationPatterns)</code></td>
-      <td>—</td>
-      <td>
-        Entry point.
-        <br><br>
-        <code>defaultLocale</code> is the locale to fall back to when a translation is missing.
-        <br><br>
-        <code>locationPatterns</code> selects the XLIFF files (<code>String</code> or <code>List&lt;String&gt;</code>) via Spring's
-        <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html">PathMatchingResourcePatternResolver</a>,
-        so all its patterns work. Only files ending in <code>xliff</code> or <code>xlf</code> are kept.
-      </td>
-    </tr>
-    <tr>
-      <td><code>fileExtensions(List&lt;String&gt; fileExtensions)</code></td>
-      <td><code>List.of("xlf", "xliff")</code></td>
-      <td>File extensions recognised as XLIFF files.</td>
-    </tr>
-    <tr>
-      <td><code>validateSchema(boolean validateSchema)</code></td>
-      <td><code>false</code></td>
-      <td>
-        Validate each file against its OASIS XSD before reading. <code>validateSchema(true)</code> rejects non-conforming files
-        (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 <code>&lt;trans-unit/&gt;</code> without the required <code>id</code>).
-        <a href="https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java">For development or testing, it is recommended to enable validation.</a>
-      </td>
-    </tr>
-    <tr>
-      <td><code>useXliffLanguageAttribute()</code></td>
-      <td>disabled</td>
-      <td>
-        Resolves a file's target locale from the XLIFF document's own language attribute
-        (<code>target-language</code> for XLIFF 1.2, <code>trgLang</code> for XLIFF 2.x) instead of the filename suffix.
-        <br><br>
-        ⚠️ See <a href="#determining-the-target-locale">Determining the Target Locale</a>.
-      </td>
-    </tr>
-    <tr>
-      <td><code>targetLocaleResolver(TargetLocaleResolverInterface targetLocaleResolver)</code></td>
-      <td>—</td>
-      <td>
-        Assigns a custom strategy for resolving a file's target locale, in place of both the filename suffix and
-        <code>useXliffLanguageAttribute()</code>.
-      </td>
-    </tr>
-    <tr>
-      <td><code>enableICU4j()</code></td>
-      <td>disabled</td>
-      <td>
-        Format messages with ICU4J instead of the default <code>java.text.MessageFormat</code>. The default only understands
-        numeric argument indices (<code>{0}</code>, <code>{1}</code>); ICU4J additionally supports named arguments and ICU
-        plural/select/gender patterns (e.g. <code>{count, plural, …}</code>).
-      </td>
-    </tr>
-    <tr>
-      <td><code>parentMessageSource(MessageSource parentMessageSource)</code></td>
-      <td>—</td>
-      <td>
-        Sets a parent
-        <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html"><code>MessageSource</code></a>
-        to delegate to. When a code cannot be resolved in the XLIFF translations, the lookup falls back to the parent source.<br><br>
-        ⚠️ See <a href="docs/README-Parent-MessageSource.md">Parent MessageSource</a> for usage in either order.
-      </td>
-    </tr>
-  </tbody>
-</table>
+| Method                                                                     | Default                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|----------------------------------------------------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `builder(Locale defaultLocale, String locationPattern)`                    | —                         | Entry point.<br><br>`defaultLocale` is the locale to fall back to when a translation is missing.<br><br>`locationPattern` selects the XLIFF files via Spring's [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html), so all its patterns work.                                                      |
+| `builder(Locale defaultLocale, List<String> locationPatterns)`             | —                         | Entry point (alternative). Same as above, with a list of patterns.                                                                                                                                                                                                                                                                                                                                                                  |
+| `fileExtensions(List<String> fileExtensions)`                              | `List.of("xlf", "xliff")` | File extensions recognised as XLIFF files. Only matching files are kept.                                                                                                                                                                                                                                                                                                                                                            |
+| `enableSchemaValidation()`                                                 | disabled                  | Validates each file against its OASIS XSD before reading and rejects non-conforming files. Strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 `<trans-unit/>` without the required `id`. <br>⚠️ Recommended for development and testing, see the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java). |
+| `useXliffLanguageAttribute()`                                              | disabled                  | Resolves the target locale from the language attribute of the XLIFF document (`target-language` for XLIFF 1.2, `trgLang` for XLIFF 2.x) instead of the filename suffix. See [Determining the Target Locale](#determining-the-target-locale).                                                                                                                                                                                        |
+| `targetLocaleResolver(TargetLocaleResolverInterface targetLocaleResolver)` | —                         | Overrides how the target locale of a file is determined, in place of both the filename suffix and `useXliffLanguageAttribute()`.                                                                                                                                                                                                                                                                                                    |
+| `enableICU4j()`                                                            | disabled                  | Formats messages with ICU4J's `com.ibm.icu.text.MessageFormat` instead of `java.text.MessageFormat`. Adds named arguments and ICU `plural`/`select`/gender patterns. Required for the XLIFF 2.2 PGS module, see the note below.                                                                                                                                                                                                     |
+| `parentMessageSource(MessageSource parentMessageSource)`                   | —                         | Sets a parent [`MessageSource`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) to delegate to when a code cannot be resolved from the XLIFF files. See [Parent MessageSource](docs/README-Parent-MessageSource.md).                                                                                                                                               |
 
 > [!IMPORTANT]
 > The XLIFF 2.2 PGS module generates ICU patterns with named arguments (e.g. `{count, plural, …}`). These cannot be resolved by the default `java.text.MessageFormat` and fail at `getMessage()` time. When using the PGS module you **must** enable ICU4J via `enableICU4j()`.
@@ -171,7 +106,7 @@ public class MessageSourceConfig {
 * Translations can be split across multiple files; the key is always taken from the unit itself (see [Translation Key](#translation-key)), the filename has no effect on it. Since the key is what's looked up, `resname` / `name` must be unique across all files.
 * Files live in the resource folder with extension `xliff` or `xlf`.
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
-* Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `validateSchema(true)`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
+* Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `enableSchemaValidation()`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
 * Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`), **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
 

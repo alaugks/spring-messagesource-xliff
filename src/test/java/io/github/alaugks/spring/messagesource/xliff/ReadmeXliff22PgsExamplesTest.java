@@ -32,7 +32,7 @@ class ReadmeXliff22PgsExamplesTest {
 		this.messageSource = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("en"), "translations_readme_pgs/*")
 			.enableICU4j()
-			.validateSchema(true)
+			.enableSchemaValidation()
 			.build();
 
 		StringTemplateResolver templateResolver = new StringTemplateResolver();
