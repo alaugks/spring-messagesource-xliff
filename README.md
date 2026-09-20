@@ -88,7 +88,8 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
       <td>
         Validate each file against its OASIS XSD before reading. <code>validateSchema(true)</code> rejects non-conforming files
         (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 <code>&lt;trans-unit/&gt;</code> without the required <code>id</code>).
-        <a href="https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java">For development or testing, it is recommended to enable validation.</a>
+        <br><br>
+        ⚠️ For development or testing, it is recommended to enable validation. <a href="https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java">See example configuration.</a>
       </td>
     </tr>
     <tr>
