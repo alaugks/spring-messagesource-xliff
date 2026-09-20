@@ -115,17 +115,27 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Controls whether each XLIFF document is validated against its OASIS
-		 * XSD schema before its units are extracted.
+		 * Controls whether each XLIFF document is validated against its OASIS XSD schema before its units are
+		 * extracted.
 		 * <p>Validation is disabled by default. Enable it to reject documents
-		 * that do not conform to the schema; note that strict schemas reject
-		 * files that are otherwise readable (for example XLIFF 1.2 files whose
-		 * {@code <trans-unit>} elements omit the schema-required {@code id}
-		 * attribute).
+		 * that do not conform to the schema; note that strict schemas reject files that are otherwise readable (for
+		 * example XLIFF 1.2 files whose {@code <trans-unit>} elements omit the schema-required {@code id} attribute).
 		 *
-		 * @param validateSchema {@code true} to validate against the schema.
 		 * @return this builder for chaining.
 		 */
+		public Builder enableSchemaValidation() {
+			this.validateSchema = true;
+			return this;
+		}
+
+		/**
+		 * @deprecated since 4.1.0 use {@link #enableSchemaValidation()}
+		 *
+		 * @param validateSchema a boolean indicating whether schema validation should
+		 *                       be enabled (true) or disabled (false).
+		 * @return this builder instance for method chaining.
+		 */
+		@Deprecated(since = "4.1.0")
 		public Builder validateSchema(boolean validateSchema) {
 			this.validateSchema = validateSchema;
 			return this;

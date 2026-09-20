@@ -83,10 +83,10 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
       <td>File extensions recognised as XLIFF files.</td>
     </tr>
     <tr>
-      <td><code>validateSchema(boolean validateSchema)</code></td>
+      <td><code>enableSchemaValidation()</code></td>
       <td><code>false</code></td>
       <td>
-        Validate each file against its OASIS XSD before reading. <code>validateSchema(true)</code> rejects non-conforming files
+        Validate each file against its OASIS XSD before reading. Enabling it rejects non-conforming files
         (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 <code>&lt;trans-unit/&gt;</code> without the required <code>id</code>).
         <br><br>
         ⚠️ For development or testing, it is recommended to enable validation. <a href="https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java">See example configuration.</a>
@@ -172,7 +172,7 @@ public class MessageSourceConfig {
 * Translations can be split across multiple files; the key is always taken from the unit itself (see [Translation Key](#translation-key)), the filename has no effect on it. Since the key is what's looked up, `resname` / `name` must be unique across all files.
 * Files live in the resource folder with extension `xliff` or `xlf`.
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
-* Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `validateSchema(true)`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
+* Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `enableSchemaValidation()`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
 * Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`), **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
 
