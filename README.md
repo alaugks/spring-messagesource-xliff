@@ -65,7 +65,7 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
   </thead>
   <tbody>
     <tr>
-      <td><code>builder(Locale defaultLocale, String locationPattern)</code><br><code>builder(Locale defaultLocale, List&lt;String&gt; locationPatterns)</code></td>
+      <td><code>builder(Locale defaultLocale, String locationPattern)</code><br><br><code>builder(Locale defaultLocale, List&lt;String&gt; locationPatterns)</code></td>
       <td>—</td>
       <td>
         Entry point.
