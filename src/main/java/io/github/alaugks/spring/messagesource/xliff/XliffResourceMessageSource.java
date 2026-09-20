@@ -129,11 +129,13 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
-		 * @deprecated since 4.1.0 use {@link #enableSchemaValidation()}
+		 * Sets whether each XLIFF document is validated against its OASIS XSD schema
+		 * before its units are extracted.
 		 *
-		 * @param validateSchema a boolean indicating whether schema validation should
-		 *                       be enabled (true) or disabled (false).
-		 * @return this builder instance for method chaining.
+		 * @param validateSchema {@code true} to enable schema validation, {@code false}
+		 *                       to disable it.
+		 * @return this builder for chaining.
+		 * @deprecated since 4.1.0, use {@link #enableSchemaValidation()} instead.
 		 */
 		@Deprecated(since = "4.1.0")
 		public Builder validateSchema(boolean validateSchema) {
