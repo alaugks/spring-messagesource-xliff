@@ -84,7 +84,7 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
     </tr>
     <tr>
       <td><code>enableSchemaValidation()</code></td>
-      <td><code>false</code></td>
+      <td><code>disabled</code></td>
       <td>
         Validate each file against its OASIS XSD before reading. Enabling it rejects non-conforming files
         (note: strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 <code>&lt;trans-unit/&gt;</code> without the required <code>id</code>).
