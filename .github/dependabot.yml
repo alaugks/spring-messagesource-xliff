@@ -4,6 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
     groups:
       actions:
         patterns:
@@ -13,9 +14,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
     ignore:
       - dependency-name: "org.springframework*:*"
         update-types:
           - "version-update:semver-major"
           - "version-update:semver-minor"
-      - dependency-name: "io.github.alaugks:spring-messagesource-catalog"
