@@ -31,6 +31,11 @@ abstract class XliffDocument {
 	protected static final String TARGET = "target";
 
 	/**
+	 * Inline renderer for extracting text from inline elements.
+	 */
+	private static final XliffInlineRenderer INLINE_RENDERER = new XliffInlineRenderer();
+
+	/**
 	 * Root element of the parsed XLIFF document.
 	 */
 	protected final Element root;
@@ -172,8 +177,7 @@ abstract class XliffDocument {
 		if (element == null) {
 			return "";
 		}
-		String content = element.getTextContent();
-		return content != null ? content : "";
+		return INLINE_RENDERER.render(element);
 	}
 
 	/**

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+    <file id="f1">
+        <unit id="ph_data_ref">
+            <originalData>
+                <data id="d1">{0}</data>
+            </originalData>
+            <segment>
+                <source>Hello <ph id="1" dataRef="d1"/>!</source>
+                <target>Hallo <ph id="1" dataRef="d1"/>!</target>
+            </segment>
+        </unit>
+        <unit id="ph_unknown_data_ref">
+            <segment>
+                <source>Hello <ph id="1" dataRef="missing"/>!</source>
+                <target>Hallo <ph id="1" dataRef="missing"/>!</target>
+            </segment>
+        </unit>
+        <unit id="ph_equiv">
+            <segment>
+                <source>Line<ph id="1" equiv="&#10;"/>end</source>
+                <target>Zeile<ph id="1" equiv="&#10;"/>Ende</target>
+            </segment>
+        </unit>
+        <unit id="pc_data_ref">
+            <originalData>
+                <data id="d1">&lt;a href="/x"&gt;</data>
+                <data id="d2">&lt;/a&gt;</data>
+            </originalData>
+            <segment>
+                <source>Click <pc id="1" dataRefStart="d1" dataRefEnd="d2">here</pc></source>
+                <target>Klicke <pc id="1" dataRefStart="d1" dataRefEnd="d2">hier</pc></target>
+            </segment>
+        </unit>
+        <unit id="sc_ec_data_ref">
+            <originalData>
+                <data id="d1">[</data>
+                <data id="d2">]</data>
+            </originalData>
+            <segment>
+                <source><sc id="1" dataRef="d1"/>Text<ec startRef="1" dataRef="d2"/></source>
+                <target><sc id="1" dataRef="d1"/>Text<ec startRef="1" dataRef="d2"/></target>
+            </segment>
+        </unit>
+        <unit id="cp_code_point">
+            <segment>
+                <source>A<cp hex="0007"/>B</source>
+                <target>A<cp hex="0007"/>B</target>
+            </segment>
+        </unit>
+        <unit id="annotation_markers">
+            <segment>
+                <source>A <sm id="m1"/>B<em startRef="m1"/> <mrk id="m2" type="term">C</mrk></source>
+                <target>A <sm id="m1"/>B<em startRef="m1"/> <mrk id="m2" type="term">C</mrk></target>
+            </segment>
+        </unit>
+        <unit id="cdata_verbatim">
+            <segment>
+                <source><![CDATA[<b>Bold</b>]]></source>
+                <target><![CDATA[<b>Fett</b>]]></target>
+            </segment>
+        </unit>
+        <unit id="html-without-cdata">
+            <originalData>
+                <data id="d1">&lt;a href="https://example.com" class="btn"&gt;</data>
+                <data id="d2">&lt;/a&gt;</data>
+                <data id="d3">%s</data>
+            </originalData>
+            <segment>
+                <source>Klicken Sie <pc id="1" dataRefStart="d1" dataRefEnd="d2">hier</pc>, um das Profil von <ph id="2" dataRef="d3"/> aufzurufen.</source>
+                <target>Click <pc id="1" dataRefStart="d1" dataRefEnd="d2">here</pc> to view the profile of <ph id="2" dataRef="d3"/>.</target>
+            </segment>
+        </unit>
+        <unit id="html-with-cdata">
+            <originalData>
+                <data id="d1"><![CDATA[<a href="https://example.com" class="btn">]]></data>
+                <data id="d2"><![CDATA[</a>]]></data>
+                <data id="d3"><![CDATA[%s]]></data>
+            </originalData>
+            <segment>
+                <source>Klicken Sie <pc id="1" dataRefStart="d1" dataRefEnd="d2">hier</pc>, um das Profil von <ph id="2" dataRef="d3"/> aufzurufen.</source>
+                <target>Click <pc id="1" dataRefStart="d1" dataRefEnd="d2">here</pc> to view the profile of <ph id="2" dataRef="d3"/>.</target>
+            </segment>
+        </unit>
+    </file>
+</xliff>
