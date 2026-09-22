@@ -5,6 +5,7 @@ target/
 mvnw
 mvnw.cmd
 /.mvn/
+/notes/
 
 ### IntelliJ IDEA ###
 .idea
