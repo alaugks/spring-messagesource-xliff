@@ -3,7 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff.inline;
 
-import io.github.alaugks.spring.messagesource.xliff.XliffInlineRenderer;
 import org.w3c.dom.Element;
 
 /**
@@ -12,7 +11,7 @@ import org.w3c.dom.Element;
 public final class CodePointElementStrategy extends XliffInlineElementStrategyAbstract {
 
 	@Override
-	public void append(Element element, StringBuilder out, int depth, XliffInlineRenderer renderer) {
+	public void append(Element element, StringBuilder out, int depth) {
 		try {
 			int codePoint = Integer.parseInt(element.getAttribute("hex").trim(), 16);
 			if (Character.isValidCodePoint(codePoint)) {

@@ -3,7 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff.inline;
 
-import io.github.alaugks.spring.messagesource.xliff.XliffInlineRenderer;
 import org.w3c.dom.Element;
 
 /**
@@ -14,17 +13,17 @@ import org.w3c.dom.Element;
 public final class PairedCodeElementStrategy extends XliffInlineElementStrategyAbstract {
 
 	@Override
-	public void append(Element element, StringBuilder out, int depth, XliffInlineRenderer renderer) {
-		out.append(this.boundary(element, "dataRefStart", "equivStart", renderer));
-		this.appendChildren(element, out, depth + 1, renderer);
-		out.append(this.boundary(element, "dataRefEnd", "equivEnd", renderer));
+	public void append(Element element, StringBuilder out, int depth) {
+		out.append(this.boundary(element, "dataRefStart", "equivStart"));
+		this.appendChildren(element, out, depth + 1);
+		out.append(this.boundary(element, "dataRefEnd", "equivEnd"));
 	}
 
 	/**
 	 * Resolves one pc boundary: dataRef attribute via <originalData>, falling back to the equiv attribute.
 	 */
-	private String boundary(Element element, String dataRefAttribute, String equivAttribute, XliffInlineRenderer renderer) {
-		String data = this.originalData(element, dataRefAttribute, renderer);
+	private String boundary(Element element, String dataRefAttribute, String equivAttribute) {
+		String data = this.originalData(element, dataRefAttribute);
 		return !data.isEmpty() ? data : element.getAttribute(equivAttribute);
 	}
 }

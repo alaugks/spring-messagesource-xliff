@@ -3,14 +3,8 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.xliff.inline.AnnotationMarkerElementStrategy;
-import io.github.alaugks.spring.messagesource.xliff.inline.CodePointElementStrategy;
-import io.github.alaugks.spring.messagesource.xliff.inline.GenericInlineElementStrategy;
-import io.github.alaugks.spring.messagesource.xliff.inline.PairedCodeElementStrategy;
 import io.github.alaugks.spring.messagesource.xliff.inline.XliffInlineElementStrategyAbstract;
-import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * Renders the content of a {@code <source>}/{@code <target>} element as plain
@@ -31,21 +25,11 @@ import org.w3c.dom.Node;
  *   <li>{@code <sm/>}/{@code <em/>} annotation markers contribute nothing.</li>
  * </ul>
  *
- * <p>Dispatches each inline element to an
- * {@link XliffInlineElementStrategyAbstract}
- * chosen by element name, and serves as those strategies' access point back
- * into this package: {@link #appendChildren} to recurse, and
- * {@link #originalData} to resolve a {@code dataRef}-style attribute, so that
- * {@link XliffDocument} itself stays internal to this package.
+ * <p>Extends {@link XliffInlineElementStrategyAbstract} purely to reuse its
+ * dispatch loop for the top-level {@code <source>}/{@code <target>} element,
+ * which is rendered exactly like any inline element's content.
  */
-public final class XliffInlineRenderer {
-
-	private static final int MAX_DEPTH = 32;
-
-	private static final XliffInlineElementStrategyAbstract ANNOTATION_MARKER = new AnnotationMarkerElementStrategy();
-	private static final XliffInlineElementStrategyAbstract CODE_POINT = new CodePointElementStrategy();
-	private static final XliffInlineElementStrategyAbstract PAIRED_CODE = new PairedCodeElementStrategy();
-	private static final XliffInlineElementStrategyAbstract GENERIC = new GenericInlineElementStrategy();
+public final class XliffInlineRenderer extends XliffInlineElementStrategyAbstract {
 
 	/**
 	 * Renders the element's content as text.
@@ -55,93 +39,12 @@ public final class XliffInlineRenderer {
 	 */
 	String render(Element element) {
 		StringBuilder out = new StringBuilder();
-		this.appendChildren(element, out, 0);
+		this.append(element, out, 0);
 		return out.toString();
 	}
 
-	/**
-	 * Appends the rendered children of the parent, dispatching each element
-	 * child to its {@link XliffInlineElementStrategyAbstract}. Called by strategies to
-	 * recurse into an element's own children.
-	 *
-	 * @param parent the element whose children to render.
-	 * @param out the buffer to append to.
-	 * @param depth the current recursion depth.
-	 */
-	public void appendChildren(Element parent, StringBuilder out, int depth) {
-		if (depth > MAX_DEPTH) {
-			return;
-		}
-		for (Node child = parent.getFirstChild(); child != null; child = child.getNextSibling()) {
-			switch (child.getNodeType()) {
-				case Node.TEXT_NODE, Node.CDATA_SECTION_NODE -> out.append(child.getNodeValue());
-				case Node.ELEMENT_NODE -> {
-					Element childElement = (Element) child;
-					this.strategyFor(childElement).append(childElement, out, depth, this);
-				}
-				default -> {
-					// Comments and processing instructions carry no text.
-				}
-			}
-		}
-	}
-
-	/**
-	 * Resolves the original data referenced by {@code attribute} (one of
-	 * {@code dataRef}, {@code dataRefStart}, {@code dataRefEnd}) via the
-	 * element's enclosing {@code <unit>}'s {@code <originalData>}.
-	 *
-	 * @param element the element carrying the reference attribute.
-	 * @param attribute the attribute holding the {@code <data>} id.
-	 * @return the referenced data's rendered content, or {@code ""} if none.
-	 */
-	public String originalData(Element element, String attribute) {
-		String ref = element.getAttribute(attribute);
-		if (ref.isEmpty()) {
-			return "";
-		}
-		Element unit = this.enclosingUnit(element);
-		Element originalData = unit != null ? XliffDocument.firstChildElement(unit, "originalData") : null;
-		if (originalData == null) {
-			return "";
-		}
-		for (Node data = originalData.getFirstChild(); data != null; data = data.getNextSibling()) {
-			if (data instanceof Element dataElement
-				&& "data".equals(XliffDocument.elementName(dataElement))
-				&& ref.equals(dataElement.getAttribute("id"))
-			) {
-				StringBuilder out = new StringBuilder();
-				this.appendChildren(dataElement, out, MAX_DEPTH - 1);
-				return out.toString();
-			}
-		}
-		return "";
-	}
-
-	/**
-	 * Finds the closest ancestor <unit> element, or null outside of one.
-	 */
-	private @Nullable Element enclosingUnit(Element element) {
-		Node node = element.getParentNode();
-		while (node instanceof Element current) {
-			if ("unit".equals(XliffDocument.elementName(current))) {
-				return current;
-			}
-			node = current.getParentNode();
-		}
-		return null;
-	}
-
-	/**
-	 * Choose the rendering strategy for an inline element by its local name.
-	 */
-	private XliffInlineElementStrategyAbstract strategyFor(Element element) {
-		String name = XliffDocument.elementName(element);
-		return switch (name) {
-			case "sm", "em" -> ANNOTATION_MARKER;
-			case "cp" -> CODE_POINT;
-			case "pc" -> PAIRED_CODE;
-			default -> GENERIC;
-		};
+	@Override
+	public void append(Element element, StringBuilder out, int depth) {
+		this.appendChildren(element, out, depth);
 	}
 }

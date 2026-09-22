@@ -3,7 +3,6 @@
 
 package io.github.alaugks.spring.messagesource.xliff.inline;
 
-import io.github.alaugks.spring.messagesource.xliff.XliffInlineRenderer;
 import org.w3c.dom.Element;
 
 /**
@@ -18,11 +17,11 @@ import org.w3c.dom.Element;
 public final class GenericInlineElementStrategy extends XliffInlineElementStrategyAbstract {
 
 	@Override
-	public void append(Element element, StringBuilder out, int depth, XliffInlineRenderer renderer) {
+	public void append(Element element, StringBuilder out, int depth) {
 		if (element.hasChildNodes()) {
-			this.appendChildren(element, out, depth + 1, renderer);
+			this.appendChildren(element, out, depth + 1);
 		} else {
-			String data = this.originalData(element, "dataRef", renderer);
+			String data = this.originalData(element, "dataRef");
 			if (!data.isEmpty()) {
 				out.append(data);
 				return;

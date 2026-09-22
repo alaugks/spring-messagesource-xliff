@@ -131,14 +131,7 @@ abstract class XliffDocument {
 	 * @return the first matching child element, or {@code null} if none.
 	 */
 	protected static @Nullable Element firstChildElement(Element parent, String localName) {
-		Node child = parent.getFirstChild();
-		while (child != null) {
-			if (child.getNodeType() == Node.ELEMENT_NODE && localName.equals(elementName(child))) {
-				return (Element) child;
-			}
-			child = child.getNextSibling();
-		}
-		return null;
+		return XliffElementSupport.firstChildElement(parent, localName);
 	}
 
 	/**
@@ -149,8 +142,7 @@ abstract class XliffDocument {
 	 * @return the local name, or the node name as fallback.
 	 */
 	protected static String elementName(Node node) {
-		String localName = node.getLocalName();
-		return localName != null ? localName : node.getNodeName();
+		return XliffElementSupport.elementName(node);
 	}
 
 	/**
