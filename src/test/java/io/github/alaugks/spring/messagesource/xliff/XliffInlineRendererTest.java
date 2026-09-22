@@ -87,6 +87,11 @@ class XliffInlineRendererTest {
 		}
 
 		@Test
+		void test_pc_without_original_data_falls_back_to_equiv() {
+			assertThat(units).containsEntry("pc_equiv", "Klicke <a>hier</a>");
+		}
+
+		@Test
 		void test_sc_and_ec_use_original_data() {
 			assertThat(units).containsEntry("sc_ec_data_ref", "[Text]");
 		}

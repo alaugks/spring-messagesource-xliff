@@ -32,6 +32,12 @@
                 <target>Klicke <pc id="1" dataRefStart="d1" dataRefEnd="d2">hier</pc></target>
             </segment>
         </unit>
+        <unit id="pc_equiv">
+            <segment>
+                <source>Click <pc id="1" equivStart="&lt;a&gt;" equivEnd="&lt;/a&gt;">here</pc></source>
+                <target>Klicke <pc id="1" equivStart="&lt;a&gt;" equivEnd="&lt;/a&gt;">hier</pc></target>
+            </segment>
+        </unit>
         <unit id="sc_ec_data_ref">
             <originalData>
                 <data id="d1">[</data>
