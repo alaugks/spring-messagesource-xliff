@@ -15,24 +15,20 @@ import org.w3c.dom.Element;
  * element becomes the original data referenced by {@code dataRef} (2.x),
  * falling back to {@code equiv} (2.x) / {@code equiv-text} (1.2).
  */
-public final class XliffGenericInlineElementStrategy extends XliffInlineElementStrategyAbstract {
+public final class GenericInlineElementStrategy extends XliffInlineElementStrategyAbstract {
 
 	@Override
 	public void append(Element element, StringBuilder out, int depth, XliffInlineRenderer renderer) {
 		if (element.hasChildNodes()) {
 			this.appendChildren(element, out, depth + 1, renderer);
 		} else {
-			out.append(this.placeholder(element, renderer));
+			String data = this.originalData(element, "dataRef", renderer);
+			if (!data.isEmpty()) {
+				out.append(data);
+				return;
+			}
+			String equiv = element.getAttribute("equiv");
+			out.append(equiv.isEmpty() ? element.getAttribute("equiv-text") : equiv);
 		}
-	}
-
-	// Resolves an empty element's replacement text: dataRef, then equiv, then equiv-text.
-	private String placeholder(Element element, XliffInlineRenderer renderer) {
-		String data = this.originalData(element, "dataRef", renderer);
-		if (!data.isEmpty()) {
-			return data;
-		}
-		String equiv = element.getAttribute("equiv");
-		return equiv.isEmpty() ? element.getAttribute("equiv-text") : equiv;
 	}
 }

@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
  * Renders {@code <sm>}/{@code <em>} (2.x) annotation markers, which contribute
  * no text.
  */
-public final class XliffAnnotationMarkerElementStrategy extends XliffInlineElementStrategyAbstract {
+public final class AnnotationMarkerElementStrategy extends XliffInlineElementStrategyAbstract {
 
 	@Override
 	public void append(Element element, StringBuilder out, int depth, XliffInlineRenderer renderer) {

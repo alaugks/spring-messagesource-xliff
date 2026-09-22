@@ -3,11 +3,11 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import io.github.alaugks.spring.messagesource.xliff.inline.XliffAnnotationMarkerElementStrategy;
-import io.github.alaugks.spring.messagesource.xliff.inline.XliffCodePointElementStrategy;
-import io.github.alaugks.spring.messagesource.xliff.inline.XliffGenericInlineElementStrategy;
+import io.github.alaugks.spring.messagesource.xliff.inline.AnnotationMarkerElementStrategy;
+import io.github.alaugks.spring.messagesource.xliff.inline.CodePointElementStrategy;
+import io.github.alaugks.spring.messagesource.xliff.inline.GenericInlineElementStrategy;
+import io.github.alaugks.spring.messagesource.xliff.inline.PairedCodeElementStrategy;
 import io.github.alaugks.spring.messagesource.xliff.inline.XliffInlineElementStrategyAbstract;
-import io.github.alaugks.spring.messagesource.xliff.inline.XliffPairedCodeElementStrategy;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -42,10 +42,10 @@ public final class XliffInlineRenderer {
 
 	private static final int MAX_DEPTH = 32;
 
-	private static final XliffInlineElementStrategyAbstract ANNOTATION_MARKER = new XliffAnnotationMarkerElementStrategy();
-	private static final XliffInlineElementStrategyAbstract CODE_POINT = new XliffCodePointElementStrategy();
-	private static final XliffInlineElementStrategyAbstract PAIRED_CODE = new XliffPairedCodeElementStrategy();
-	private static final XliffInlineElementStrategyAbstract GENERIC = new XliffGenericInlineElementStrategy();
+	private static final XliffInlineElementStrategyAbstract ANNOTATION_MARKER = new AnnotationMarkerElementStrategy();
+	private static final XliffInlineElementStrategyAbstract CODE_POINT = new CodePointElementStrategy();
+	private static final XliffInlineElementStrategyAbstract PAIRED_CODE = new PairedCodeElementStrategy();
+	private static final XliffInlineElementStrategyAbstract GENERIC = new GenericInlineElementStrategy();
 
 	/**
 	 * Renders the element's content as text.
@@ -118,7 +118,9 @@ public final class XliffInlineRenderer {
 		return "";
 	}
 
-	// Finds the closest ancestor <unit> element, or null outside of one.
+	/**
+	 * Finds the closest ancestor <unit> element, or null outside of one.
+	 */
 	private @Nullable Element enclosingUnit(Element element) {
 		Node node = element.getParentNode();
 		while (node instanceof Element current) {
@@ -130,7 +132,9 @@ public final class XliffInlineRenderer {
 		return null;
 	}
 
-	// Picks the rendering strategy for an inline element by its local name.
+	/**
+	 * Choose the rendering strategy for an inline element by its local name.
+	 */
 	private XliffInlineElementStrategyAbstract strategyFor(Element element) {
 		String name = XliffDocument.elementName(element);
 		return switch (name) {

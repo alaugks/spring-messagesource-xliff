@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
  * data referenced by {@code dataRefStart}/{@code dataRefEnd}, falling back to
  * {@code equivStart}/{@code equivEnd} when no original data is referenced.
  */
-public final class XliffPairedCodeElementStrategy extends XliffInlineElementStrategyAbstract {
+public final class PairedCodeElementStrategy extends XliffInlineElementStrategyAbstract {
 
 	@Override
 	public void append(Element element, StringBuilder out, int depth, XliffInlineRenderer renderer) {
@@ -20,7 +20,9 @@ public final class XliffPairedCodeElementStrategy extends XliffInlineElementStra
 		out.append(this.boundary(element, "dataRefEnd", "equivEnd", renderer));
 	}
 
-	// Resolves one pc boundary: dataRef attribute via <originalData>, falling back to the equiv attribute.
+	/**
+	 * Resolves one pc boundary: dataRef attribute via <originalData>, falling back to the equiv attribute.
+	 */
 	private String boundary(Element element, String dataRefAttribute, String equivAttribute, XliffInlineRenderer renderer) {
 		String data = this.originalData(element, dataRefAttribute, renderer);
 		return !data.isEmpty() ? data : element.getAttribute(equivAttribute);

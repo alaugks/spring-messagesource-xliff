@@ -9,7 +9,7 @@ import org.w3c.dom.Element;
 /**
  * Renders {@code <cp hex="..."/>} (2.x) as the referenced code point.
  */
-public final class XliffCodePointElementStrategy extends XliffInlineElementStrategyAbstract {
+public final class CodePointElementStrategy extends XliffInlineElementStrategyAbstract {
 
 	@Override
 	public void append(Element element, StringBuilder out, int depth, XliffInlineRenderer renderer) {
