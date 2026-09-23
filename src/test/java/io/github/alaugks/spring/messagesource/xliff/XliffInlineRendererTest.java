@@ -163,6 +163,20 @@ class XliffInlineRendererTest {
 					"Hallo {0}!"
 				),
 				Arguments.of(
+					"ph_is_replaced_by_original_data_from_source",
+					"""
+					<unit id="ph_data_ref" name="code">
+						<originalData>
+							<data id="d1">{0}</data>
+						</originalData>
+						<segment>
+							<source>Hello <ph id="1" dataRef="d1"/>!</source>
+						</segment>
+					</unit>
+					""",
+					"Hello {0}!"
+				),
+				Arguments.of(
 					"ph_with_unknown_data_ref_contributes_nothing",
 					"""
 					<unit id="ph_unknown_data_ref" name="code">
