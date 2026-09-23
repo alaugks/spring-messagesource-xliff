@@ -20,7 +20,7 @@ import org.w3c.dom.Node;
  */
 public abstract class XliffInlineElementStrategyAbstract implements XliffInlineElementStrategyInterface {
 
-	private static final int MAX_DEPTH = 32;
+	private static final int MAX_DEPTH = 8;
 
 	/**
 	 * Appends the rendered children of the parent, dispatching each element
