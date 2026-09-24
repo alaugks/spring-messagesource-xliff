@@ -194,7 +194,7 @@ The `order` attribute on `<target/>` defines how target segments are composed. S
 
 XLIFF 2.2 adds the PGS module. It annotates a `<unit/>` with a `pgs:switch`, so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument, for example a count or a gender. This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
 
-⚠️ See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
+See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
 
 #### Markup
 
