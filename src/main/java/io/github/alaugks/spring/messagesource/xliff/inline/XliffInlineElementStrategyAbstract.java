@@ -4,7 +4,7 @@
 package io.github.alaugks.spring.messagesource.xliff.inline;
 
 import io.github.alaugks.spring.messagesource.xliff.XliffElementSupport;
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -64,33 +64,24 @@ public abstract class XliffInlineElementStrategyAbstract implements XliffInlineE
 		if (ref.isEmpty()) {
 			return "";
 		}
-		Element unit = this.enclosingUnit(element);
-		Element originalData = unit != null ? XliffElementSupport.firstChildElement(unit, "originalData") : null;
-		if (originalData == null) {
-			return "";
+		Element originalData = Objects.requireNonNull(
+			XliffElementSupport.firstChildElement(this.enclosingUnit(element), "originalData")
+		);
+		Node data = originalData.getFirstChild();
+		while (!(data instanceof Element dataElement && ref.equals(dataElement.getAttribute("id")))) {
+			data = data.getNextSibling();
 		}
-		for (Node data = originalData.getFirstChild(); data != null; data = data.getNextSibling()) {
-			if (data instanceof Element dataElement
-				&& "data".equals(XliffElementSupport.elementName(dataElement))
-				&& ref.equals(dataElement.getAttribute("id"))
-			) {
-				StringBuilder out = new StringBuilder();
-				this.appendChildren(dataElement, out, MAX_DEPTH - 1);
-				return out.toString();
-			}
-		}
-		return "";
+		StringBuilder out = new StringBuilder();
+		this.appendChildren((Element) data, out, MAX_DEPTH - 1);
+		return out.toString();
 	}
 
-	// Finds the closest ancestor <unit> element, or null outside of one.
-	private @Nullable Element enclosingUnit(Element element) {
-		Node node = element.getParentNode();
-		while (node instanceof Element current) {
-			if ("unit".equals(XliffElementSupport.elementName(current))) {
-				return current;
-			}
-			node = current.getParentNode();
+	// Finds the closest ancestor <unit> element. A dataRef is only valid inside a <unit>.
+	private Element enclosingUnit(Element element) {
+		Element current = (Element) element.getParentNode();
+		while (!"unit".equals(XliffElementSupport.elementName(current))) {
+			current = (Element) current.getParentNode();
 		}
-		return null;
+		return current;
 	}
 }

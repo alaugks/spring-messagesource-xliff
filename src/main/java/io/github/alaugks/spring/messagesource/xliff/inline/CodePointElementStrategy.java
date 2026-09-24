@@ -12,13 +12,6 @@ public final class CodePointElementStrategy extends XliffInlineElementStrategyAb
 
 	@Override
 	public void append(Element element, StringBuilder out, int depth) {
-		try {
-			int codePoint = Integer.parseInt(element.getAttribute("hex").trim(), 16);
-			if (Character.isValidCodePoint(codePoint)) {
-				out.appendCodePoint(codePoint);
-			}
-		} catch (NumberFormatException e) {
-			// Not a hex number; skipped.
-		}
+		out.appendCodePoint(Integer.parseInt(element.getAttribute("hex"), 16));
 	}
 }
