@@ -189,6 +189,31 @@ class XliffInlineRendererTest {
 					"Hallo !"
 				),
 				Arguments.of(
+					"ph_with_data_ref_not_in_original_data_contributes_nothing",
+					"""
+					<unit id="ph_data_ref_mismatch" name="code">
+						<originalData>
+							<data id="d1">{0}</data>
+						</originalData>
+						<segment>
+							<source>Hello <ph id="1" dataRef="missing"/>!</source>
+						</segment>
+					</unit>
+					""",
+					"Hello !"
+				),
+				Arguments.of(
+					"comment_in_source_contributes_no_text",
+					"""
+					<unit id="comment" name="code">
+						<segment>
+							<source>Hello<!-- ignored --> World</source>
+						</segment>
+					</unit>
+					""",
+					"Hello World"
+				),
+				Arguments.of(
 					"ph_without_original_data_falls_back_to_equiv",
 					"""
 					<unit id="ph_equiv" name="code">
@@ -315,6 +340,44 @@ class XliffInlineRendererTest {
 					"Click <a href=\"https://example.com\" class=\"btn\">here</a> to view the profile of {0}."
 				)
 			);
+		}
+	}
+
+	@Nested
+	class OutsideUnit {
+
+		@Test
+		void test_data_ref_outside_of_unit_contributes_nothing() {
+			Element source = TestHelper.parseDocument(
+				"<source>Hello <ph id=\"1\" dataRef=\"d1\"/>!</source>"
+			).getDocumentElement();
+
+			assertThat(new XliffInlineRenderer().render(source)).isEqualTo("Hello !");
+		}
+	}
+
+	@Nested
+	class OriginalDataWithForeignElement {
+
+		// The XSD rejects foreign elements in <originalData>, so the unit is rendered unvalidated.
+		@Test
+		void test_non_data_element_in_original_data_is_skipped() {
+			Element unit = TestHelper.parseDocument(
+				"""
+				<unit id="foreign" name="code">
+					<originalData>
+						<foreign/>
+						<data id="d1">{0}</data>
+					</originalData>
+					<segment>
+						<source>Hello <ph id="1" dataRef="d1"/>!</source>
+					</segment>
+				</unit>
+				"""
+			).getDocumentElement();
+			Element source = (Element) unit.getElementsByTagName("source").item(0);
+
+			assertThat(new XliffInlineRenderer().render(source)).isEqualTo("Hello {0}!");
 		}
 	}
 
