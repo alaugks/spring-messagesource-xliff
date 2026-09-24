@@ -107,6 +107,7 @@ public class MessageSourceConfig {
 * Files live in the resource folder with extension `xliff` or `xlf`.
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
 * Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `enableSchemaValidation()`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
+* ⚠️ Valid XLIFF is a prerequisite. The library does not defend against invalid input. Such files may fail with an exception or produce undefined results. Enable the schema validation with enableSchemaValidation() during development and in tests to catch invalid files early. See the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java).
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
 * Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`), **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
 
