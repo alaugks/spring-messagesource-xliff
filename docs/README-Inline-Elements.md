@@ -177,8 +177,8 @@ Without `dataRef` the `equiv` attribute is used.
 ```xml
 <unit id="ph_equiv" name="code">
     <segment>
-        <source>Line<ph id="1" equiv="&amp;#10;"/>end</source>
-        <target>Zeile<ph id="1" equiv="&amp;#10;"/>Ende</target>
+        <source>Line<ph id="1" equiv="&#10;"/>end</source>
+        <target>Zeile<ph id="1" equiv="&#10;"/>Ende</target>
     </segment>
 </unit>
 ```
