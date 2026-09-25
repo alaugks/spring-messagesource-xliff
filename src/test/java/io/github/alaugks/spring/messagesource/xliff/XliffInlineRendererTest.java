@@ -220,12 +220,12 @@ class XliffInlineRendererTest {
 					"""
 					<unit id="pc_equiv" name="code">
 						<segment>
-							<source>Click <pc id="1" equivStart="&lt;a&gt;" equivEnd="&lt;/a&gt;">here</pc></source>
-							<target>Klicke <pc id="1" equivStart="&lt;a&gt;" equivEnd="&lt;/a&gt;">hier</pc></target>
+							<source>Click <pc id="1" equivStart="&lt;a href=&quot;{0}&quot;&gt;" equivEnd="&lt;/a&gt;">here</pc></source>
+							<target>Klicke <pc id="1" equivStart="&lt;a href=&quot;{0}&quot;&gt;" equivEnd="&lt;/a&gt;">hier</pc></target>
 						</segment>
 					</unit>
 					""",
-					"Klicke <a>hier</a>"
+					"Klicke <a href=\"{0}\">hier</a>"
 				),
 				Arguments.of(
 					"sc_and_ec_use_original_data",

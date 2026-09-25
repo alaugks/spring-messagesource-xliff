@@ -125,7 +125,7 @@ The key is the application-facing resource name. XLIFF separates the internal id
 
 ### Translation Value
 
-The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are not interpreted, and the value is trimmed unless `xml:space="preserve"` is set. See [Markup](#markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
+The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are reconstructed as plain text, and the value is trimmed unless `xml:space="preserve"` is set. See [Markup](#markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
 
 #### XLIFF 1.2
 
@@ -197,30 +197,9 @@ XLIFF 2.2 adds the PGS module. It annotates a `<unit/>` with a `pgs:switch`, so 
 
 #### Markup
 
-Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**; embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements are reconstructed as plain text (**prototype**):
+Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**. Embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements are reconstructed as plain text: placeholders and codes are replaced by their original data, wrapping elements such as `<g/>` or `<mrk/>` keep their text, and annotation markers are dropped.
 
-| Element                                         | Result                                                                                            |
-|-------------------------------------------------|---------------------------------------------------------------------------------------------------|
-| `<pc/>` (2.x)                                   | Content wrapped in the `<originalData/>` referenced by `dataRefStart` / `dataRefEnd`.             |
-| `<ph/>`, `<sc/>`, `<ec/>` (2.x), `<x/>`, `<bx/>`, `<ex/>` (1.2) | Referenced `<originalData/>` (`dataRef`), else `equiv` (2.x) / `equiv-text` (1.2), else nothing. |
-| `<cp hex="…"/>` (2.x)                           | The referenced code point.                                                                        |
-| `<g/>`, `<mrk/>`, `<ph>…</ph>`, `<bpt/>`, … (1.2) | Their content.                                                                                  |
-| `<sm/>`, `<em/>` (2.x)                          | Nothing.                                                                                          |
-
-Example (2.x): `Click <pc dataRefStart="d1" dataRefEnd="d2">here</pc>` with `d1` = `<a href="/x">` and `d2` = `</a>` → `Click <a href="/x">here</a>`. A `<ph dataRef="d3"/>` with `d3` = `{0}` → `{0}`, usable as a `MessageFormat` argument. `CDATA` or escaped markup keeps working as before.
-
-Text-wrapping inline elements, most notably the annotation marker `<mrk/>`, are not processed, but their **text is kept**: the tag is dropped, the spanned text remains. E.g. `Hallo <mrk ...>Welt</mrk>!` → `Hallo Welt!`.
-
-```xml
-<unit id="1" name="teaser">
-    <segment>
-        <source><![CDATA[Read <strong>more</strong>]]></source>
-        <target><![CDATA[<strong>Mehr</strong> lesen]]></target>
-    </segment>
-</unit>
-```
-
-**Result:** `teaser` → `<strong>Mehr</strong> lesen`
+⚠️ See [XLIFF Inline Elements](docs/README-Inline-Elements.md) for all rules and examples.
 
 #### Whitespace
 
