@@ -284,7 +284,7 @@ class XliffInlineRendererTest {
 					"""
 					<unit id="html-without-cdata" name="code">
 						<originalData>
-							<data id="d1">&lt;a href="https://example.com" class="btn"&gt;</data>
+							<data id="d1">&lt;a href="{0}" class="btn"&gt;</data>
 							<data id="d2">&lt;/a&gt;</data>
 							<data id="d3">{0}</data>
 						</originalData>
@@ -294,14 +294,14 @@ class XliffInlineRendererTest {
 						</segment>
 					</unit>
 					""",
-					"Click <a href=\"https://example.com\" class=\"btn\">here</a> to view the profile of {0}."
+					"Click <a href=\"{0}\" class=\"btn\">here</a> to view the profile of {0}."
 				),
 				Arguments.of(
 					"cdata_stays_verbatim_html_with_cdata",
 					"""
 					<unit id="html-with-cdata" name="code">
 						<originalData>
-							<data id="d1"><![CDATA[<a href="https://example.com" class="btn">]]></data>
+							<data id="d1"><![CDATA[<a href="{0}" class="btn">]]></data>
 							<data id="d2"><![CDATA[</a>]]></data>
 							<data id="d3"><![CDATA[{0}]]></data>
 						</originalData>
@@ -311,7 +311,7 @@ class XliffInlineRendererTest {
 						</segment>
 					</unit>
 					""",
-					"Click <a href=\"https://example.com\" class=\"btn\">here</a> to view the profile of {0}."
+					"Click <a href=\"{0}\" class=\"btn\">here</a> to view the profile of {0}."
 				)
 			);
 		}

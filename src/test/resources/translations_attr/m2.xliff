@@ -20,6 +20,10 @@
                 <target>
                     <![CDATA[Es gibt {0,choice,0#keine Datei|1#eine Datei|1<{0,number,integer} Dateien}.]]></target>
             </trans-unit>
+            <trans-unit id="4" resname="greetings">
+                <source>Hello {0} {1}</source>
+                <target>Hallo {0} {1}</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

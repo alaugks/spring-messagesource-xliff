@@ -64,7 +64,7 @@ Inline elements are always rendered. Before, only the text nodes were taken, so 
 An empty placeholder is replaced by `equiv-text`.
 
 ```xml
-<trans-unit id="x_equiv_text" resname="code">
+<trans-unit id="x_equiv_text" resname="x_equiv_text">
     <source>Hello <x id="1" equiv-text="{0}"/>!</source>
     <target>Hallo <x id="1" equiv-text="{0}"/>!</target>
 </trans-unit>
@@ -72,10 +72,24 @@ An empty placeholder is replaced by `equiv-text`.
 
 Result: `Hallo {0}!`
 
+The placeholder is resolved by the message argument. With `Max`: `Hallo Max!`
+
+**getMessage()**
+
+```java
+messageSource.getMessage("x_equiv_text", new Object[] { "Max" }, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{x_equiv_text('Max')}"></p>
+```
+
 Without `equiv-text` the element contributes nothing:
 
 ```xml
-<trans-unit id="x_without_equiv_text" resname="code">
+<trans-unit id="x_without_equiv_text" resname="x_without_equiv_text">
     <source>Hello <x id="1"/>!</source>
     <target>Hallo <x id="1"/>!</target>
 </trans-unit>
@@ -83,12 +97,24 @@ Without `equiv-text` the element contributes nothing:
 
 Result: `Hallo !`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("x_without_equiv_text", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{x_without_equiv_text}"></p>
+```
+
 ### `<bx/>` and `<ex/>`
 
 Empty start and end elements are replaced by `equiv-text`.
 
 ```xml
-<trans-unit id="bx_ex_equiv_text" resname="code">
+<trans-unit id="bx_ex_equiv_text" resname="bx_ex_equiv_text">
     <source>A <bx id="1" equiv-text="&lt;b&gt;"/>text<ex id="1" equiv-text="&lt;/b&gt;"/></source>
     <target>Ein <bx id="1" equiv-text="&lt;b&gt;"/>Text<ex id="1" equiv-text="&lt;/b&gt;"/></target>
 </trans-unit>
@@ -96,12 +122,24 @@ Empty start and end elements are replaced by `equiv-text`.
 
 Result: `Ein <b>Text</b>`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("bx_ex_equiv_text", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:utext="#{bx_ex_equiv_text}"></p>
+```
+
 ### `<g/>`
 
 The tag is dropped, the wrapped text is kept.
 
 ```xml
-<trans-unit id="g_keeps_text" resname="code">
+<trans-unit id="g_keeps_text" resname="g_keeps_text">
     <source>A <g id="1" ctype="bold">text</g></source>
     <target>Ein <g id="1" ctype="bold">Text</g></target>
 </trans-unit>
@@ -109,12 +147,24 @@ The tag is dropped, the wrapped text is kept.
 
 Result: `Ein Text`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("g_keeps_text", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{g_keeps_text}"></p>
+```
+
 ### `<ph>` with native content
 
 The native content of the placeholder is used.
 
 ```xml
-<trans-unit id="ph_native_content" resname="code">
+<trans-unit id="ph_native_content" resname="ph_native_content">
     <source>Hello <ph id="1">{0}</ph></source>
     <target>Hallo <ph id="1">{0}</ph></target>
 </trans-unit>
@@ -122,12 +172,26 @@ The native content of the placeholder is used.
 
 Result: `Hallo {0}`
 
+The placeholder is resolved by the message argument. With `Max`: `Hallo Max`
+
+**getMessage()**
+
+```java
+messageSource.getMessage("ph_native_content", new Object[] { "Max" }, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{ph_native_content('Max')}"></p>
+```
+
 ### `<bpt>` and `<ept>`
 
 Start and end elements with native content keep that content.
 
 ```xml
-<trans-unit id="bpt_ept_native_content" resname="code">
+<trans-unit id="bpt_ept_native_content" resname="bpt_ept_native_content">
     <source>A <bpt id="1">&lt;b&gt;</bpt>text<ept id="1">&lt;/b&gt;</ept></source>
     <target>Ein <bpt id="1">&lt;b&gt;</bpt>Text<ept id="1">&lt;/b&gt;</ept></target>
 </trans-unit>
@@ -135,18 +199,42 @@ Start and end elements with native content keep that content.
 
 Result: `Ein <b>Text</b>`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("bpt_ept_native_content", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:utext="#{bpt_ept_native_content}"></p>
+```
+
 ### `<mrk/>`
 
 The tag is dropped, the wrapped text is kept.
 
 ```xml
-<trans-unit id="mrk_keeps_text" resname="code">
+<trans-unit id="mrk_keeps_text" resname="mrk_keeps_text">
     <source>A <mrk mtype="term">term</mrk></source>
     <target>Ein <mrk mtype="term">Begriff</mrk></target>
 </trans-unit>
 ```
 
 Result: `Ein Begriff`
+
+**getMessage()**
+
+```java
+messageSource.getMessage("mrk_keeps_text", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{mrk_keeps_text}"></p>
+```
 
 ## XLIFF 2.x
 
@@ -155,7 +243,7 @@ Result: `Ein Begriff`
 The placeholder is replaced by the `<data/>` it references via `dataRef`.
 
 ```xml
-<unit id="ph_data_ref" name="code">
+<unit id="ph_data_ref" name="ph_data_ref">
     <originalData>
         <data id="d1">{0}</data>
     </originalData>
@@ -168,6 +256,20 @@ The placeholder is replaced by the `<data/>` it references via `dataRef`.
 
 Result: `Hallo {0}!`
 
+The placeholder is resolved by the message argument. With `Max`: `Hallo Max!`
+
+**getMessage()**
+
+```java
+messageSource.getMessage("ph_data_ref", new Object[] { "Max" }, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{ph_data_ref('Max')}"></p>
+```
+
 Without a `<target/>` the `<source/>` is rendered the same way, result: `Hello {0}!`
 
 ### `<ph/>` with `equiv` fallback
@@ -175,7 +277,7 @@ Without a `<target/>` the `<source/>` is rendered the same way, result: `Hello {
 Without `dataRef` the `equiv` attribute is used.
 
 ```xml
-<unit id="ph_equiv" name="code">
+<unit id="ph_equiv" name="ph_equiv">
     <segment>
         <source>Line<ph id="1" equiv="&#10;"/>end</source>
         <target>Zeile<ph id="1" equiv="&#10;"/>Ende</target>
@@ -185,12 +287,24 @@ Without `dataRef` the `equiv` attribute is used.
 
 Result: `Zeile` + line feed + `Ende`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("ph_equiv", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{ph_equiv}"></p>
+```
+
 ### `<pc/>` with original data
 
 The content of the `<pc/>` is wrapped in the original data referenced by `dataRefStart` and `dataRefEnd`.
 
 ```xml
-<unit id="pc_data_ref" name="code">
+<unit id="pc_data_ref" name="pc_data_ref">
     <originalData>
         <data id="d1">&lt;a href="/x"&gt;</data>
         <data id="d2">&lt;/a&gt;</data>
@@ -204,12 +318,24 @@ The content of the `<pc/>` is wrapped in the original data referenced by `dataRe
 
 Result: `Klicke <a href="/x">hier</a>`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("pc_data_ref", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:utext="#{pc_data_ref}"></p>
+```
+
 ### `<pc/>` with `equivStart` / `equivEnd` fallback
 
 Without original data the `equivStart` and `equivEnd` attributes are used.
 
 ```xml
-<unit id="pc_equiv" name="code">
+<unit id="pc_equiv" name="pc_equiv">
     <segment>
         <source>Click <pc id="1" equivStart="&lt;a&gt;" equivEnd="&lt;/a&gt;">here</pc></source>
         <target>Klicke <pc id="1" equivStart="&lt;a&gt;" equivEnd="&lt;/a&gt;">hier</pc></target>
@@ -219,12 +345,24 @@ Without original data the `equivStart` and `equivEnd` attributes are used.
 
 Result: `Klicke <a>hier</a>`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("pc_equiv", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:utext="#{pc_equiv}"></p>
+```
+
 ### `<sc/>` and `<ec/>`
 
 Like `<pc/>`, but start and end are separate elements. They are needed when start and end overlap other elements or span segments. Each one is replaced by its `dataRef`.
 
 ```xml
-<unit id="sc_ec_data_ref" name="code">
+<unit id="sc_ec_data_ref" name="sc_ec_data_ref">
     <originalData>
         <data id="d1">[</data>
         <data id="d2">]</data>
@@ -238,12 +376,24 @@ Like `<pc/>`, but start and end are separate elements. They are needed when star
 
 Result: `[Text]`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("sc_ec_data_ref", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{sc_ec_data_ref}"></p>
+```
+
 ### `<cp/>`
 
 Represents a character that is not allowed in XML. The `hex` attribute is turned into the code point.
 
 ```xml
-<unit id="cp_code_point" name="code">
+<unit id="cp_code_point" name="cp_code_point">
     <segment>
         <source>A<cp hex="0007"/>B</source>
         <target>A<cp hex="0007"/>B</target>
@@ -253,12 +403,24 @@ Represents a character that is not allowed in XML. The `hex` attribute is turned
 
 Result: `A` + U+0007 + `B`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("cp_code_point", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{cp_code_point}"></p>
+```
+
 ### `<sm/>`, `<em/>` and `<mrk/>`
 
 Annotation markers carry metadata (comment, glossary term, …) but no text and no original data. The markers are dropped, the text between them and the text wrapped by `<mrk/>` is kept.
 
 ```xml
-<unit id="annotation_markers" name="code">
+<unit id="annotation_markers" name="annotation_markers">
     <segment>
         <source>A <sm id="m1"/>B<em startRef="m1"/> <mrk id="m2" type="term">C</mrk></source>
         <target>A <sm id="m1"/>B<em startRef="m1"/> <mrk id="m2" type="term">C</mrk></target>
@@ -267,6 +429,18 @@ Annotation markers carry metadata (comment, glossary term, …) but no text and 
 ```
 
 Result: `A B C`
+
+**getMessage()**
+
+```java
+messageSource.getMessage("annotation_markers", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:text="#{annotation_markers}"></p>
+```
 
 A `<message/>` needs no place for a comment or a glossary reference, so nothing is lost by dropping the markers.
 
@@ -277,7 +451,7 @@ A `<message/>` needs no place for a comment or a glossary reference, so nothing 
 `CDATA` sections are taken verbatim. This works the same in XLIFF 1.2 and 2.x.
 
 ```xml
-<unit id="cdata_verbatim" name="code">
+<unit id="cdata_verbatim" name="cdata_verbatim">
     <segment>
         <source><![CDATA[<b>Bold</b>]]></source>
         <target><![CDATA[<b>Fett</b>]]></target>
@@ -287,12 +461,24 @@ A `<message/>` needs no place for a comment or a glossary reference, so nothing 
 
 Result: `<b>Fett</b>`
 
+**getMessage()**
+
+```java
+messageSource.getMessage("cdata_verbatim", null, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:utext="#{cdata_verbatim}"></p>
+```
+
 ### HTML in `<data/>` (escaped)
 
 HTML can be kept in the original data and referenced from `<pc/>` and `<ph/>`. This is the form the XLIFF 2.x standard expects.
 
 ```xml
-<unit id="html-without-cdata" name="code">
+<unit id="html-without-cdata" name="html-without-cdata">
     <originalData>
         <data id="d1">&lt;a href="https://example.com" class="btn"&gt;</data>
         <data id="d2">&lt;/a&gt;</data>
@@ -307,12 +493,26 @@ HTML can be kept in the original data and referenced from `<pc/>` and `<ph/>`. T
 
 Result: `Click <a href="https://example.com" class="btn">here</a> to view the profile of {0}.`
 
+The placeholder is resolved by the message argument. With `Max`: `Click <a href="https://example.com" class="btn">here</a> to view the profile of Max.`
+
+**getMessage()**
+
+```java
+messageSource.getMessage("html-without-cdata", new Object[] { "Max" }, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:utext="#{html-without-cdata('Max')}"></p>
+```
+
 ### HTML in `<data/>` (CDATA)
 
 The same, with `CDATA` instead of escaping. The result is identical.
 
 ```xml
-<unit id="html-with-cdata" name="code">
+<unit id="html-with-cdata" name="html-with-cdata">
     <originalData>
         <data id="d1"><![CDATA[<a href="https://example.com" class="btn">]]></data>
         <data id="d2"><![CDATA[</a>]]></data>
@@ -326,6 +526,20 @@ The same, with `CDATA` instead of escaping. The result is identical.
 ```
 
 Result: `Click <a href="https://example.com" class="btn">here</a> to view the profile of {0}.`
+
+The placeholder is resolved by the message argument. With `Max`: `Click <a href="https://example.com" class="btn">here</a> to view the profile of Max.`
+
+**getMessage()**
+
+```java
+messageSource.getMessage("html-with-cdata", new Object[] { "Max" }, Locale.forLanguageTag("de"));
+```
+
+**Thymeleaf**
+
+```html
+<p th:utext="#{html-with-cdata('Max')}"></p>
+```
 
 ## Limits and Edge Cases
 
