@@ -74,13 +74,13 @@ Result: `Hallo {0}!`
 
 The placeholder is resolved by the message argument. With `Max`: `Hallo Max!`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("x_equiv_text", new Object[] { "Max" }, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{x_equiv_text('Max')}"></p>
@@ -97,13 +97,13 @@ Without `equiv-text` the element contributes nothing:
 
 Result: `Hallo !`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("x_without_equiv_text", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{x_without_equiv_text}"></p>
@@ -122,13 +122,13 @@ Empty start and end elements are replaced by `equiv-text`.
 
 Result: `Ein <b>Text</b>`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("bx_ex_equiv_text", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:utext="#{bx_ex_equiv_text}"></p>
@@ -147,13 +147,13 @@ The tag is dropped, the wrapped text is kept.
 
 Result: `Ein Text`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("g_keeps_text", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{g_keeps_text}"></p>
@@ -174,13 +174,13 @@ Result: `Hallo {0}`
 
 The placeholder is resolved by the message argument. With `Max`: `Hallo Max`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("ph_native_content", new Object[] { "Max" }, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{ph_native_content('Max')}"></p>
@@ -199,13 +199,13 @@ Start and end elements with native content keep that content.
 
 Result: `Ein <b>Text</b>`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("bpt_ept_native_content", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:utext="#{bpt_ept_native_content}"></p>
@@ -224,13 +224,13 @@ The tag is dropped, the wrapped text is kept.
 
 Result: `Ein Begriff`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("mrk_keeps_text", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{mrk_keeps_text}"></p>
@@ -258,13 +258,13 @@ Result: `Hallo {0}!`
 
 The placeholder is resolved by the message argument. With `Max`: `Hallo Max!`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("ph_data_ref", new Object[] { "Max" }, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{ph_data_ref('Max')}"></p>
@@ -287,13 +287,13 @@ Without `dataRef` the `equiv` attribute is used.
 
 Result: `Zeile` + line feed + `Ende`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("ph_equiv", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{ph_equiv}"></p>
@@ -318,13 +318,13 @@ The content of the `<pc/>` is wrapped in the original data referenced by `dataRe
 
 Result: `Klicke <a href="/x">hier</a>`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("pc_data_ref", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:utext="#{pc_data_ref}"></p>
@@ -345,13 +345,13 @@ Without original data the `equivStart` and `equivEnd` attributes are used.
 
 Result: `Klicke <a>hier</a>`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("pc_equiv", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:utext="#{pc_equiv}"></p>
@@ -376,13 +376,13 @@ Like `<pc/>`, but start and end are separate elements. They are needed when star
 
 Result: `[Text]`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("sc_ec_data_ref", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{sc_ec_data_ref}"></p>
@@ -403,13 +403,13 @@ Represents a character that is not allowed in XML. The `hex` attribute is turned
 
 Result: `A` + U+0007 + `B`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("cp_code_point", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{cp_code_point}"></p>
@@ -430,13 +430,13 @@ Annotation markers carry metadata (comment, glossary term, …) but no text and 
 
 Result: `A B C`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("annotation_markers", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:text="#{annotation_markers}"></p>
@@ -461,13 +461,13 @@ A `<message/>` needs no place for a comment or a glossary reference, so nothing 
 
 Result: `<b>Fett</b>`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("cdata_verbatim", null, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:utext="#{cdata_verbatim}"></p>
@@ -495,13 +495,13 @@ Result: `Click <a href="https://example.com" class="btn">here</a> to view the pr
 
 The placeholder is resolved by the message argument. With `Max`: `Click <a href="https://example.com" class="btn">here</a> to view the profile of Max.`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("html-without-cdata", new Object[] { "Max" }, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:utext="#{html-without-cdata('Max')}"></p>
@@ -529,13 +529,13 @@ Result: `Click <a href="https://example.com" class="btn">here</a> to view the pr
 
 The placeholder is resolved by the message argument. With `Max`: `Click <a href="https://example.com" class="btn">here</a> to view the profile of Max.`
 
-**getMessage()**
+#### getMessage()
 
 ```java
 messageSource.getMessage("html-with-cdata", new Object[] { "Max" }, Locale.forLanguageTag("de"));
 ```
 
-**Thymeleaf**
+#### Thymeleaf
 
 ```html
 <p th:utext="#{html-with-cdata('Max')}"></p>
