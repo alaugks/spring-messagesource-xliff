@@ -48,4 +48,4 @@ None of this exists anymore. The `<name>` part of a filename is now purely cosme
 
 * [Translation Key](../README.md#translation-key)
 * [Structure of the Translation Filename](../README.md#structure-of-the-translation-filename)
-* [Example with XLIFF Files](../README.md#example-with-xliff-files)
+* [Example](../README.md#example)

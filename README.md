@@ -12,7 +12,10 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
   - [Maven](#maven)
   - [Gradle](#gradle)
 - [MessageSource Configuration](#messagesource-configuration)
-  - [Example](#example)
+- [Example](#example)
+  - [Java Configuration](#java-configuration)
+  - [XLIFF Example Files](#xliff-example-files)
+  - [Target value](#target-value)
 - [XLIFF Files](#xliff-files)
   - [Translation Key](#translation-key)
   - [Translation Value](#translation-value)
@@ -25,9 +28,6 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
   - [Determining the Target Locale](#determining-the-target-locale)
     - [Filename Suffix](#filename-suffix)
     - [XLIFF Language Attribute](#xliff-language-attribute)
-  - [Example with XLIFF Files](#example-with-xliff-files)
-    - [XLIFF Files](#xliff-files-1)
-    - [Target value](#target-value)
   - [Unsupported XLIFF Features](#unsupported-xliff-features)
 - [Full Example](#full-example)
 - [Related MessageSources and Examples](#related-messagesources-and-examples)
@@ -72,7 +72,9 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 >
 > Note that the two are not fully output-compatible: ICU4J uses Unicode CLDR locale data, so the formatted result for a given locale can differ from the JDK's, for example the decimal and grouping separators in numbers (`.` vs `,`). Verify locale-sensitive output after enabling ICU4J.
 
-### Example
+## Example
+
+### Java Configuration
 
 * Default locale is `en`.
 * The XLIFF files are stored in `src/main/resources/translations`.
@@ -99,6 +101,162 @@ public class MessageSourceConfig {
 
 }
 ```
+
+### XLIFF Example Files
+
+* Default locale is `en` without region.
+* Translations are provided for the locale `en`, `de` and `en-US`.
+
+```
+[resources]
+     |-[translations]
+             |-messages.xliff   // messages_en.xliff also works.
+             |-messages_de.xliff
+             |-messages_en-US.xliff
+```  
+
+> [!TIP]
+> Trans-units can be organized across multiple XLIFF files however you like (e.g. by feature or module); this example keeps everything in one file per locale. Only requirement: `resname` / `name` must be unique across all files, since it is the key.
+
+#### messages.xliff
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="messages"
+          datatype="plaintext"
+          source-language="en"
+          target-language="en">
+        <body>
+            <trans-unit id="1" resname="headline">
+                <source>Headline</source>
+                <target>Headline</target>
+            </trans-unit>
+            <trans-unit id="2" resname="postcode">
+                <source>Postcode</source>
+                <target>Postcode</target>
+            </trans-unit>
+            <trans-unit id="3" resname="payment.headline">
+                <source>Payment</source>
+                <target>Payment</target>
+            </trans-unit>
+            <trans-unit id="4" resname="payment.expiry_date">
+                <source>Expiry date</source>
+                <target>Expiry date</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
+```
+
+#### messages_de.xliff
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="messages"
+          datatype="plaintext"
+          source-language="en"
+          target-language="de">
+        <body>
+            <trans-unit id="1" resname="headline">
+                <source>Headline</source>
+                <target>Überschrift</target>
+            </trans-unit>
+            <trans-unit id="2" resname="postcode">
+                <source>Postcode</source>
+                <target>Postleitzahl</target>
+            </trans-unit>
+            <trans-unit id="3" resname="payment.headline">
+                <source>Payment</source>
+                <target>Zahlung</target>
+            </trans-unit>
+            <trans-unit id="4" resname="payment.expiry_date">
+                <source>Expiry date</source>
+                <target>Ablaufdatum</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
+```
+
+#### messages_en-US.xliff
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+       xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="messages"
+          datatype="plaintext"
+          source-language="en"
+          target-language="en-US">
+        <body>
+            <trans-unit id="2" resname="postcode">
+                <source>Postcode</source>
+                <target>Zip code</target>
+            </trans-unit>
+            <trans-unit id="4" resname="payment.expiry_date">
+                <source>Expiry date</source>
+                <target>Expiration date</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
+```
+
+### Target value
+
+The target locale is determined as described in [Determining the Target Locale](#determining-the-target-locale).
+
+Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / `ReloadableResourceBundleMessageSource`.
+
+<table>
+  <thead>
+  <tr>
+    <th>id (code)</th>
+    <th>en</th>
+    <th>en-US</th>
+    <th>de</th>
+    <th>jp**</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>headline</td>
+    <td>Headline</td>
+    <td>Headline*</td>
+    <td>Überschrift</td>
+    <td>Headline</td>
+  </tr>
+  <tr>
+    <td>postcode</td>
+    <td>Postcode</td>
+    <td>Zip code</td>
+    <td>Postleitzahl</td>
+    <td>Postcode</td>
+  </tr>
+  <tr>
+    <td>payment.headline</td>
+    <td>Payment</td>
+    <td>Payment*</td>
+    <td>Zahlung</td>
+    <td>Payment</td>
+  </tr>
+  <tr>
+    <td>payment.expiry_date</td>
+    <td>Expiry date</td>
+    <td>Expiration date</td>
+    <td>Ablaufdatum</td>
+    <td>Expiry date</td>
+  </tr>
+  </tbody>
+</table>
+
+> *Example of a fallback from Language_Region (`en-US`) to Language (`en`). The `id` does not exist in `en-US`, so it tries to select the translation with locale `en`.
+> 
+> **There is no translation for Japanese (`jp`). The default locale translations (`en`) are selected.
 
 ## XLIFF Files
 
@@ -286,162 +444,6 @@ return XliffResourceMessageSource
 ```
 
 For any other strategy (e.g. an external mapping), implement `TargetLocaleResolverInterface` and pass it to `targetLocaleResolver(...)`.
-
-### Example with XLIFF Files
-
-* Default locale is `en` without region.
-* Translations are provided for the locale `en`, `de` and `en-US`.
-
-```
-[resources]
-     |-[translations]
-             |-messages.xliff   // messages_en.xliff also works.
-             |-messages_de.xliff
-             |-messages_en-US.xliff
-```  
-
-#### XLIFF Files
-
-> [!TIP]
-> Trans-units can be organized across multiple XLIFF files however you like (e.g. by feature or module); this example keeps everything in one file per locale. Only requirement: `resname` / `name` must be unique across all files, since it is the key.
-
-##### messages.xliff
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<xliff version="1.2"
-       xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file original="messages"
-          datatype="plaintext"
-          source-language="en"
-          target-language="en">
-        <body>
-            <trans-unit id="1" resname="headline">
-                <source>Headline</source>
-                <target>Headline</target>
-            </trans-unit>
-            <trans-unit id="2" resname="postcode">
-                <source>Postcode</source>
-                <target>Postcode</target>
-            </trans-unit>
-            <trans-unit id="3" resname="payment.headline">
-                <source>Payment</source>
-                <target>Payment</target>
-            </trans-unit>
-            <trans-unit id="4" resname="payment.expiry_date">
-                <source>Expiry date</source>
-                <target>Expiry date</target>
-            </trans-unit>
-        </body>
-    </file>
-</xliff>
-```
-
-##### messages_de.xliff
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<xliff version="1.2"
-       xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file original="messages"
-          datatype="plaintext"
-          source-language="en"
-          target-language="de">
-        <body>
-            <trans-unit id="1" resname="headline">
-                <source>Headline</source>
-                <target>Überschrift</target>
-            </trans-unit>
-            <trans-unit id="2" resname="postcode">
-                <source>Postcode</source>
-                <target>Postleitzahl</target>
-            </trans-unit>
-            <trans-unit id="3" resname="payment.headline">
-                <source>Payment</source>
-                <target>Zahlung</target>
-            </trans-unit>
-            <trans-unit id="4" resname="payment.expiry_date">
-                <source>Expiry date</source>
-                <target>Ablaufdatum</target>
-            </trans-unit>
-        </body>
-    </file>
-</xliff>
-```
-
-##### messages_en-US.xliff
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<xliff version="1.2"
-       xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file original="messages"
-          datatype="plaintext"
-          source-language="en"
-          target-language="en-US">
-        <body>
-            <trans-unit id="2" resname="postcode">
-                <source>Postcode</source>
-                <target>Zip code</target>
-            </trans-unit>
-            <trans-unit id="4" resname="payment.expiry_date">
-                <source>Expiry date</source>
-                <target>Expiration date</target>
-            </trans-unit>
-        </body>
-    </file>
-</xliff>
-```
-
-#### Target value
-
-Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / `ReloadableResourceBundleMessageSource`.
-
-<table>
-  <thead>
-  <tr>
-    <th>id (code)</th>
-    <th>en</th>
-    <th>en-US</th>
-    <th>de</th>
-    <th>jp**</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>headline</td>
-    <td>Headline</td>
-    <td>Headline*</td>
-    <td>Überschrift</td>
-    <td>Headline</td>
-  </tr>
-  <tr>
-    <td>postcode</td>
-    <td>Postcode</td>
-    <td>Zip code</td>
-    <td>Postleitzahl</td>
-    <td>Postcode</td>
-  </tr>
-  <tr>
-    <td>payment.headline</td>
-    <td>Payment</td>
-    <td>Payment*</td>
-    <td>Zahlung</td>
-    <td>Payment</td>
-  </tr>
-  <tr>
-    <td>payment.expiry_date</td>
-    <td>Expiry date</td>
-    <td>Expiration date</td>
-    <td>Ablaufdatum</td>
-    <td>Expiry date</td>
-  </tr>
-  </tbody>
-</table>
-
-> *Example of a fallback from Language_Region (`en-US`) to Language (`en`). The `id` does not exist in `en-US`, so it tries to select the translation with locale `en`.
-> 
-> **There is no translation for Japanese (`jp`). The default locale translations (`en`) are selected.
 
 ### Unsupported XLIFF Features
 
