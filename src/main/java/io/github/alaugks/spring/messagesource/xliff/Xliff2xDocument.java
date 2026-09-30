@@ -119,11 +119,18 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	}
 
 	/**
+	 * The unit's key: its name, falling back to its id.
+	 */
+	private String unitKey(Element unit) {
+		return this.firstNonEmpty(unit.getAttribute("name"), unit.getAttribute("id"));
+	}
+
+	/**
 	 * Adds the unit's key and value to the map, skipping it when it has no key
 	 * or no segments.
 	 */
 	private void addUnit(Element unit, Map<String, String> transUnits) {
-		String key = this.firstNonEmpty(unit.getAttribute("name"), unit.getAttribute("id"));
+		String key = this.unitKey(unit);
 		if (key.isEmpty()) {
 			return;
 		}
@@ -226,7 +233,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 * must be exactly 1, 2, ..., n without gaps or duplicates.
 	 */
 	private void assertContinuousOrder(List<Element> segments) {
-		String unitId = ((Element) segments.get(0).getParentNode()).getAttribute("id");
+		String unitKey = this.unitKey((Element) segments.get(0).getParentNode());
 		List<Integer> orders = new ArrayList<>();
 		for (Element segment : segments) {
 			int order = this.targetOrder(segment);
@@ -234,7 +241,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 				throw new XliffMessageSourceRuntimeException(
 					String.format(
 						"unit '%s': segment with missing or non-numeric target order",
-						unitId
+						unitKey
 					)
 				);
 			}
@@ -246,7 +253,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 				throw new XliffMessageSourceRuntimeException(
 					String.format(
 						"unit '%s': target order must be continuous 1..%d, got %s",
-						unitId,
+						unitKey,
 						orders.size(),
 						orders
 					)
