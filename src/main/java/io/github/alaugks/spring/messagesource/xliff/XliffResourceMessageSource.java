@@ -7,8 +7,10 @@ import io.github.alaugks.spring.messagesource.base.AbstractBaseMessageSourceBuil
 import io.github.alaugks.spring.messagesource.base.BaseMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.base.resources.ResourceLoaderBuilder;
 import io.github.alaugks.spring.messagesource.base.resources.TargetLocaleResolverInterface;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
 
@@ -83,7 +85,7 @@ public final class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
-		private ParsingMode parsingMode = ParsingMode.LENIENT;
+		private Set<StrictCheck> strictChecks = Set.of();
 
 		@Nullable
 		private TargetLocaleResolverInterface targetLocaleResolver;
@@ -131,19 +133,18 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Sets how invalid values in otherwise readable XLIFF documents are handled.
-		 * <p>{@link ParsingMode#LENIENT} (default) reads them on a best-effort basis,
-		 * {@link ParsingMode#STRICT} rejects them with an
-		 * {@link io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException}
-		 * (currently: a non-numeric {@code target/@order}).
+		 * Enables checks that reject invalid values in otherwise readable XLIFF documents
+		 * with an {@link io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException}.
+		 * <p>Without an enabled check (default), invalid values are read on a best-effort basis.
+		 * See {@link StrictCheck} for the available checks.
 		 *
-		 * @param parsingMode the parsing mode; must not be null.
+		 * @param strictChecks the checks to enable; must not be null.
 		 * @return this builder for chaining.
 		 */
-		public Builder parsingMode(ParsingMode parsingMode) {
-			Assert.notNull(parsingMode, "parsingMode must not be null");
+		public Builder strictChecks(StrictCheck... strictChecks) {
+			Assert.notNull(strictChecks, "strictChecks must not be null");
 
-			this.parsingMode = parsingMode;
+			this.strictChecks = Set.copyOf(Arrays.asList(strictChecks));
 			return this;
 		}
 
@@ -211,7 +212,7 @@ public final class XliffResourceMessageSource {
 			XliffCatalog xliffCatalog = new XliffCatalog(
 				resourcesLoader.getTranslationFiles(),
 				this.validateSchema,
-				this.parsingMode
+				this.strictChecks
 			);
 
 			return BaseMessageSourceBuilder

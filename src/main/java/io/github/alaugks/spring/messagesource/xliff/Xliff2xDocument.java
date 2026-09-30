@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,7 +38,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	private final IcuPatternGenerator icuPatternGenerator = new IcuPatternGenerator();
 
-	private final ParsingMode parsingMode;
+	private final Set<StrictCheck> strictChecks;
 
 	/**
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
@@ -45,18 +46,18 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 * @param root the root element of the parsed XLIFF document.
 	 */
 	public Xliff2xDocument(Element root) {
-		this(root, ParsingMode.LENIENT);
+		this(root, Set.of());
 	}
 
 	/**
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
 	 *
-	 * @param root        the root element of the parsed XLIFF document.
-	 * @param parsingMode how invalid values are handled.
+	 * @param root         the root element of the parsed XLIFF document.
+	 * @param strictChecks checks that reject invalid values.
 	 */
-	public Xliff2xDocument(Element root, ParsingMode parsingMode) {
+	public Xliff2xDocument(Element root, Set<StrictCheck> strictChecks) {
 		super(root);
-		this.parsingMode = parsingMode;
+		this.strictChecks = Set.copyOf(strictChecks);
 	}
 
 	/**
@@ -66,18 +67,18 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 */
 	public Xliff2xDocument(Document document) {
 		super(document);
-		this.parsingMode = ParsingMode.LENIENT;
+		this.strictChecks = Set.of();
 	}
 
 	/**
 	 * Creates a reader for the given parsed XLIFF 2.0/2.1 document.
 	 *
-	 * @param document the parsed XLIFF document.
-	 * @param parsingMode how invalid values are handled.
+	 * @param document     the parsed XLIFF document.
+	 * @param strictChecks checks that reject invalid values.
 	 */
-	public Xliff2xDocument(Document document, ParsingMode parsingMode) {
+	public Xliff2xDocument(Document document, Set<StrictCheck> strictChecks) {
 		super(document);
-		this.parsingMode = parsingMode;
+		this.strictChecks = Set.copyOf(strictChecks);
 	}
 
 	/**
@@ -211,7 +212,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			return segments;
 		}
 
-		if (this.parsingMode == ParsingMode.STRICT) {
+		if (this.strictChecks.contains(StrictCheck.TARGET_ORDER)) {
 			this.assertContinuousOrder(segments);
 		}
 
