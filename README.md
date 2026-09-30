@@ -2,14 +2,12 @@
 
 This package provides a [MessageSource interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for translations stored in XLIFF files. It supports XLIFF versions 1.2, 2.0, 2.1 and 2.2, including the [PGS Module](docs/README-XLIFF-2.2-PGS.md).
 
-> [!IMPORTANT]
-> Upgrading from 3.x? Domains have been removed. See [Migration: 3.x → 4.0 — Domain Removed](docs/README-Migration-3.x-to-4.0.md).
-
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.2.0-SNAPSHOT)
 
 ## Table of Contents
 
+- ⚠️ [Migration: 3.x → 4.0 (Domain Removed)](docs/README-Migration-3.x-to-4.0.md)
 - [Dependency](#dependency)
   - [Maven](#maven)
   - [Gradle](#gradle)
@@ -108,6 +106,7 @@ public class MessageSourceConfig {
 * Files live in the resource folder with extension `xliff` or `xlf`.
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
 * Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `enableSchemaValidation()`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
+* 🚨 Valid XLIFF is a prerequisite. The library does not defend against invalid input. Such files may fail with an exception or produce undefined results. Enable the schema validation with `enableSchemaValidation()` during development and in tests to catch invalid files early. See the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java).
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
 * Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`), **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
 
