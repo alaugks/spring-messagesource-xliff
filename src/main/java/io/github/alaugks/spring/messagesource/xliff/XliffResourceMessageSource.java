@@ -167,7 +167,7 @@ public final class XliffResourceMessageSource {
 		 * Configures the builder to use the XLIFF language attribute for determining
 		 * the target locale of XLIFF files.
 		 *
-		 * This method sets the {@code fileNameParser} field to an instance of
+		 * <p>This method sets the {@code fileNameParser} field to an instance of
 		 * {@link XliffLanguageAttrParser}, enabling the extraction of the target
 		 * locale directly from the language-related attributes defined in the XLIFF
 		 * document.
