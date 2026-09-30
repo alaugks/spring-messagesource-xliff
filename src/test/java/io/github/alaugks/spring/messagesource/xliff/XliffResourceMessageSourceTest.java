@@ -144,10 +144,10 @@ class XliffResourceMessageSourceTest {
 	@ParameterizedTest
 	@MethodSource("provider_strict_checks")
 	@SuppressWarnings("java:S2699")
-	void test_strict_checks(Set<StrictCheck> strictChecks, Consumer<ThrowingCallable> assertion) {
+	void test_strict_checks(Set<StrictMode> strictMode, Consumer<ThrowingCallable> assertion) {
 		XliffResourceMessageSource.Builder builder = XliffResourceMessageSource
 			.builder(Locale.forLanguageTag("de"), "fixtures/xliff21ordergap.xliff")
-			.strictChecks(strictChecks.toArray(StrictCheck[]::new));
+			.strictMode(strictMode.toArray(StrictMode[]::new));
 
 		assertion.accept(builder::build);
 	}
@@ -160,7 +160,7 @@ class XliffResourceMessageSourceTest {
 					assertThatCode(build).doesNotThrowAnyException()
 			),
 			Arguments.of(
-				Set.of(StrictCheck.TARGET_ORDER),
+				Set.of(StrictMode.TARGET_ORDER),
 				(Consumer<ThrowingCallable>) build ->
 					assertThatThrownBy(build).isInstanceOf(XliffMessageSourceRuntimeException.class)
 			)

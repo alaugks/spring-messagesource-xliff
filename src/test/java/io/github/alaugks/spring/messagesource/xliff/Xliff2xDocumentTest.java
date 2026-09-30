@@ -443,7 +443,7 @@ class Xliff2xDocumentTest {
 	@ParameterizedTest
 	@MethodSource("provider_same_order_number")
 	@SuppressWarnings("java:S2699")
-	void test_multiple_segments_by_order_same_order_number(Set<StrictCheck> strictChecks, Consumer<Xliff2xDocument> assertion) {
+	void test_multiple_segments_by_order_same_order_number(Set<StrictMode> strictMode, Consumer<Xliff2xDocument> assertion) {
 		Xliff2xDocument document = new Xliff2xDocument(TestHelper.parseDocument("""
 			<?xml version="1.0" encoding="utf-8"?>
 			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
@@ -463,7 +463,7 @@ class Xliff2xDocumentTest {
 					</unit>
 			    </file>
 			</xliff>
-			""").getDocumentElement(), strictChecks);
+			""").getDocumentElement(), strictMode);
 
 		assertion.accept(document);
 	}
@@ -476,7 +476,7 @@ class Xliff2xDocumentTest {
 					assertThat(document.getUnits()).containsEntry("disclaimer", "Welt! Hallo")
 			),
 			Arguments.of(
-				Set.of(StrictCheck.TARGET_ORDER),
+				Set.of(StrictMode.TARGET_ORDER),
 				(Consumer<Xliff2xDocument>) document ->
 					assertThatThrownBy(document::getUnits).isInstanceOf(XliffMessageSourceRuntimeException.class)
 			)
@@ -558,7 +558,7 @@ class Xliff2xDocumentTest {
 	@MethodSource("provider_non_numeric_order_value")
 	// The assertions live in the provider's lambdas, which the rule does not follow.
 	@SuppressWarnings("java:S2699")
-	void test_non_numeric_order_value(Set<StrictCheck> strictChecks, Consumer<Xliff2xDocument> assertion) {
+	void test_non_numeric_order_value(Set<StrictMode> strictMode, Consumer<Xliff2xDocument> assertion) {
 		Xliff2xDocument document = new Xliff2xDocument(TestHelper.parseDocument("""
 			<?xml version="1.0" encoding="utf-8"?>
 			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
@@ -575,7 +575,7 @@ class Xliff2xDocumentTest {
 					</unit>
 				</file>
 			</xliff>
-			""").getDocumentElement(), strictChecks);
+			""").getDocumentElement(), strictMode);
 
 		assertion.accept(document);
 	}
@@ -588,7 +588,7 @@ class Xliff2xDocumentTest {
 					assertThat(document.getUnits()).containsEntry("name-value", "HalloWelt!")
 			),
 			Arguments.of(
-				Set.of(StrictCheck.TARGET_ORDER),
+				Set.of(StrictMode.TARGET_ORDER),
 				(Consumer<Xliff2xDocument>) document ->
 					assertThatThrownBy(document::getUnits)
 						.isInstanceOf(XliffMessageSourceRuntimeException.class)
@@ -623,7 +623,7 @@ class Xliff2xDocumentTest {
 				    <file id="f1"><unit id="1">%s</unit></file>
 				</xliff>
 				""".formatted(segments)).getDocumentElement(),
-			Set.of(StrictCheck.TARGET_ORDER)
+			Set.of(StrictMode.TARGET_ORDER)
 		);
 	}
 }

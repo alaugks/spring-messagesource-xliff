@@ -38,7 +38,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	private final IcuPatternGenerator icuPatternGenerator = new IcuPatternGenerator();
 
-	private final Set<StrictCheck> strictChecks;
+	private final Set<StrictMode> strictMode;
 
 	/**
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
@@ -53,11 +53,11 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
 	 *
 	 * @param root         the root element of the parsed XLIFF document.
-	 * @param strictChecks checks that reject invalid values.
+	 * @param strictMode checks that reject invalid values.
 	 */
-	public Xliff2xDocument(Element root, Set<StrictCheck> strictChecks) {
+	public Xliff2xDocument(Element root, Set<StrictMode> strictMode) {
 		super(root);
-		this.strictChecks = Set.copyOf(strictChecks);
+		this.strictMode = Set.copyOf(strictMode);
 	}
 
 	/**
@@ -67,18 +67,18 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 */
 	public Xliff2xDocument(Document document) {
 		super(document);
-		this.strictChecks = Set.of();
+		this.strictMode = Set.of();
 	}
 
 	/**
 	 * Creates a reader for the given parsed XLIFF 2.0/2.1 document.
 	 *
 	 * @param document     the parsed XLIFF document.
-	 * @param strictChecks checks that reject invalid values.
+	 * @param strictMode checks that reject invalid values.
 	 */
-	public Xliff2xDocument(Document document, Set<StrictCheck> strictChecks) {
+	public Xliff2xDocument(Document document, Set<StrictMode> strictMode) {
 		super(document);
-		this.strictChecks = Set.copyOf(strictChecks);
+		this.strictMode = Set.copyOf(strictMode);
 	}
 
 	/**
@@ -212,7 +212,7 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			return segments;
 		}
 
-		if (this.strictChecks.contains(StrictCheck.TARGET_ORDER)) {
+		if (this.strictMode.contains(StrictMode.TARGET_ORDER)) {
 			this.assertContinuousOrder(segments);
 		}
 

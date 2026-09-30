@@ -10,7 +10,7 @@ package io.github.alaugks.spring.messagesource.xliff;
  * An enabled check rejects a violation with an
  * {@link io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException}.
  */
-public enum StrictCheck {
+public enum StrictMode {
 
 	/**
 	 * Validates that the {@code target/@order} values of a unit's segments (XLIFF 2.x) are integers

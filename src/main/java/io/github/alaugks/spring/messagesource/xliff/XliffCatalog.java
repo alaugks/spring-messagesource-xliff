@@ -33,7 +33,7 @@ class XliffCatalog {
 
 	private final boolean validateSchema;
 
-	private final Set<StrictCheck> strictChecks;
+	private final Set<StrictMode> strictMode;
 
 	private final XliffSchemaValidator schemaValidator = new XliffSchemaValidator();
 
@@ -56,12 +56,12 @@ class XliffCatalog {
 	 * @param translationFiles XLIFF files to parse on first access.
 	 * @param validateSchema   whether each document is validated against its
 	 *                         OASIS XSD schema before its units are extracted.
-	 * @param strictChecks      checks that reject invalid values in readable documents.
+	 * @param strictMode      checks that reject invalid values in readable documents.
 	 */
-	public XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema, Set<StrictCheck> strictChecks) {
+	public XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema, Set<StrictMode> strictMode) {
 		this.translationFiles = translationFiles;
 		this.validateSchema = validateSchema;
-		this.strictChecks = Set.copyOf(strictChecks);
+		this.strictMode = Set.copyOf(strictMode);
 	}
 
 	/**
@@ -119,7 +119,7 @@ class XliffCatalog {
 
 			Map<String, String> units = switch (version) {
 				case "1.2" -> new Xliff12Document(root).getUnits();
-				case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root, this.strictChecks).getUnits();
+				case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root, this.strictMode).getUnits();
 				default -> throw new XliffMessageSourceVersionSupportException(
 					String.format(
 						"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",

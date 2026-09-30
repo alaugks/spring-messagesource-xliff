@@ -85,7 +85,7 @@ public final class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
-		private Set<StrictCheck> strictChecks = Set.of();
+		private Set<StrictMode> strictMode = Set.of();
 
 		@Nullable
 		private TargetLocaleResolverInterface targetLocaleResolver;
@@ -136,15 +136,15 @@ public final class XliffResourceMessageSource {
 		 * Enables checks that reject invalid values in otherwise readable XLIFF documents
 		 * with an {@link io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException}.
 		 * <p>Without an enabled check (default), invalid values are read on a best-effort basis.
-		 * See {@link StrictCheck} for the available checks.
+		 * See {@link StrictMode} for the available checks.
 		 *
-		 * @param strictChecks the checks to enable; must not be null.
+		 * @param strictMode the checks to enable; must not be null.
 		 * @return this builder for chaining.
 		 */
-		public Builder strictChecks(StrictCheck... strictChecks) {
-			Assert.notNull(strictChecks, "strictChecks must not be null");
+		public Builder strictMode(StrictMode... strictMode) {
+			Assert.notNull(strictMode, "strictMode must not be null");
 
-			this.strictChecks = Set.copyOf(Arrays.asList(strictChecks));
+			this.strictMode = Set.copyOf(Arrays.asList(strictMode));
 			return this;
 		}
 
@@ -212,7 +212,7 @@ public final class XliffResourceMessageSource {
 			XliffCatalog xliffCatalog = new XliffCatalog(
 				resourcesLoader.getTranslationFiles(),
 				this.validateSchema,
-				this.strictChecks
+				this.strictMode
 			);
 
 			return BaseMessageSourceBuilder
