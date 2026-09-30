@@ -31,6 +31,11 @@ abstract class XliffDocument {
 	protected static final String TARGET = "target";
 
 	/**
+	 * Inline renderer for extracting text from inline elements.
+	 */
+	private static final InlineElementRenderer INLINE_RENDERER = new InlineElementRenderer();
+
+	/**
 	 * Root element of the parsed XLIFF document.
 	 */
 	protected final Element root;
@@ -126,14 +131,7 @@ abstract class XliffDocument {
 	 * @return the first matching child element, or {@code null} if none.
 	 */
 	protected static @Nullable Element firstChildElement(Element parent, String localName) {
-		Node child = parent.getFirstChild();
-		while (child != null) {
-			if (child.getNodeType() == Node.ELEMENT_NODE && localName.equals(elementName(child))) {
-				return (Element) child;
-			}
-			child = child.getNextSibling();
-		}
-		return null;
+		return XliffElementSupport.firstChildElement(parent, localName);
 	}
 
 	/**
@@ -144,8 +142,7 @@ abstract class XliffDocument {
 	 * @return the local name, or the node name as fallback.
 	 */
 	protected static String elementName(Node node) {
-		String localName = node.getLocalName();
-		return localName != null ? localName : node.getNodeName();
+		return XliffElementSupport.elementName(node);
 	}
 
 	/**
@@ -172,8 +169,7 @@ abstract class XliffDocument {
 		if (element == null) {
 			return "";
 		}
-		String content = element.getTextContent();
-		return content != null ? content : "";
+		return INLINE_RENDERER.render(element);
 	}
 
 	/**

@@ -6,7 +6,7 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 > Upgrading from 3.x? Domains have been removed. See [Migration: 3.x → 4.0 — Domain Removed](docs/README-Migration-3.x-to-4.0.md).
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.0.1-SNAPSHOT)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.2.0-SNAPSHOT)
 
 ## Table of Contents
 
@@ -42,14 +42,14 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.0.1-SNAPSHOT'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.2.0-SNAPSHOT'
 ```
 
 
@@ -126,7 +126,7 @@ The key is the application-facing resource name. XLIFF separates the internal id
 
 ### Translation Value
 
-The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are not interpreted, and the value is trimmed unless `xml:space="preserve"` is set. See [Markup](#markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
+The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are reconstructed as plain text, and the value is trimmed unless `xml:space="preserve"` is set. See [Markup](#markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
 
 #### XLIFF 1.2
 
@@ -198,20 +198,9 @@ XLIFF 2.2 adds the PGS module. It annotates a `<unit/>` with a `pgs:switch`, so 
 
 #### Markup
 
-Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**; embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements (`<g/>`, `<pc/>`, `<ph/>`, `<x/>`, …) are **not** interpreted. Put display markup into the text as `CDATA` or escaped characters.
+Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**. Embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements are reconstructed as plain text: placeholders and codes are replaced by their original data, wrapping elements such as `<g/>` or `<mrk/>` keep their text, and annotation markers are dropped.
 
-Text-wrapping inline elements, most notably the annotation marker `<mrk/>`, are not processed, but their **text is kept**: the tag is dropped, the spanned text remains. E.g. `Hallo <mrk ...>Welt</mrk>!` → `Hallo Welt!`.
-
-```xml
-<unit id="1" name="teaser">
-    <segment>
-        <source><![CDATA[Read <strong>more</strong>]]></source>
-        <target><![CDATA[<strong>Mehr</strong> lesen]]></target>
-    </segment>
-</unit>
-```
-
-**Result:** `teaser` → `<strong>Mehr</strong> lesen`
+⚠️ See [XLIFF Inline Elements](docs/README-Inline-Elements.md) for all rules and examples.
 
 #### Whitespace
 
@@ -451,10 +440,8 @@ This package focuses on **reading and displaying** translations (key → text), 
 Not supported, relative to the XLIFF 1.2 and 2.x specifications (a `—` means the version has no such concept):
 
 | Feature                                   | XLIFF 1.2                                                                        | XLIFF 2.x                                                                                                                     | Description                                                                                                                                                  |
-|-------------------------------------------|----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Inline formatting / code elements         | `<g/>`, `<x/>`, `<bx/>`, `<ex/>`, `<bpt/>`, `<ept/>`, `<ph/>`, `<it/>`, `<sub/>` | `<pc/>`, `<ph/>`, `<sc/>`, `<ec/>`, `<cp/>`                                                                                   | Not interpreted. Text-wrapping elements keep their text; standalone placeholders contribute nothing. Use `CDATA` for display markup (see [Markup](#markup)). |
-| Placeholder / original-data fallback text | `equiv-text`                                                                     | `equiv`, `disp`, `<originalData/>` + `dataRef`                                                                                | Ignored; native code is not reconstructed.                                                                                                                   |
-| Annotation markers                        | `<mrk/>` (`mtype`, `comment`)                                                    | `<mrk/>`, `<sm/>` / `<em/>`                                                                                                   | Tag dropped, wrapped text kept (see [Markup](#markup)).                                                                                                      |
+|-------------------------------------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Inline element display hint               | —                                                                                 | `disp`                                                                                                                        | Only relevant for CAT-tool display; ignored (see [Markup](#markup)).                                                                                         |
 | Translation state                         | `state`, `state-qualifier`                                                       | segment `state`                                                                                                               | `<target/>` is always used, regardless of state.                                                                                                             |
 | Notes & alternative translations          | `<note/>`, `<alt-trans/>`                                                        | `<notes/>`                                                                                                                    | Not exposed.                                                                                                                                                 |
 | Process metadata                          | `approved`, `<phase-group/>` / `phase`, `tool`                                   | `tool` / metadata                                                                                                             | Ignored.                                                                                                                                                     |

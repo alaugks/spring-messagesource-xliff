@@ -65,7 +65,8 @@ class XliffResourceMessageSourceTest {
 			Arguments.of("format_plural", new Object[]{1000}, Locale.forLanguageTag("de"), "Es gibt 1.000 Dateien."),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en"), "Expiry date"),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en-US"), "Expiration date"),
-			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("de"), "Ablaufdatum")
+			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("de"), "Ablaufdatum"),
+			Arguments.of("greetings", new Object[]{"John", "Doe"}, Locale.forLanguageTag("de"), "Hallo John Doe")
 		);
 	}
 
@@ -88,7 +89,8 @@ class XliffResourceMessageSourceTest {
 			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en-US"),
 				"You deleted 2 files."),
 			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("de"),
-				"Sie haben 2 Dateien gelöscht.")
+				"Sie haben 2 Dateien gelöscht."),
+			Arguments.of("greetings", new Object[]{"John", "Doe"}, Locale.forLanguageTag("de"), "Hallo John Doe")
 		);
 	}
 
