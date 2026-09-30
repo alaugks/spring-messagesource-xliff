@@ -226,11 +226,17 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 * must be exactly 1, 2, ..., n without gaps or duplicates.
 	 */
 	private void assertContinuousOrder(List<Element> segments) {
+		String unitId = ((Element) segments.get(0).getParentNode()).getAttribute("id");
 		List<Integer> orders = new ArrayList<>();
 		for (Element segment : segments) {
 			int order = this.targetOrder(segment);
 			if (order == Integer.MAX_VALUE) {
-				throw new XliffMessageSourceRuntimeException("segment with missing or non-numeric target order");
+				throw new XliffMessageSourceRuntimeException(
+					String.format(
+						"unit '%s': segment with missing or non-numeric target order",
+						unitId
+					)
+				);
 			}
 			orders.add(order);
 		}
@@ -238,7 +244,12 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 		for (int i = 0; i < orders.size(); i++) {
 			if (orders.get(i) != i + 1) {
 				throw new XliffMessageSourceRuntimeException(
-					String.format("target order must be continuous 1..%d, got %s", orders.size(), orders)
+					String.format(
+						"unit '%s': target order must be continuous 1..%d, got %s",
+						unitId,
+						orders.size(),
+						orders
+					)
 				);
 			}
 		}
