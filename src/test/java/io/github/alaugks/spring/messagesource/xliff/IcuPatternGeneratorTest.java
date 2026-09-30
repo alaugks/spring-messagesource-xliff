@@ -4,6 +4,7 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import com.ibm.icu.text.MessageFormat;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -13,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class IcuPatternGeneratorTest {
 
@@ -164,29 +166,6 @@ class IcuPatternGeneratorTest {
 	}
 
 	@Test
-	void test_segment_without_case_defaults_to_other() {
-		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
-			<?xml version="1.0" encoding="utf-8"?>
-			<xliff version="2.2" srcLang="en" trgLang="de"
-			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-			    <file id="f1">
-			        <unit id="tu1" name="count" pgs:switch="plural:count">
-			            <segment pgs:case="one">
-			            	<target>eine</target>
-			            </segment>
-			            <segment>
-			            	<target>andere</target>
-						</segment>
-			        </unit>
-			    </file>
-			</xliff>
-			""")).getUnits();
-
-		assertThat(units).containsEntry("count", "{count, plural, one {eine} other {andere}}");
-	}
-
-	@Test
 	void test_gender_to_icu_select_pattern() {
 
 		String icuPattern = "{recipient_gender, select, feminine {Wie geht es ihr?} masculine {Wie geht es ihm?} other {Wie geht es ihnen?}}";
@@ -252,52 +231,57 @@ class IcuPatternGeneratorTest {
 		).isEqualTo("# 30% {Rabatt'}");
 	}
 
-	@ParameterizedTest
-	@MethodSource("provider_no_unit_generated")
-	void test_yields_no_unit(String xml) {
-		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument(xml)).getUnits();
+	@Test
+	void test_unit_without_segments_yields_no_unit() {
+		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="count" pgs:switch="plural:count">
+			            <notes><note>no segments here</note></notes>
+			        </unit>
+			    </file>
+			</xliff>
+			""")).getUnits();
 
 		assertThat(units).doesNotContainKey("count");
 	}
 
-	static Stream<Arguments> provider_no_unit_generated() {
+	@ParameterizedTest
+	@MethodSource("provider_invalid_switch_or_case_structure")
+	void test_malformed_switch_or_case_structure_fails_with_domain_error(String switchValue, String segments, String reason) {
+		String xml = """
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="key" pgs:switch="%s">
+			            %s
+			        </unit>
+			    </file>
+			</xliff>
+			""".formatted(switchValue, segments);
+
+		Xliff2xDocument xliffDokument = new Xliff2xDocument(TestHelper.parseDocument(xml));
+
+		assertThatThrownBy(xliffDokument::getUnits)
+			.isInstanceOf(XliffMessageSourceRuntimeException.class)
+			.hasMessageContaining("'key'")
+			.hasMessageContaining(reason);
+	}
+
+	static Stream<Arguments> provider_invalid_switch_or_case_structure() {
+		String other = "<segment pgs:case=\"other\"><target>x</target></segment>";
 		return Stream.of(
-			Arguments.of("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="count" pgs:switch="invalid">
-				            <segment pgs:case="0"><target>null</target></segment>
-				        </unit>
-				    </file>
-				</xliff>
-				"""),
-			Arguments.of("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="count" pgs:switch="plural:">
-				            <segment pgs:case="0"><target>null</target></segment>
-				        </unit>
-				    </file>
-				</xliff>
-				"""),
-			Arguments.of("""
-				<?xml version="1.0" encoding="utf-8"?>
-				<xliff version="2.2" srcLang="en" trgLang="de"
-				       xmlns="urn:oasis:names:tc:xliff:document:2.0"
-				       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
-				    <file id="f1">
-				        <unit id="tu1" name="count" pgs:switch="plural:count">
-				            <notes><note>no segments here</note></notes>
-				        </unit>
-				    </file>
-				</xliff>
-				""")
+			Arguments.of("invalid", other, "malformed pgs:switch"),
+			Arguments.of("plural:", other, "malformed pgs:switch"),
+			Arguments.of(":count", other, "malformed pgs:switch"),
+			Arguments.of("plural:count", other + other, "duplicate pgs:case 'other'"),
+			Arguments.of("plural:count", "<segment pgs:case=\"one\"><target>x</target></segment><segment pgs:case=\"one\"><target>y</target></segment>" + other, "duplicate pgs:case 'one'"),
+			Arguments.of("plural:count", other + "<segment><target>x</target></segment>", "segment without pgs:case")
 		);
 	}
 
@@ -329,12 +313,13 @@ class IcuPatternGeneratorTest {
 			    <file id="f1">
 			        <unit id="tu1" name="count" pgs:switch="plural:count">
 			            <segment pgs:case="0"/>
+			            <segment pgs:case="other"/>
 			        </unit>
 			    </file>
 			</xliff>
 			""")).getUnits();
 
-		assertThat(units).containsEntry("count", "{count, plural, =0 {}}");
+		assertThat(units).containsEntry("count", "{count, plural, =0 {} other {}}");
 	}
 
 	@Test
@@ -392,7 +377,7 @@ class IcuPatternGeneratorTest {
 	}
 
 	@Test
-	void test_escapes_adjacent_metacharacters_including_pipe() {
+	void test_escapes_adjacent_metacharacters_and_leaves_pipe_unquoted() {
 		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
 			<?xml version="1.0" encoding="utf-8"?>
 			<xliff version="2.2" srcLang="en" trgLang="de"
@@ -406,6 +391,78 @@ class IcuPatternGeneratorTest {
 			</xliff>
 			""")).getUnits();
 
-		assertThat(units).containsEntry("count", "{count, plural, other {Special '{}|' chars}}");
+		assertThat(units).containsEntry("count", "{count, plural, other {Special '{}'| chars}}");
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_invalid_pgs_structure")
+	void test_invalid_structure_fails_with_domain_error(String switchValue, String caseValue, String disp, String reason) {
+		String xml = """
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="key" pgs:switch="%s">
+			            <segment pgs:case="%s"><target>Text <ph id="1" disp="%s"/></target></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""".formatted(switchValue, caseValue, disp);
+
+		Xliff2xDocument xliffDokument = new Xliff2xDocument(TestHelper.parseDocument(xml));
+
+		assertThatThrownBy(xliffDokument::getUnits)
+			.isInstanceOf(XliffMessageSourceRuntimeException.class)
+			.hasMessageContaining("'key'")
+			.hasMessageContaining(reason);
+	}
+
+	static Stream<Arguments> provider_invalid_pgs_structure() {
+		return Stream.of(
+			Arguments.of("plural:a b", "other", "x", "pgs:switch variable"),
+			Arguments.of("plural:a}", "other", "x", "pgs:switch variable"),
+			Arguments.of("foo:count", "other", "x", "unsupported pgs:switch type"),
+			Arguments.of("plural:count", "other", "a, b", "<ph disp>"),
+			Arguments.of("plural:count", "other", "}", "<ph disp>"),
+			Arguments.of("plural:count", "abc", "x", "invalid plural pgs:case"),
+			Arguments.of("select:kind", "a b", "x", "select pgs:case"),
+			Arguments.of("select:kind", "{", "x", "select pgs:case"),
+			Arguments.of("plural:count", "one", "x", "missing mandatory 'other' case")
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_literal_text_roundtrip")
+	void test_literal_text_survives_icu_roundtrip(String text) {
+		String xml = """
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.2" srcLang="en" trgLang="de"
+			       xmlns="urn:oasis:names:tc:xliff:document:2.0"
+			       xmlns:pgs="urn:oasis:names:tc:xliff:pgs:1.0">
+			    <file id="f1">
+			        <unit id="tu1" name="key" pgs:switch="plural:count">
+			            <segment pgs:case="other"><target><![CDATA[%s]]></target></segment>
+			        </unit>
+			    </file>
+			</xliff>
+			""".formatted(text);
+
+		String pattern = new Xliff2xDocument(TestHelper.parseDocument(xml)).getUnits().get("key");
+
+		assertThat(new MessageFormat(pattern, Locale.ENGLISH).format(Map.of("count", 5))).isEqualTo(text);
+	}
+
+	static Stream<Arguments> provider_literal_text_roundtrip() {
+		return Stream.of(
+			Arguments.of("Hello {world}"),
+			Arguments.of("It's nice"),
+			Arguments.of("foo # bar"),
+			Arguments.of("foo | bar"),
+			Arguments.of("{{{{}}}}"),
+			Arguments.of("''"),
+			Arguments.of("'{'"),
+			Arguments.of("a'{b}'c")
+		);
 	}
 }
