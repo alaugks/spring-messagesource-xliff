@@ -83,6 +83,8 @@ public final class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
+		private ParsingMode parsingMode = ParsingMode.LENIENT;
+
 		@Nullable
 		private TargetLocaleResolverInterface targetLocaleResolver;
 
@@ -125,6 +127,23 @@ public final class XliffResourceMessageSource {
 		 */
 		public Builder enableSchemaValidation() {
 			this.validateSchema = true;
+			return this;
+		}
+
+		/**
+		 * Sets how invalid values in otherwise readable XLIFF documents are handled.
+		 * <p>{@link ParsingMode#LENIENT} (default) reads them on a best-effort basis,
+		 * {@link ParsingMode#STRICT} rejects them with an
+		 * {@link io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException}
+		 * (currently: a non-numeric {@code target/@order}).
+		 *
+		 * @param parsingMode the parsing mode; must not be null.
+		 * @return this builder for chaining.
+		 */
+		public Builder parsingMode(ParsingMode parsingMode) {
+			Assert.notNull(parsingMode, "parsingMode must not be null");
+
+			this.parsingMode = parsingMode;
 			return this;
 		}
 
@@ -191,7 +210,8 @@ public final class XliffResourceMessageSource {
 
 			XliffCatalog xliffCatalog = new XliffCatalog(
 				resourcesLoader.getTranslationFiles(),
-				this.validateSchema
+				this.validateSchema,
+				this.parsingMode
 			);
 
 			return BaseMessageSourceBuilder

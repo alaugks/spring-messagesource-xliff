@@ -32,6 +32,8 @@ class XliffCatalog {
 
 	private final boolean validateSchema;
 
+	private final ParsingMode parsingMode;
+
 	private final XliffSchemaValidator schemaValidator = new XliffSchemaValidator();
 
 	/**
@@ -43,8 +45,22 @@ class XliffCatalog {
 	 *                         OASIS XSD schema before its units are extracted.
 	 */
 	public XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema) {
+		this(translationFiles, validateSchema, ParsingMode.LENIENT);
+	}
+
+	/**
+	 * Creates a new catalog that lazily parses the given XLIFF translation
+	 * files.
+	 *
+	 * @param translationFiles XLIFF files to parse on first access.
+	 * @param validateSchema   whether each document is validated against its
+	 *                         OASIS XSD schema before its units are extracted.
+	 * @param parsingMode      how invalid values in readable documents are handled.
+	 */
+	public XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema, ParsingMode parsingMode) {
 		this.translationFiles = translationFiles;
 		this.validateSchema = validateSchema;
+		this.parsingMode = parsingMode;
 	}
 
 	/**
@@ -102,7 +118,7 @@ class XliffCatalog {
 
 			Map<String, String> units = switch (version) {
 				case "1.2" -> new Xliff12Document(root).getUnits();
-				case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root).getUnits();
+				case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root, this.parsingMode).getUnits();
 				default -> throw new XliffMessageSourceVersionSupportException(
 					String.format(
 						"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",

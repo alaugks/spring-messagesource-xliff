@@ -3,6 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -36,13 +37,26 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	private final IcuPatternGenerator icuPatternGenerator = new IcuPatternGenerator();
 
+	private final ParsingMode parsingMode;
+
 	/**
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
 	 *
 	 * @param root the root element of the parsed XLIFF document.
 	 */
 	public Xliff2xDocument(Element root) {
+		this(root, ParsingMode.LENIENT);
+	}
+
+	/**
+	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
+	 *
+	 * @param root        the root element of the parsed XLIFF document.
+	 * @param parsingMode how invalid values are handled.
+	 */
+	public Xliff2xDocument(Element root, ParsingMode parsingMode) {
 		super(root);
+		this.parsingMode = parsingMode;
 	}
 
 	/**
@@ -52,6 +66,18 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 */
 	public Xliff2xDocument(Document document) {
 		super(document);
+		this.parsingMode = ParsingMode.LENIENT;
+	}
+
+	/**
+	 * Creates a reader for the given parsed XLIFF 2.0/2.1 document.
+	 *
+	 * @param document the parsed XLIFF document.
+	 * @param parsingMode how invalid values are handled.
+	 */
+	public Xliff2xDocument(Document document, ParsingMode parsingMode) {
+		super(document);
+		this.parsingMode = parsingMode;
 	}
 
 	/**
@@ -185,9 +211,36 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			return segments;
 		}
 
+		if (this.parsingMode == ParsingMode.STRICT) {
+			this.assertContinuousOrder(segments);
+		}
+
 		return segments.stream()
 			.sorted(Comparator.comparingInt(this::targetOrder))
 			.toList();
+	}
+
+	/**
+	 * Strict mode: every segment needs a target order, and together the orders
+	 * must be exactly 1, 2, ..., n without gaps or duplicates.
+	 */
+	private void assertContinuousOrder(List<Element> segments) {
+		List<Integer> orders = new ArrayList<>();
+		for (Element segment : segments) {
+			int order = this.targetOrder(segment);
+			if (order == Integer.MAX_VALUE) {
+				throw new XliffMessageSourceRuntimeException("segment with missing or non-numeric target order");
+			}
+			orders.add(order);
+		}
+		orders.sort(Comparator.naturalOrder());
+		for (int i = 0; i < orders.size(); i++) {
+			if (orders.get(i) != i + 1) {
+				throw new XliffMessageSourceRuntimeException(
+					String.format("target order must be continuous 1..%d, got %s", orders.size(), orders)
+				);
+			}
+		}
 	}
 
 	/**
@@ -206,9 +259,10 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	/**
 	 * Returns the sort key for a segment: its target's order attribute parsed as
-	 * an integer. Segments whose order is absent, empty, or not a valid number
-	 * sort after all explicitly ordered ones, keeping their document order among
-	 * each other (the sort is stable).
+	 * an integer. Segments whose order is absent or empty sort after all
+	 * explicitly ordered ones, keeping their document order among each other
+	 * (the sort is stable). This includes a non-numeric order; strict mode
+	 * rejects it beforehand in {@link #assertContinuousOrder}.
 	 */
 	private int targetOrder(Element segment) {
 		Element target = firstChildElement(segment, TARGET);
