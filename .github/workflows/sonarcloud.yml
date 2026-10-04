@@ -53,8 +53,12 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Test
-        run: mvn test -P test-coverage
+      - name: Test and check coverage
+        run: | 
+          mvn verify -P test-coverage
+
+      - name: Try build Javadoc
+        run: mvn javadoc:javadoc
 
       - name: SonarCloud analyze
         run: |

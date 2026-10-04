@@ -3,11 +3,20 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class Xliff2xDocumentTest {
 
@@ -431,9 +440,11 @@ class Xliff2xDocumentTest {
 		assertThat(units).containsEntry("name-value", "Hallo Welt! Ich bin hier.");
 	}
 
-	@Test
-	void test_multiple_segments_by_order_same_order_number() {
-		Map<String, String> units = new Xliff2xDocument(TestHelper.parseDocument("""
+	@ParameterizedTest
+	@MethodSource("provider_same_order_number")
+	@SuppressWarnings("java:S2699")
+	void test_multiple_segments_by_order_same_order_number(Set<StrictMode> strictMode, Consumer<Xliff2xDocument> assertion) {
+		Xliff2xDocument document = new Xliff2xDocument(TestHelper.parseDocument("""
 			<?xml version="1.0" encoding="utf-8"?>
 			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
 			    <file id="f1">
@@ -452,9 +463,24 @@ class Xliff2xDocumentTest {
 					</unit>
 			    </file>
 			</xliff>
-			""")).getUnits();
+			""").getDocumentElement(), strictMode);
 
-		assertThat(units).containsEntry("disclaimer", "Welt! Hallo");
+		assertion.accept(document);
+	}
+
+	static Stream<Arguments> provider_same_order_number() {
+		return Stream.of(
+			Arguments.of(
+				Set.of(),
+				(Consumer<Xliff2xDocument>) document ->
+					assertThat(document.getUnits()).containsEntry("disclaimer", "Welt! Hallo")
+			),
+			Arguments.of(
+				Set.of(StrictMode.TARGET_ORDER),
+				(Consumer<Xliff2xDocument>) document ->
+					assertThatThrownBy(document::getUnits).isInstanceOf(XliffMessageSourceRuntimeException.class)
+			)
+		);
 	}
 
 	@Test
@@ -526,5 +552,78 @@ class Xliff2xDocumentTest {
 			""")).getUnits();
 
 		assertThat(units).containsEntry("unit-attr-name", "source");
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_non_numeric_order_value")
+	// The assertions live in the provider's lambdas, which the rule does not follow.
+	@SuppressWarnings("java:S2699")
+	void test_non_numeric_order_value(Set<StrictMode> strictMode, Consumer<Xliff2xDocument> assertion) {
+		Xliff2xDocument document = new Xliff2xDocument(TestHelper.parseDocument("""
+			<?xml version="1.0" encoding="utf-8"?>
+			<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				<file id="f1">
+					<unit id="1" name="name-value">
+						<segment>
+							<source>World!</source>
+							<target order="abc">Welt!</target>
+						</segment>
+						<segment>
+							<source>Hello</source>
+							<target order="1">Hallo</target>
+						</segment>
+					</unit>
+				</file>
+			</xliff>
+			""").getDocumentElement(), strictMode);
+
+		assertion.accept(document);
+	}
+
+	static Stream<Arguments> provider_non_numeric_order_value() {
+		return Stream.of(
+			Arguments.of(
+				Set.of(),
+				(Consumer<Xliff2xDocument>) document ->
+					assertThat(document.getUnits()).containsEntry("name-value", "HalloWelt!")
+			),
+			Arguments.of(
+				Set.of(StrictMode.TARGET_ORDER),
+				(Consumer<Xliff2xDocument>) document ->
+					assertThatThrownBy(document::getUnits)
+						.isInstanceOf(XliffMessageSourceRuntimeException.class)
+						.hasMessageContaining("non-numeric target order")
+			)
+		);
+	}
+
+	@Test
+	void test_strict_mode_accepts_continuous_order_in_any_sequence() {
+		assertThat(strictDocument("3", "1", "2").getUnits()).containsEntry("1", "bar1bar2bar3");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"1,3", "2,3", "1,1", "0,1", "1,"})
+	void test_strict_mode_rejects_non_continuous_order(String orders) {
+		Xliff2xDocument document = strictDocument(orders.split(",", -1));
+
+		assertThatThrownBy(document::getUnits).isInstanceOf(XliffMessageSourceRuntimeException.class);
+	}
+
+	private static Xliff2xDocument strictDocument(String... segmentOrders) {
+		StringBuilder segments = new StringBuilder();
+		for (String order : segmentOrders) {
+			segments
+				.append("<segment><source>foo</source><target order=\"%1$s\">bar%1$s</target></segment>".formatted(order));
+		}
+		return new Xliff2xDocument(
+			TestHelper.parseDocument("""
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.0" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1"><unit id="1">%s</unit></file>
+				</xliff>
+				""".formatted(segments)).getDocumentElement(),
+			Set.of(StrictMode.TARGET_ORDER)
+		);
 	}
 }

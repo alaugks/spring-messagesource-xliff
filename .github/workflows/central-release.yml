@@ -26,9 +26,9 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           cache: 'maven'
 
-      - name: Run Tests
+      - name: Test and check coverage
         run: |
-          mvn test
+          mvn verify -P test-coverage
 
       - name: Build & Deploy
         run: |

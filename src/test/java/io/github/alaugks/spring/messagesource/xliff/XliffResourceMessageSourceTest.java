@@ -4,11 +4,15 @@
 package io.github.alaugks.spring.messagesource.xliff;
 
 import io.github.alaugks.spring.messagesource.base.BaseMessageSourceBuilder;
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceValidationException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,6 +20,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.NoSuchMessageException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class XliffResourceMessageSourceTest {
@@ -65,7 +70,8 @@ class XliffResourceMessageSourceTest {
 			Arguments.of("format_plural", new Object[]{1000}, Locale.forLanguageTag("de"), "Es gibt 1.000 Dateien."),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en"), "Expiry date"),
 			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("en-US"), "Expiration date"),
-			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("de"), "Ablaufdatum")
+			Arguments.of("payment.expiry_date", null, Locale.forLanguageTag("de"), "Ablaufdatum"),
+			Arguments.of("greetings", new Object[]{"John", "Doe"}, Locale.forLanguageTag("de"), "Hallo John Doe")
 		);
 	}
 
@@ -88,7 +94,8 @@ class XliffResourceMessageSourceTest {
 			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("en-US"),
 				"You deleted 2 files."),
 			Arguments.of("plural.file_deleted", new Object[]{Map.of("count", 2)}, Locale.forLanguageTag("de"),
-				"Sie haben 2 Dateien gelöscht.")
+				"Sie haben 2 Dateien gelöscht."),
+			Arguments.of("greetings", new Object[]{"John", "Doe"}, Locale.forLanguageTag("de"), "Hallo John Doe")
 		);
 	}
 
@@ -132,6 +139,32 @@ class XliffResourceMessageSourceTest {
 			null,
 			locale
 		)).isInstanceOf(NoSuchMessageException.class);
+	}
+
+	@ParameterizedTest
+	@MethodSource("provider_strict_checks")
+	@SuppressWarnings("java:S2699")
+	void test_strict_checks(Set<StrictMode> strictMode, Consumer<ThrowingCallable> assertion) {
+		XliffResourceMessageSource.Builder builder = XliffResourceMessageSource
+			.builder(Locale.forLanguageTag("de"), "fixtures/xliff21ordergap.xliff")
+			.strictMode(strictMode.toArray(StrictMode[]::new));
+
+		assertion.accept(builder::build);
+	}
+
+	static Stream<Arguments> provider_strict_checks() {
+		return Stream.of(
+			Arguments.of(
+				Set.of(),
+				(Consumer<ThrowingCallable>) build ->
+					assertThatCode(build).doesNotThrowAnyException()
+			),
+			Arguments.of(
+				Set.of(StrictMode.TARGET_ORDER),
+				(Consumer<ThrowingCallable>) build ->
+					assertThatThrownBy(build).isInstanceOf(XliffMessageSourceRuntimeException.class)
+			)
+		);
 	}
 
 	@Test

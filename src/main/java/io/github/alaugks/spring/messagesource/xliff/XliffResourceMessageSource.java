@@ -7,8 +7,10 @@ import io.github.alaugks.spring.messagesource.base.AbstractBaseMessageSourceBuil
 import io.github.alaugks.spring.messagesource.base.BaseMessageSourceBuilder;
 import io.github.alaugks.spring.messagesource.base.resources.ResourceLoaderBuilder;
 import io.github.alaugks.spring.messagesource.base.resources.TargetLocaleResolverInterface;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
 
@@ -83,6 +85,8 @@ public final class XliffResourceMessageSource {
 
 		private boolean validateSchema = false;
 
+		private Set<StrictMode> strictMode = Set.of();
+
 		@Nullable
 		private TargetLocaleResolverInterface targetLocaleResolver;
 
@@ -129,6 +133,22 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
+		 * Enables checks that reject invalid values in otherwise readable XLIFF documents
+		 * with an {@link io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException}.
+		 * <p>Without an enabled check (default), invalid values are read on a best-effort basis.
+		 * See {@link StrictMode} for the available checks.
+		 *
+		 * @param strictMode the checks to enable; must not be null.
+		 * @return this builder for chaining.
+		 */
+		public Builder strictMode(StrictMode... strictMode) {
+			Assert.notNull(strictMode, "strictMode must not be null");
+
+			this.strictMode = Set.copyOf(Arrays.asList(strictMode));
+			return this;
+		}
+
+		/**
 		 * Sets whether each XLIFF document is validated against its OASIS XSD schema
 		 * before its units are extracted.
 		 *
@@ -147,7 +167,7 @@ public final class XliffResourceMessageSource {
 		 * Configures the builder to use the XLIFF language attribute for determining
 		 * the target locale of XLIFF files.
 		 *
-		 * This method sets the {@code fileNameParser} field to an instance of
+		 * <p>This method sets the {@code fileNameParser} field to an instance of
 		 * {@link XliffLanguageAttrParser}, enabling the extraction of the target
 		 * locale directly from the language-related attributes defined in the XLIFF
 		 * document.
@@ -191,7 +211,8 @@ public final class XliffResourceMessageSource {
 
 			XliffCatalog xliffCatalog = new XliffCatalog(
 				resourcesLoader.getTranslationFiles(),
-				this.validateSchema
+				this.validateSchema,
+				this.strictMode
 			);
 
 			return BaseMessageSourceBuilder

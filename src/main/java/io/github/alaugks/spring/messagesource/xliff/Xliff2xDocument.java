@@ -3,12 +3,14 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
+import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,13 +38,26 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	private final IcuPatternGenerator icuPatternGenerator = new IcuPatternGenerator();
 
+	private final Set<StrictMode> strictMode;
+
 	/**
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
 	 *
 	 * @param root the root element of the parsed XLIFF document.
 	 */
 	public Xliff2xDocument(Element root) {
+		this(root, Set.of());
+	}
+
+	/**
+	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
+	 *
+	 * @param root         the root element of the parsed XLIFF document.
+	 * @param strictMode checks that reject invalid values.
+	 */
+	public Xliff2xDocument(Element root, Set<StrictMode> strictMode) {
 		super(root);
+		this.strictMode = Set.copyOf(strictMode);
 	}
 
 	/**
@@ -52,6 +67,18 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	 */
 	public Xliff2xDocument(Document document) {
 		super(document);
+		this.strictMode = Set.of();
+	}
+
+	/**
+	 * Creates a reader for the given parsed XLIFF 2.0/2.1 document.
+	 *
+	 * @param document     the parsed XLIFF document.
+	 * @param strictMode checks that reject invalid values.
+	 */
+	public Xliff2xDocument(Document document, Set<StrictMode> strictMode) {
+		super(document);
+		this.strictMode = Set.copyOf(strictMode);
 	}
 
 	/**
@@ -92,11 +119,18 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	}
 
 	/**
+	 * The unit's key: its name, falling back to its id.
+	 */
+	private String unitKey(Element unit) {
+		return this.firstNonEmpty(unit.getAttribute("name"), unit.getAttribute("id"));
+	}
+
+	/**
 	 * Adds the unit's key and value to the map, skipping it when it has no key
 	 * or no segments.
 	 */
 	private void addUnit(Element unit, Map<String, String> transUnits) {
-		String key = this.firstNonEmpty(unit.getAttribute("name"), unit.getAttribute("id"));
+		String key = this.unitKey(unit);
 		if (key.isEmpty()) {
 			return;
 		}
@@ -185,9 +219,47 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			return segments;
 		}
 
+		if (this.strictMode.contains(StrictMode.TARGET_ORDER)) {
+			this.assertContinuousOrder(segments);
+		}
+
 		return segments.stream()
 			.sorted(Comparator.comparingInt(this::targetOrder))
 			.toList();
+	}
+
+	/**
+	 * Strict mode: every segment needs a target order, and together the orders
+	 * must be exactly 1, 2, ..., n without gaps or duplicates.
+	 */
+	private void assertContinuousOrder(List<Element> segments) {
+		String unitKey = this.unitKey((Element) segments.get(0).getParentNode());
+		List<Integer> orders = new ArrayList<>();
+		for (Element segment : segments) {
+			int order = this.targetOrder(segment);
+			if (order == Integer.MAX_VALUE) {
+				throw new XliffMessageSourceRuntimeException(
+					String.format(
+						"unit '%s': segment with missing or non-numeric target order",
+						unitKey
+					)
+				);
+			}
+			orders.add(order);
+		}
+		orders.sort(Comparator.naturalOrder());
+		for (int i = 0; i < orders.size(); i++) {
+			if (orders.get(i) != i + 1) {
+				throw new XliffMessageSourceRuntimeException(
+					String.format(
+						"unit '%s': target order must be continuous 1..%d, got %s",
+						unitKey,
+						orders.size(),
+						orders
+					)
+				);
+			}
+		}
 	}
 
 	/**
@@ -206,9 +278,10 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	/**
 	 * Returns the sort key for a segment: its target's order attribute parsed as
-	 * an integer. Segments whose order is absent, empty, or not a valid number
-	 * sort after all explicitly ordered ones, keeping their document order among
-	 * each other (the sort is stable).
+	 * an integer. Segments whose order is absent or empty sort after all
+	 * explicitly ordered ones, keeping their document order among each other
+	 * (the sort is stable). This includes a non-numeric order; strict mode
+	 * rejects it beforehand in {@link #assertContinuousOrder}.
 	 */
 	private int targetOrder(Element segment) {
 		Element target = firstChildElement(segment, TARGET);

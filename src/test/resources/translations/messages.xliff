@@ -28,6 +28,9 @@
                     Empty Code
                 </target>
             </trans-unit>
+            <trans-unit id="4" resname="greetings">
+                <source>Hello {0} {1}</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

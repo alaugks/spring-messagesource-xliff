@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="2.1"
+       srcLang="en"
+       trgLang="de"
+       xmlns="urn:oasis:names:tc:xliff:document:2.0">
+    <file id="f1" original="source_file.ext">
+        <unit id="order-gap">
+            <segment>
+                <source>First. </source>
+                <target order="1">Erster. </target>
+            </segment>
+            <segment>
+                <source>Second.</source>
+                <target order="3">Zweiter.</target>
+            </segment>
+        </unit>
+    </file>
+</xliff>
