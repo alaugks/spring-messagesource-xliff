@@ -23,7 +23,7 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
     - [XLIFF 2.x — Segmentation](#xliff-2x--segmentation)
     - [XLIFF 2.x — Segments Order](#xliff-2x--segments-order)
     - [XLIFF 2.2 — PGS Module (Plural, Gender and Select)](#xliff-22--pgs-module-plural-gender-and-select)
-    - [Markup](#markup)
+    - [XLIFF Inline Elements and Markup](#xliff-inline-elements-and-markup)
     - [Whitespace](#whitespace)
   - [Determining the Target Locale](#determining-the-target-locale)
     - [Filename Suffix](#filename-suffix)
@@ -283,7 +283,7 @@ The key is the application-facing resource name. XLIFF separates the internal id
 
 ### Translation Value
 
-The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are reconstructed as plain text, and the value is trimmed unless `xml:space="preserve"` is set. See [Markup](#markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
+The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are reconstructed as plain text, and the value is trimmed unless `xml:space="preserve"` is set. See [XLIFF Inline Elements and Markup](#xliff-inline-elements-and-markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
 
 #### XLIFF 1.2
 
@@ -364,7 +364,7 @@ XLIFF 2.2 adds the PGS module. It annotates a `<unit/>` with a `pgs:switch`, so 
 
 ⚠️ See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
 
-#### Markup
+#### XLIFF Inline Elements and Markup
 
 Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**. Embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements are reconstructed as plain text: placeholders and codes are replaced by their original data, wrapping elements such as `<g/>` or `<mrk/>` keep their text, and annotation markers are dropped.
 
@@ -453,7 +453,7 @@ Not supported, relative to the XLIFF 1.2 and 2.x specifications (a `—` means t
 
 | Feature                                   | XLIFF 1.2                                                                        | XLIFF 2.x                                                                                                                     | Description                                                                                                                                                  |
 |-------------------------------------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Inline element display hint               | —                                                                                 | `disp`                                                                                                                        | Only relevant for CAT-tool display; ignored (see [Markup](#markup)).                                                                                         |
+| Inline element display hint               | —                                                                                 | `disp`                                                                                                                        | Only relevant for CAT-tool display; ignored (see [XLIFF Inline Elements and Markup](#xliff-inline-elements-and-markup)).                                                                                         |
 | Translation state                         | `state`, `state-qualifier`                                                       | segment `state`                                                                                                               | `<target/>` is always used, regardless of state.                                                                                                             |
 | Notes & alternative translations          | `<note/>`, `<alt-trans/>`                                                        | `<notes/>`                                                                                                                    | Not exposed.                                                                                                                                                 |
 | Process metadata                          | `approved`, `<phase-group/>` / `phase`, `tool`                                   | `tool` / metadata                                                                                                             | Ignored.                                                                                                                                                     |
