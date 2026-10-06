@@ -2,8 +2,6 @@
 
 This package provides a [MessageSource interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for translations stored in XLIFF files. It supports XLIFF versions 1.2, 2.0, 2.1 and 2.2, including the [PGS Module](docs/README-XLIFF-2.2-PGS.md).
 
-Internally, the translations are served through a `java.util.ResourceBundle`, so message resolution, locale fallback and parent-message-source handling behave as with `.properties` files. The XLIFF files are read and parsed once while the `MessageSource` is built during Spring startup and held in memory. They are not read again when messages are resolved at runtime.
-
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.2.0)
 
