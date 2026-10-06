@@ -7,7 +7,7 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 
 ## Table of Contents
 
-- ⚠️ [Migration: 3.x → 4.0 (Domain Removed)](docs/README-Migration-3.x-to-4.0.md)
+- 🚨 [Migration: 3.x → 4.0 (Domain Removed)](docs/README-Migration-3.x-to-4.0.md)
 - [Dependency](#dependency)
   - [Maven](#maven)
   - [Gradle](#gradle)
@@ -58,7 +58,7 @@ implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', v
 | `builder(Locale defaultLocale, String locationPattern)`                    | —                         | Entry point.<br><br>`defaultLocale` is the locale to fall back to when a translation is missing.<br><br>`locationPattern` selects the XLIFF files via Spring's [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html), so all its patterns work.                                                      |
 | `builder(Locale defaultLocale, List<String> locationPatterns)`             | —                         | Entry point (alternative). Same as above, with a list of patterns.                                                                                                                                                                                                                                                                                                                                                                  |
 | `fileExtensions(List<String> fileExtensions)`                              | `List.of("xlf", "xliff")` | File extensions recognised as XLIFF files. Only matching files are kept.                                                                                                                                                                                                                                                                                                                                                            |
-| `enableSchemaValidation()`                                                 | disabled                  | Validates each file against its OASIS XSD before reading and rejects non-conforming files. Strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 `<trans-unit/>` without the required `id`. <br>⚠️ Recommended for development and testing, see the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java). |
+| `enableSchemaValidation()`                                                 | disabled                  | Validates each file against its OASIS XSD before reading and rejects non-conforming files. Strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 `<trans-unit/>` without the required `id`. <br>🚨 Recommended for development and testing, see the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java). |
 | `strictMode(StrictMode...)`                                            | none (lenient)            | Enables checks that reject invalid values with an `XliffMessageSourceRuntimeException` instead of reading them best-effort. Available: `StrictMode.TARGET_ORDER` (non-numeric or non-continuous, not 1..n, `target/@order`, XLIFF 2.x). |
 | `useXliffLanguageAttribute()`                                              | disabled                  | Resolves the target locale from the language attribute of the XLIFF document (`target-language` for XLIFF 1.2, `trgLang` for XLIFF 2.x) instead of the filename suffix. See [Determining the Target Locale](#determining-the-target-locale).                                                                                                                                                                                        |
 | `targetLocaleResolver(TargetLocaleResolverInterface targetLocaleResolver)` | —                         | Overrides how the target locale of a file is determined, in place of both the filename suffix and `useXliffLanguageAttribute()`.                                                                                                                                                                                                                                                                                                    |
@@ -362,13 +362,13 @@ With `strictMode(StrictMode.TARGET_ORDER)` the `order` values are validated inst
 
 XLIFF 2.2 adds the PGS module. It annotates a `<unit/>` with a `pgs:switch`, so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument, for example a count or a gender. This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
 
-⚠️ See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
+🚨 See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
 
 #### XLIFF Inline Elements and Markup
 
 Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**. Embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements are reconstructed as plain text: placeholders and codes are replaced by their original data, wrapping elements such as `<g/>` or `<mrk/>` keep their text, and annotation markers are dropped.
 
-⚠️ See [XLIFF Inline Elements](docs/README-Inline-Elements.md) for all rules and examples.
+🚨 See [XLIFF Inline Elements](docs/README-Inline-Elements.md) for all rules and examples.
 
 #### Whitespace
 
