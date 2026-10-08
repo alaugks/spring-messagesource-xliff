@@ -8,6 +8,7 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 ## Table of Contents
 
 - 🚨 [Migration: 3.x → 4.0 (Domain Removed)](docs/README-Migration-3.x-to-4.0.md)
+- [How it works](#how-it-works)
 - [Dependency](#dependency)
   - [Maven](#maven)
   - [Gradle](#gradle)
@@ -33,6 +34,15 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 - [Related MessageSources and Examples](#related-messagesources-and-examples)
 - [License](#license)
 
+## How it works
+
+The XLIFF files are read once at startup and held in memory. Message resolution follows Spring's `ResourceBundleMessageSource`.
+
+1. **Loading:** `build()` reads all matching XLIFF files and turns every unit into a `locale` / `code` / `value` entry, grouped per locale. If a code occurs more than once for the same locale, the first one wins.
+2. **Locale fallback:** For each requested locale, a `java.util.ResourceBundle` is created on top of these entries. The standard `ResourceBundle` lookup applies: `en-US` → `en` → default locale.
+
+Like Spring's `ResourceBundleMessageSource`, a `null` locale falls back to the default locale and a `MessageSourceResolvable` tries its codes in order. If nothing is found, `getMessage()` throws a `NoSuchMessageException` unless a default message is given.
+
 ## Dependency
 
 ### Maven
@@ -49,7 +59,6 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 ```text
 implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.2.0'
 ```
-
 
 ## MessageSource Configuration
 
