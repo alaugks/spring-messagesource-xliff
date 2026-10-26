@@ -3,11 +3,12 @@
 This package provides a [MessageSource interface](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) for translations stored in XLIFF files. It supports XLIFF versions 1.2, 2.0, 2.1 and 2.2, including the [PGS Module](docs/README-XLIFF-2.2-PGS.md).
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=alaugks_spring-messagesource-xliff&metric=alert_status)](https://sonarcloud.io/summary/overall?id=alaugks_spring-messagesource-xliff)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.2.0-SNAPSHOT)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.alaugks/spring-messagesource-xliff.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.alaugks/spring-messagesource-xliff/4.2.0)
 
 ## Table of Contents
 
-- ⚠️ [Migration: 3.x → 4.0 (Domain Removed)](docs/README-Migration-3.x-to-4.0.md)
+- 🚨 [Migration: 3.x → 4.0 (Domain Removed)](docs/README-Migration-3.x-to-4.0.md)
+- [How it works](#how-it-works)
 - [Dependency](#dependency)
   - [Maven](#maven)
   - [Gradle](#gradle)
@@ -23,7 +24,7 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
     - [XLIFF 2.x — Segmentation](#xliff-2x--segmentation)
     - [XLIFF 2.x — Segments Order](#xliff-2x--segments-order)
     - [XLIFF 2.2 — PGS Module (Plural, Gender and Select)](#xliff-22--pgs-module-plural-gender-and-select)
-    - [Markup](#markup)
+    - [XLIFF Inline Elements and Markup](#xliff-inline-elements-and-markup)
     - [Whitespace](#whitespace)
   - [Determining the Target Locale](#determining-the-target-locale)
     - [Filename Suffix](#filename-suffix)
@@ -33,6 +34,15 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 - [Related MessageSources and Examples](#related-messagesources-and-examples)
 - [License](#license)
 
+## How it works
+
+The XLIFF files are read once at startup and held in memory. Message resolution follows Spring's `ResourceBundleMessageSource`.
+
+1. **Loading:** `build()` reads all matching XLIFF files and turns every unit into a `locale` / `code` / `value` entry, grouped per locale. If a code occurs more than once for the same locale, the first one wins.
+2. **Locale fallback:** For each requested locale, a `java.util.ResourceBundle` is created on top of these entries. The standard `ResourceBundle` lookup applies: `en-US` → `en` → default locale.
+
+Like Spring's `ResourceBundleMessageSource`, a `null` locale falls back to the default locale and a `MessageSourceResolvable` tries its codes in order. If nothing is found, `getMessage()` throws a `NoSuchMessageException` unless a default message is given.
+
 ## Dependency
 
 ### Maven
@@ -40,30 +50,29 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
 <dependency>
     <groupId>io.github.alaugks</groupId>
     <artifactId>spring-messagesource-xliff</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.2.0</version>
 </dependency>
 ```
 
 ### Gradle 
 
 ```text
-implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.2.0-SNAPSHOT'
+implementation group: 'io.github.alaugks', name: 'spring-messagesource-xliff', version: '4.2.0'
 ```
-
 
 ## MessageSource Configuration
 
-| Method                                                                     | Default                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                         |
-|----------------------------------------------------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `builder(Locale defaultLocale, String locationPattern)`                    | —                         | Entry point.<br><br>`defaultLocale` is the locale to fall back to when a translation is missing.<br><br>`locationPattern` selects the XLIFF files via Spring's [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html), so all its patterns work.                                                      |
-| `builder(Locale defaultLocale, List<String> locationPatterns)`             | —                         | Entry point (alternative). Same as above, with a list of patterns.                                                                                                                                                                                                                                                                                                                                                                  |
-| `fileExtensions(List<String> fileExtensions)`                              | `List.of("xlf", "xliff")` | File extensions recognised as XLIFF files. Only matching files are kept.                                                                                                                                                                                                                                                                                                                                                            |
-| `enableSchemaValidation()`                                                 | disabled                  | Validates each file against its OASIS XSD before reading and rejects non-conforming files. Strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 `<trans-unit/>` without the required `id`. <br>⚠️ Recommended for development and testing, see the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java). |
-| `strictMode(StrictMode...)`                                            | none (lenient)            | Enables checks that reject invalid values with an `XliffMessageSourceRuntimeException` instead of reading them best-effort. Available: `StrictMode.TARGET_ORDER` (non-numeric or non-continuous, not 1..n, `target/@order`, XLIFF 2.x). |
-| `useXliffLanguageAttribute()`                                              | disabled                  | Resolves the target locale from the language attribute of the XLIFF document (`target-language` for XLIFF 1.2, `trgLang` for XLIFF 2.x) instead of the filename suffix. See [Determining the Target Locale](#determining-the-target-locale).                                                                                                                                                                                        |
-| `targetLocaleResolver(TargetLocaleResolverInterface targetLocaleResolver)` | —                         | Overrides how the target locale of a file is determined, in place of both the filename suffix and `useXliffLanguageAttribute()`.                                                                                                                                                                                                                                                                                                    |
-| `enableICU4j()`                                                            | disabled                  | Formats messages with ICU4J's `com.ibm.icu.text.MessageFormat` instead of `java.text.MessageFormat`. Adds named arguments and ICU `plural`/`select`/gender patterns. Required for the XLIFF 2.2 PGS module, see the note below.                                                                                                                                                                                                     |
-| `parentMessageSource(MessageSource parentMessageSource)`                   | —                         | Sets a parent [`MessageSource`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) to delegate to when a code cannot be resolved from the XLIFF files. See [Parent MessageSource](docs/README-Parent-MessageSource.md).                                                                                                                                               |
+| Method                                                                     | Default                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|----------------------------------------------------------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `builder(Locale defaultLocale, String locationPattern)`                    | —                         | Entry point.<br><br>`defaultLocale` is the locale to fall back to when a translation is missing.<br><br>`locationPattern` selects the XLIFF files via Spring's [PathMatchingResourcePatternResolver](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html), so all its patterns work.                                                         |
+| `builder(Locale defaultLocale, List<String> locationPatterns)`             | —                         | Entry point (alternative). Same as above, with a list of patterns.                                                                                                                                                                                                                                                                                                                                                                     |
+| `fileExtensions(List<String> fileExtensions)`                              | `List.of("xlf", "xliff")` | File extensions recognised as XLIFF files. Only matching files are kept.<br><br>An empty list matches no file.                                                                                                                                                                                                                                                                                                                                                               |
+| `enableSchemaValidation()`                                                 | disabled                  | Validates each file against its OASIS XSD before reading and rejects non-conforming files. Strict schemas also reject otherwise-readable files, e.g. XLIFF 1.2 `<trans-unit/>` without the required `id`.<br><br>🚨 Recommended for development and testing, see the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java). |
+| `strictMode(StrictMode...)`                                                | none (lenient)            | Enables checks that reject invalid values with an `XliffMessageSourceRuntimeException` instead of reading them best-effort. Available: `StrictMode.TARGET_ORDER` (non-numeric or non-continuous, not 1..n, `target/@order`, XLIFF 2.x).                                                                                                                                                                                                |
+| `useXliffLanguageAttribute()`                                              | disabled                  | Resolves the target locale from the language attribute of the XLIFF document (`target-language` for XLIFF 1.2, `trgLang` for XLIFF 2.x) instead of the filename suffix. See [Determining the Target Locale](#determining-the-target-locale).                                                                                                                                                                                           |
+| `targetLocaleResolver(TargetLocaleResolverInterface targetLocaleResolver)` | —                         | Overrides how the target locale of a file is determined, in place of both the filename suffix and `useXliffLanguageAttribute()`.                                                                                                                                                                                                                                                                                                       |
+| `enableICU4j()`                                                            | disabled                  | Formats messages with ICU4J's `com.ibm.icu.text.MessageFormat` instead of `java.text.MessageFormat`. Adds named arguments and ICU `plural`/`select`/gender patterns. Required for the XLIFF 2.2 PGS module, see the note below.                                                                                                                                                                                                        |
+| `parentMessageSource(MessageSource parentMessageSource)`                   | —                         | Sets a parent [`MessageSource`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/MessageSource.html) to delegate to when a code cannot be resolved from the XLIFF files.<br><br>🚨 See [Parent MessageSource](docs/README-Parent-MessageSource.md).                                                                                                                                        |
 
 > [!IMPORTANT]
 > The XLIFF 2.2 PGS module generates ICU patterns with named arguments (e.g. `{count, plural, …}`). These cannot be resolved by the default `java.text.MessageFormat` and fail at `getMessage()` time. When using the PGS module you **must** enable ICU4J via `enableICU4j()`.
@@ -212,47 +221,12 @@ The target locale is determined as described in [Determining the Target Locale](
 
 Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / `ReloadableResourceBundleMessageSource`.
 
-<table>
-  <thead>
-  <tr>
-    <th>id (code)</th>
-    <th>en</th>
-    <th>en-US</th>
-    <th>de</th>
-    <th>jp**</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td>headline</td>
-    <td>Headline</td>
-    <td>Headline*</td>
-    <td>Überschrift</td>
-    <td>Headline</td>
-  </tr>
-  <tr>
-    <td>postcode</td>
-    <td>Postcode</td>
-    <td>Zip code</td>
-    <td>Postleitzahl</td>
-    <td>Postcode</td>
-  </tr>
-  <tr>
-    <td>payment.headline</td>
-    <td>Payment</td>
-    <td>Payment*</td>
-    <td>Zahlung</td>
-    <td>Payment</td>
-  </tr>
-  <tr>
-    <td>payment.expiry_date</td>
-    <td>Expiry date</td>
-    <td>Expiration date</td>
-    <td>Ablaufdatum</td>
-    <td>Expiry date</td>
-  </tr>
-  </tbody>
-</table>
+| id (code)           | en          | en-US           | de           | jp**        |
+|---------------------|-------------|-----------------|--------------|-------------|
+| headline            | Headline    | Headline*       | Überschrift  | Headline    |
+| postcode            | Postcode    | Zip code        | Postleitzahl | Postcode    |
+| payment.headline    | Payment     | Payment*        | Zahlung      | Payment     |
+| payment.expiry_date | Expiry date | Expiration date | Ablaufdatum  | Expiry date |
 
 > *Example of a fallback from Language_Region (`en-US`) to Language (`en`). The `id` does not exist in `en-US`, so it tries to select the translation with locale `en`.
 > 
@@ -260,13 +234,15 @@ Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / 
 
 ## XLIFF Files
 
-* Translations can be split across multiple files; the key is always taken from the unit itself (see [Translation Key](#translation-key)), the filename has no effect on it. Since the key is what's looked up, `resname` / `name` must be unique across all files.
-* Files live in the resource folder with extension `xliff` or `xlf`.
+* Translations can be split across multiple files; the key is always taken from the unit itself (see [Translation Key](#translation-key)), the filename has no effect on it. Since the key is what's looked up, it must be unique across all files: `resname` / `name`, or `id` if neither is set.
+* Files are selected by `locationPattern` and by file extension: `xlf` and `xliff` by default, configurable with `fileExtensions()`.
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
 * Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `enableSchemaValidation()`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
 * 🚨 Valid XLIFF is a prerequisite. The library does not defend against invalid input. Such files may fail with an exception or produce undefined results. Enable the schema validation with `enableSchemaValidation()` during development and in tests to catch invalid files early. See the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java).
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
-* Each unit yields a **key** (message code) and a **value** (translated text). The key is always the resource name (`resname` / `name`), **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
+* Each unit yields a **key** (message code) and a **value** (the `<target/>` text, or the `<source/>` text if the unit has no `<target/>`). The key is always the resource name (`resname` / `name`, with `id` as fallback), **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
+
+
 
 ### Translation Key
 
@@ -283,7 +259,7 @@ The key is the application-facing resource name. XLIFF separates the internal id
 
 ### Translation Value
 
-The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are reconstructed as plain text, and the value is trimmed unless `xml:space="preserve"` is set. See [Markup](#markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
+The value is the `<target/>` text and falls back to the `<source/>` text when no `<target/>` is present. It is the element's **text content**. Embedded markup (e.g. HTML as `CDATA` or escaped) is kept verbatim, XLIFF inline elements are reconstructed as plain text, and the value is trimmed unless `xml:space="preserve"` is set. See [XLIFF Inline Elements and Markup](#xliff-inline-elements-and-markup) and [Whitespace](#whitespace) (both apply to XLIFF 1.2 and 2.x).
 
 #### XLIFF 1.2
 
@@ -352,23 +328,23 @@ By default invalid `order` values are handled best-effort: a segment with a non-
 With `strictMode(StrictMode.TARGET_ORDER)` the `order` values are validated instead. As soon as one `<target/>` of a unit declares an `order`, every segment of that unit needs one, and the values must be integers forming a continuous sequence `1..n` without gaps or duplicates (in any document order). Otherwise an `XliffMessageSourceRuntimeException` is thrown.
 
 | `order` values of a unit | default              | `StrictMode.TARGET_ORDER` |
-|--------------------------|----------------------|----------------------------|
-| `2, 1`                   | sorted `1, 2`        | accepted                   |
-| `1, 3` (gap)             | sorted `1, 3`        | rejected                   |
-| `1, 1` (duplicate)       | sorted as written    | rejected                   |
-| `1, abc` (non-numeric)   | `abc` is sorted last | rejected                   |
+|--------------------------|----------------------|---------------------------|
+| `2, 1`                   | sorted `1, 2`        | accepted                  |
+| `1, 3` (gap)             | sorted `1, 3`        | rejected                  |
+| `1, 1` (duplicate)       | sorted as written    | rejected                  |
+| `1, abc` (non-numeric)   | `abc` is sorted last | rejected                  |
 
 #### XLIFF 2.2 — PGS Module (Plural, Gender and Select)
 
 XLIFF 2.2 adds the PGS module. It annotates a `<unit/>` with a `pgs:switch`, so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument, for example a count or a gender. This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
 
-⚠️ See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
+🚨 See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
 
-#### Markup
+#### XLIFF Inline Elements and Markup
 
 Applies to XLIFF 1.2 and 2.x. The value is the element's **text content**. Embedded markup (e.g. HTML) is kept **verbatim**, as a `CDATA` section or escaped. XLIFF inline elements are reconstructed as plain text: placeholders and codes are replaced by their original data, wrapping elements such as `<g/>` or `<mrk/>` keep their text, and annotation markers are dropped.
 
-⚠️ See [XLIFF Inline Elements](docs/README-Inline-Elements.md) for all rules and examples.
+🚨 See [XLIFF Inline Elements](docs/README-Inline-Elements.md) for all rules and examples.
 
 #### Whitespace
 
@@ -451,16 +427,16 @@ This package focuses on **reading and displaying** translations (key → text), 
 
 Not supported, relative to the XLIFF 1.2 and 2.x specifications (a `—` means the version has no such concept):
 
-| Feature                                   | XLIFF 1.2                                                                        | XLIFF 2.x                                                                                                                     | Description                                                                                                                                                  |
-|-------------------------------------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Inline element display hint               | —                                                                                 | `disp`                                                                                                                        | Only relevant for CAT-tool display; ignored (see [Markup](#markup)).                                                                                         |
-| Translation state                         | `state`, `state-qualifier`                                                       | segment `state`                                                                                                               | `<target/>` is always used, regardless of state.                                                                                                             |
-| Notes & alternative translations          | `<note/>`, `<alt-trans/>`                                                        | `<notes/>`                                                                                                                    | Not exposed.                                                                                                                                                 |
-| Process metadata                          | `approved`, `<phase-group/>` / `phase`, `tool`                                   | `tool` / metadata                                                                                                             | Ignored.                                                                                                                                                     |
-| Skeleton / round-trip structure           | `<skl/>` / external skeleton                                                     | `<skeleton/>`                                                                                                                 | Not read.                                                                                                                                                    |
-| Grouping & context                        | `<group/>`, `restype`, `<context-group/>`, `<count-group/>`                      | `<group/>`                                                                                                                    | Structural metadata ignored.                                                                                                                                 |
-| Binary content                            | `<bin-unit/>`, `<bin-source/>`, `<bin-target/>`                                  | —                                                                                                                             | Not read.                                                                                                                                                    |
-| XLIFF 2.x modules                         | —                                                                                | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed (the XLIFF 2.2 PGS module is supported, see [XLIFF 2.2 — PGS Module](#xliff-22--pgs-module-plural-gender-and-select)).                         |
+| Feature                          | XLIFF 1.2                                                   | XLIFF 2.x                                                                                                                     | Description                                                                                                                          |
+|----------------------------------|-------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| Inline element display hint      | —                                                           | `disp`                                                                                                                        | Only relevant for CAT-tool display; ignored (see [XLIFF Inline Elements and Markup](#xliff-inline-elements-and-markup)).             |
+| Translation state                | `state`, `state-qualifier`                                  | segment `state`                                                                                                               | `<target/>` is always used, regardless of state.                                                                                     |
+| Notes & alternative translations | `<note/>`, `<alt-trans/>`                                   | `<notes/>`                                                                                                                    | Not exposed.                                                                                                                         |
+| Process metadata                 | `approved`, `<phase-group/>` / `phase`, `tool`              | `tool` / metadata                                                                                                             | Ignored.                                                                                                                             |
+| Skeleton / round-trip structure  | `<skl/>` / external skeleton                                | `<skeleton/>`                                                                                                                 | Not read.                                                                                                                            |
+| Grouping & context               | `<group/>`, `restype`, `<context-group/>`, `<count-group/>` | `<group/>`                                                                                                                    | Structural metadata ignored.                                                                                                         |
+| Binary content                   | `<bin-unit/>`, `<bin-source/>`, `<bin-target/>`             | —                                                                                                                             | Not read.                                                                                                                            |
+| XLIFF 2.x modules                | —                                                           | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed (the XLIFF 2.2 PGS module is supported, see [XLIFF 2.2 — PGS Module](#xliff-22--pgs-module-plural-gender-and-select)). |
 
 ## Full Example
 
