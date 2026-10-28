@@ -14,7 +14,7 @@ None of this exists anymore. The `<name>` part of a filename is now purely cosme
 
 ## Migration steps
 
-1. **Remove the calls.** Delete `.defaultDomain(...)` and `.domainDivider(...)` from your builder configuration — both methods are gone and the code will no longer compile.
+1. **Remove the calls.** Delete `defaultDomain(String)` and `domainDivider(String)` from your builder configuration — both methods are gone and the code will no longer compile.
 
    ```diff
     XliffResourceMessageSource
