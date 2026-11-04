@@ -6,8 +6,8 @@ package io.github.alaugks.spring.messagesource.xliff;
 import io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,12 +84,12 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 	/**
 	 * Extracts the translation units from the XLIFF 2.0/2.1 document.
 	 *
-	 * @return ordered map of key to translated text; empty if the document is
+	 * @return map of key to translated text; empty if the document is
 	 *         not an XLIFF document.
 	 */
 	@Override
 	public Map<String, String> getUnits() {
-		Map<String, String> transUnits = new LinkedHashMap<>();
+		Map<String, String> transUnits = new HashMap<>();
 		if (this.isXliffDocument()) {
 			NodeList units = this.root.getElementsByTagName("unit");
 			for (int i = 0; i < units.getLength(); i++) {

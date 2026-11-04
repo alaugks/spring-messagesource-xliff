@@ -10,7 +10,7 @@ interface XliffDocumentInterface {
 	/**
 	 * Extracts the translation units from the document.
 	 *
-	 * @return ordered map of key to translated text; empty if the document is
+	 * @return map of key to translated text; empty if the document is
 	 *         not an XLIFF document.
 	 */
 	Map<String, String> getUnits();

@@ -3,7 +3,7 @@
 
 package io.github.alaugks.spring.messagesource.xliff;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -45,10 +45,10 @@ class Xliff12Document extends XliffDocument implements XliffDocumentInterface {
 	/**
 	 * Extracts the translation units from the XLIFF 1.2 document.
 	 *
-	 * @return ordered map of key to translated text; empty if the document is not an XLIFF document.
+	 * @return map of key to translated text; empty if the document is not an XLIFF document.
 	 */
 	public Map<String, String> getUnits() {
-		Map<String, String> transUnits = new LinkedHashMap<>();
+		Map<String, String> transUnits = new HashMap<>();
 		if (this.isXliffDocument()) {
 			NodeList nodeList = this.root.getElementsByTagName("trans-unit");
 			for (int i = 0; i < nodeList.getLength(); i++) {
