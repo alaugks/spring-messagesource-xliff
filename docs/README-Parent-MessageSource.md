@@ -40,7 +40,7 @@ The source that is asked **first wins** for codes that exist in both. Pick the o
 
 The XLIFF `MessageSource` is the primary source. A code is looked up in the XLIFF translations first; if it is missing, the lookup falls back to the parent (here a `ResourceBundleMessageSource`).
 
-Use `parentMessageSource(...)` on the builder:
+Use `parentMessageSource(MessageSource)` on the builder:
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
@@ -79,7 +79,7 @@ Lookup order: **XLIFF translations → `messages` ResourceBundle**.
 
 The other `MessageSource` is the primary source. A code is looked up there first; if it is missing, the lookup falls back to the XLIFF translations.
 
-Build the XLIFF `MessageSource` and set it as the parent of the primary source via `setParentMessageSource(...)`:
+Build the XLIFF `MessageSource` and set it as the parent of the primary source via `setParentMessageSource(MessageSource)`:
 
 ```java
 import io.github.alaugks.spring.messagesource.xliff.XliffResourceMessageSource;
