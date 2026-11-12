@@ -1,4 +1,4 @@
-# XLIFF 2.2 — PGS Module (Plural, Gender and Select)
+# XLIFF 2.2: PGS Module (Plural, Gender and Select)
 
 XLIFF 2.2 introduces the **PGS module** (Plural, Gender and Select). This library reads a PGS-annotated `<unit/>` and turns it into a translation that resolves to the right text for a runtime argument. The unit's `pgs:switch` becomes the argument, its `<segment/>`s become the cases.
 
@@ -94,7 +94,7 @@ messageSource.getMessage(
 
 **Result:** `Sie haben 1.000 Dateien gelöscht.`
 
-**Thymeleaf**: the same `Map` is passed as the message parameter (the locale comes from the request); use an inline `${ … }` map literal:
+**Thymeleaf**: the same `Map` is passed as the message parameter (the locale comes from the request). Use an inline `${ … }` map literal:
 
 ```html
 <p th:text="#{file_deleted(${ {'count' : 1000} })}"></p>
@@ -195,7 +195,7 @@ A `select:<variable>` switch maps directly to an ICU `select`: each `<segment/>`
 
 A `gender:<variable>` switch is the same construct under a more specific name: it picks the segment whose `pgs:case` matches the argument value. Because there is no separate gender mechanism in ICU, it behaves exactly like `select`.
 
-The following example uses `gender`; replacing the switch type with `select` (e.g. `pgs:switch="select:recipient_gender"`) produces the identical result.
+The following example uses `gender`. Replacing the switch type with `select` (e.g. `pgs:switch="select:recipient_gender"`) produces the identical result.
 
 ```xml
 <unit id="tu1" name="greeting" pgs:switch="gender:recipient_gender">

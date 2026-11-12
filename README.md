@@ -21,9 +21,9 @@ This package provides a [MessageSource interface](https://docs.spring.io/spring-
   - [Translation Key](#translation-key)
   - [Translation Value](#translation-value)
     - [XLIFF 1.2](#xliff-12)
-    - [XLIFF 2.x — Segmentation](#xliff-2x--segmentation)
-    - [XLIFF 2.x — Segments Order](#xliff-2x--segments-order)
-    - [XLIFF 2.2 — PGS Module (Plural, Gender and Select)](#xliff-22--pgs-module-plural-gender-and-select)
+    - [XLIFF 2.x: Segmentation](#xliff-2x-segmentation)
+    - [XLIFF 2.x: Segments Order](#xliff-2x-segments-order)
+    - [XLIFF 2.2: PGS Module (Plural, Gender and Select)](#xliff-22-pgs-module-plural-gender-and-select)
     - [XLIFF Inline Elements and Markup](#xliff-inline-elements-and-markup)
     - [Whitespace](#whitespace)
   - [Determining the Target Locale](#determining-the-target-locale)
@@ -126,7 +126,7 @@ public class MessageSourceConfig {
 ```  
 
 > [!TIP]
-> Trans-units can be organized across multiple XLIFF files however you like (e.g. by feature or module); this example keeps everything in one file per locale. Only requirement: `resname` / `name` must be unique across all files, since it is the key.
+> Trans-units can be organized across multiple XLIFF files however you like (e.g. by feature or module). This example keeps everything in one file per locale. The only requirement: `resname` / `name` must be unique across all files, since it is the key.
 
 #### messages.xliff
 
@@ -235,10 +235,10 @@ Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / 
 
 ## XLIFF Files
 
-* Translations can be split across multiple files; the key is always taken from the unit itself (see [Translation Key](#translation-key)), the filename has no effect on it. Since the key is what's looked up, it must be unique across all files: `resname` / `name`, or `id` if neither is set.
+* Translations can be split across multiple files. The key is always taken from the unit itself (see [Translation Key](#translation-key)), the filename has no effect on it. Since the key is what's looked up, it must be unique across all files: `resname` / `name`, or `id` if neither is set.
 * Files are selected by `locationPattern` and by file extension: `xlf` and `xliff` by default, configurable with `fileExtensions()`.
 * Supported versions: `1.2`, `2.0`, `2.1` and `2.2`.
-* Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module); off by default, enable with `enableSchemaValidation()`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
+* Each file can optionally be validated against its OASIS XSD schema (1.2 → `xliff-core-1.2-transitional.xsd`, 2.0/2.1 → `xliff-core-2.0.xsd`, 2.2 → `xliff_core_2.2.xsd` with the `metadata.xsd` module). It is off by default and enabled with `enableSchemaValidation()`. The PGS module attributes are this library's extension and are not part of the OASIS core schema, so they are removed before validation.
 * 🚨 Valid XLIFF is a prerequisite. The library does not defend against invalid input. Such files may fail with an exception or produce undefined results. Enable the schema validation with `enableSchemaValidation()` during development and in tests to catch invalid files early. See the [example configuration](https://github.com/alaugks/spring-messagesource-xliff-example/blob/main/src/main/java/io/github/alaugks/config/MessageSourceConfig.java).
 * SAX parser errors are handled by an [ErrorHandler](src/main/java/io/github/alaugks/spring/messagesource/xliff/exception/SaxErrorHandler.java).
 * Each unit yields a **key** (message code) and a **value** (the `<target/>` text, or the `<source/>` text if the unit has no `<target/>`). The key is always the resource name (`resname` / `name`, with `id` as fallback), **never** the `<source/>` text. See [Translation Key](#translation-key) and [Translation Value](#translation-value).
@@ -247,7 +247,7 @@ Resolving a value by code behaves like Spring's `ResourceBundleMessageSource` / 
 
 ### Translation Key
 
-The key is the application-facing resource name. XLIFF separates the internal identifier (`id`) from the resource name (`resname` / `name`); the resource name is the key, with `id` as fallback when it is absent.
+The key is the application-facing resource name. XLIFF separates the internal identifier (`id`) from the resource name (`resname` / `name`). The resource name is the key, with `id` as fallback when it is absent.
 
 | Version | Element         | 1. Key from                           | 2. Fallback                            | Not used as key |
 |---------|-----------------|---------------------------------------|----------------------------------------|-----------------|
@@ -256,7 +256,7 @@ The key is the application-facing resource name. XLIFF separates the internal id
 
 * **XLIFF 1.2:** `resname` &rarr; `id`. `resname` is the original resource name (e.g. a properties-file key) and is preferred; `id` is required and unique within the `<file/>` but is a tool-internal identifier, used as the key only when `resname` is absent. ([Docs: General Identifiers](http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html#General_Identifiers))
 * **XLIFF 2.x:** `unit/@name` &rarr; `unit/@id`, analogous to 1.2. `segment/@id` is **never** the key (optional, only unique within its `<unit/>`). (Docs: [2.0](https://docs.oasis-open.org/xliff/xliff-core/v2.0/csprd01/xliff-core-v2.0-csprd01.html#unit), [2.1](https://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html#unit), [2.2](https://docs.oasis-open.org/xliff/xliff-core/v2.2/xliff-core-v2.2-part1.html#unit))
-* A unit is **skipped** when neither attribute is set (1.2: no `resname`/`id`; 2.x: no `name`/`id`).
+* A unit is **skipped** when neither attribute is set (1.2: no `resname`/`id`, 2.x: no `name`/`id`).
 
 ### Translation Value
 
@@ -275,7 +275,7 @@ Each `<trans-unit/>` has exactly one `<source/>` and one optional `<target/>`. T
 
 **Result:** `greeting` → `Hallo Welt`
 
-#### XLIFF 2.x — Segmentation
+#### XLIFF 2.x: Segmentation
 
 A `<unit/>` holds one or more `<segment/>` elements. A single segment is the common case. Multiple segments are reassembled into one string. An `<ignorable/>` between them holds non-translatable content, typically whitespace.
 
@@ -302,7 +302,7 @@ The reassembly rules are:
 
 **Result:** `disclaimer` → `Alle Preise inkl. MwSt. Irrtümer vorbehalten.`
 
-#### XLIFF 2.x — Segments Order
+#### XLIFF 2.x: Segments Order
 
 The `order` attribute on `<target/>` defines how target segments are composed. Segments are sorted ascending by their `order` value. An `<ignorable/>` element always keeps its document position.
 
@@ -335,11 +335,11 @@ With `strictMode(StrictMode.TARGET_ORDER)` the `order` values are validated inst
 | `1, 1` (duplicate)       | sorted as written    | rejected                  |
 | `1, abc` (non-numeric)   | `abc` is sorted last | rejected                  |
 
-#### XLIFF 2.2 — PGS Module (Plural, Gender and Select)
+#### XLIFF 2.2: PGS Module (Plural, Gender and Select)
 
 XLIFF 2.2 adds the PGS module. It annotates a `<unit/>` with a `pgs:switch`, so its `<segment/>`s become plural, gender or select cases. Such a unit resolves to different text depending on a runtime argument, for example a count or a gender. This requires ICU4J via `enableICU4j()` (see [MessageSource Configuration](#messagesource-configuration)).
 
-🚨 See [XLIFF 2.2 — PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
+🚨 See [XLIFF 2.2: PGS Module](docs/README-XLIFF-2.2-PGS.md) for the annotation, all switch types and examples.
 
 #### XLIFF Inline Elements and Markup
 
@@ -363,11 +363,11 @@ Applies to XLIFF 1.2 and 2.x. The value is trimmed by default. Set [`xml:space="
 
 ### Determining the Target Locale
 
-There are two ways a file's target locale is determined: by default from the filename suffix, or — when `useXliffLanguageAttribute()` is enabled on the builder — from the XLIFF document's own language attribute instead.
+There are two ways a file's target locale is determined: by default from the filename suffix, or from the XLIFF document's own language attribute instead if `useXliffLanguageAttribute()` is enabled on the builder.
 
 #### Filename Suffix
 
-The `<name>` part is freely choosable and has no functional meaning; it's not used to derive keys and files aren't otherwise linked by it (see [XLIFF Files](#xliff-files)). What matters is that the locale is recognised as a suffix of the filename:
+The `<name>` part is freely choosable and has no functional meaning. It is not used to derive keys, and files aren't otherwise linked by it (see [XLIFF Files](#xliff-files)). What matters is that the locale is recognised as a suffix of the filename:
 
 ```
 # Default language
@@ -382,7 +382,7 @@ The `<name>` part is freely choosable and has no functional meaning; it's not us
 
 #### XLIFF Language Attribute
 
-Enable `useXliffLanguageAttribute()` on the builder to resolve a file's target locale from the document's own language attribute (`target-language` for XLIFF 1.2, `trgLang` for XLIFF 2.x) instead. The filename is then completely free-form — like the `<name>` part above, it has no functional meaning at all, so the locale suffix isn't needed either.
+Enable `useXliffLanguageAttribute()` on the builder to resolve a file's target locale from the document's own language attribute (`target-language` for XLIFF 1.2, `trgLang` for XLIFF 2.x) instead. The filename is then completely free-form. Like the `<name>` part above, it has no functional meaning at all, so the locale suffix isn't needed either.
 
 ```java
 return XliffResourceMessageSource
@@ -441,7 +441,7 @@ Not supported, relative to the XLIFF 1.2 and 2.x specifications (a `—` means t
 | Skeleton / round-trip structure  | `<skl/>` / external skeleton                                | `<skeleton/>`                                                                                                                 | Not read.                                                                                                                            |
 | Grouping & context               | `<group/>`, `restype`, `<context-group/>`, `<count-group/>` | `<group/>`                                                                                                                    | Structural metadata ignored.                                                                                                         |
 | Binary content                   | `<bin-unit/>`, `<bin-source/>`, `<bin-target/>`             | —                                                                                                                             | Not read.                                                                                                                            |
-| XLIFF 2.x modules                | —                                                           | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed (the XLIFF 2.2 PGS module is supported, see [XLIFF 2.2 — PGS Module](#xliff-22--pgs-module-plural-gender-and-select)). |
+| XLIFF 2.x modules                | —                                                           | Translation Candidates, Glossary, Metadata, Resource Data, Size/Length Restriction, Format Style, Validation, Change Tracking | Not processed (the XLIFF 2.2 PGS module is supported, see [XLIFF 2.2: PGS Module](#xliff-22-pgs-module-plural-gender-and-select)). |
 
 ## Full Example
 

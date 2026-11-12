@@ -543,7 +543,7 @@ messageSource.getMessage("html-with-cdata", new Object[] { "Max" }, Locale.forLa
 
 ## Limits and Edge Cases
 
-- **Maximum nesting depth:** Content nested deeper than 8 levels is dropped instead of rendered. This protects against a stack overflow; text above the limit is kept.
+- **Maximum nesting depth:** Content nested deeper than 8 levels is dropped instead of rendered. This protects against a stack overflow. Text above the limit is kept.
 - **Invalid `hex`:** An invalid `hex` value in `<cp/>` is skipped.
 - **Whitespace:** The rendered text is trimmed unless `xml:space="preserve"` is set, see the main [README](../README.md).
 - **`<it/>` and `<sub/>` (1.2):** Follow the general rules (content is rendered, an empty element falls back to `equiv-text`).

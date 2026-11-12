@@ -38,7 +38,7 @@ The source that is asked **first wins** for codes that exist in both. Pick the o
 
 ## 1. XLIFF first, other source as fallback
 
-The XLIFF `MessageSource` is the primary source. A code is looked up in the XLIFF translations first; if it is missing, the lookup falls back to the parent (here a `ResourceBundleMessageSource`).
+The XLIFF `MessageSource` is the primary source. A code is looked up in the XLIFF translations first. If it is missing, the lookup falls back to the parent (here a `ResourceBundleMessageSource`).
 
 Use `parentMessageSource(MessageSource)` on the builder:
 
@@ -77,7 +77,7 @@ Lookup order: **XLIFF translations → `messages` ResourceBundle**.
 
 ## 2. Other source first, XLIFF as fallback
 
-The other `MessageSource` is the primary source. A code is looked up there first; if it is missing, the lookup falls back to the XLIFF translations.
+The other `MessageSource` is the primary source. A code is looked up there first. If it is missing, the lookup falls back to the XLIFF translations.
 
 Build the XLIFF `MessageSource` and set it as the parent of the primary source via `setParentMessageSource(MessageSource)`:
 
@@ -120,8 +120,8 @@ Lookup order: **`messages` ResourceBundle → XLIFF translations**.
 
 | Goal                                                                                              | Order                                                |
 |---------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| XLIFF holds the translations; the other source only provides a few extra/legacy codes.            | [1. XLIFF first](#1-xliff-first-other-source-as-fallback) |
+| XLIFF holds the translations, the other source only provides a few extra/legacy codes.            | [1. XLIFF first](#1-xliff-first-other-source-as-fallback) |
 | An existing `ResourceBundle` setup stays authoritative; XLIFF adds or gradually replaces codes.   | [2. Other source first](#2-other-source-first-xliff-as-fallback) |
 
 > [!NOTE]
-> The parent chain is not limited to two sources. A parent can itself have a parent, so several `MessageSource`s can be chained; each level is asked only when the code was not resolved at the level before it.
+> The parent chain is not limited to two sources. A parent can itself have a parent, so several `MessageSource`s can be chained. Each level is asked only when the code was not resolved at the level before it.

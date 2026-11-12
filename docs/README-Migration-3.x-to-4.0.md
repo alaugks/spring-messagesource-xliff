@@ -1,6 +1,6 @@
-# Migration: 3.x → 4.0 — Domain Removed
+# Migration: 3.x → 4.0, Domain Removed
 
-Version 4.0 removes the **domain** concept entirely. In 3.x, a translation file's domain (derived from its filename) could be prepended to the message code; 4.0 no longer does this. The message code is now always exactly the unit's `resname` / `name` (fallback `id`) — see [Translation Key](../README.md#translation-key) in the main README.
+Version 4.0 removes the **domain** concept entirely. In 3.x, a translation file's domain (derived from its filename) could be prepended to the message code. 4.0 no longer does this. The message code is now always exactly the unit's `resname` / `name` (fallback `id`). See [Translation Key](../README.md#translation-key) in the main README.
 
 ## What was removed
 
@@ -10,11 +10,11 @@ Version 4.0 removes the **domain** concept entirely. In 3.x, a translation file'
 | `Builder.domainDivider(String)` *(deprecated since 4.0.0)* | Separator used between domain and code when the file's domain differed from the default domain. Default was `"."`.                                                                               |
 | Implicit domain from filename                              | Each file's domain was derived from the `<domain>` part of its filename (e.g. `payment_de.xlf` → domain `payment`) and prepended to every code in that file, unless it equalled `defaultDomain`. |
 
-None of this exists anymore. The `<name>` part of a filename is now purely cosmetic — see [Structure of the Translation Filename](../README.md#structure-of-the-translation-filename).
+None of this exists anymore. The `<name>` part of a filename is now purely cosmetic. See [Structure of the Translation Filename](../README.md#structure-of-the-translation-filename).
 
 ## Migration steps
 
-1. **Remove the calls.** Delete `defaultDomain(String)` and `domainDivider(String)` from your builder configuration — both methods are gone and the code will no longer compile.
+1. **Remove the calls.** Delete `defaultDomain(String)` and `domainDivider(String)` from your builder configuration. Both methods are gone and the code will no longer compile.
 
    ```diff
     XliffResourceMessageSource
@@ -40,7 +40,7 @@ None of this exists anymore. The `<name>` part of a filename is now purely cosme
 
 3. **Files whose domain equalled the default domain need no change.** They were never prefixed, so their `resname` / `name` values already match the resulting code.
 
-4. **A custom `domainDivider` has no replacement.** There is no separator configuration anymore; use whatever literal characters you like directly in `resname` / `name` — the code is opaque to this library.
+4. **A custom `domainDivider` has no replacement.** There is no separator configuration anymore. Use whatever literal characters you like directly in `resname` / `name`. The code is opaque to this library.
 
 5. **Codes must be unique across all files**, since there is no longer a per-domain namespace to keep them apart. See the note in [XLIFF Files](../README.md#xliff-files).
 
