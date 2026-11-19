@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -21,15 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class XliffCatalogTest {
+class XliffCatalogTests {
 
 	@Test
 	void test_get_trans_units() {
 		ResourceLoaderBuilder ressourceLoader = ResourceLoaderBuilder
-			.builder(
-				Locale.forLanguageTag("en"),
-				List.of("translations/messages.xliff", "translations/messages_de.xliff")
-			)
+			.builder(Locale.forLanguageTag("en"),
+					List.of("translations/messages.xliff", "translations/messages_de.xliff"))
 			.fileExtensions(List.of("xlf", "xliff"))
 			.build();
 
@@ -42,10 +53,8 @@ class XliffCatalogTest {
 
 	@Test
 	void test_parse_error() {
-		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-			List.of("fixtures/parse_error.xliff"),
-			Locale.forLanguageTag("en")
-		);
+		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(List.of("fixtures/parse_error.xliff"),
+				Locale.forLanguageTag("en"));
 
 		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(XliffMessageSourceSAXParseException.class);
 		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(FatalError.class);
@@ -59,56 +68,39 @@ class XliffCatalogTest {
 			.fileExtensions(List.of("xml"))
 			.build();
 
-		List<TransUnitInterface> transUnits = new XliffCatalog(
-			ressourceLoader.getTranslationFiles(),
-			true
-		).getTransUnits();
+		List<TransUnitInterface> transUnits = new XliffCatalog(ressourceLoader.getTranslationFiles(), true)
+			.getTransUnits();
 
 		assertThat(transUnits).isEqualTo(List.of());
 	}
 
 	@Test
 	void test_version_not_supported() {
-		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-			List.of("fixtures/xliff10.xliff"),
-			Locale.forLanguageTag("en"),
-			false
-		);
+		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(List.of("fixtures/xliff10.xliff"),
+				Locale.forLanguageTag("en"), false);
 
-		assertThatThrownBy(
-			xliffCatalog::getTransUnits
-		)
-			.isInstanceOf(XliffMessageSourceVersionSupportException.class)
-			.hasMessage(
-				"XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2"
-			);
+		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(XliffMessageSourceVersionSupportException.class)
+			.hasMessage("XLIFF version \"1.0\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2");
 	}
 
 	@ParameterizedTest
 	@MethodSource("provider_supported_versions")
 	void test_version_supported(String ressourcePath, String expected) {
-		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-			List.of(ressourcePath),
-			Locale.forLanguageTag("en")
-		);
+		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(List.of(ressourcePath), Locale.forLanguageTag("en"));
 
 		assertThat(TestHelper.findInTransUnits(xliffCatalog.getTransUnits(), "en", "code-1")).isEqualTo(expected);
 	}
 
 	static Stream<Arguments> provider_supported_versions() {
-		return Stream.of(
-			Arguments.of("fixtures/xliff12.xliff", "Postcode (Xliff Version 1.2)"),
-			Arguments.of("fixtures/xliff20.xliff", "Postcode (Xliff Version 2.0)"),
-			Arguments.of("fixtures/xliff21.xliff", "Postcode (Xliff Version 2.1)")
-		);
+		return Stream.of(Arguments.of("fixtures/xliff12.xliff", "Postcode (Xliff Version 1.2)"),
+				Arguments.of("fixtures/xliff20.xliff", "Postcode (Xliff Version 2.0)"),
+				Arguments.of("fixtures/xliff21.xliff", "Postcode (Xliff Version 2.1)"));
 	}
 
 	@Test
 	void test_schema_validation_invalid_throws() {
-		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-			List.of("fixtures/schemainvalid.xliff"),
-			Locale.forLanguageTag("en")
-		);
+		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(List.of("fixtures/schemainvalid.xliff"),
+				Locale.forLanguageTag("en"));
 
 		assertThatThrownBy(xliffCatalog::getTransUnits).isInstanceOf(XliffMessageSourceValidationException.class);
 	}
@@ -120,8 +112,8 @@ class XliffCatalogTest {
 			.fileExtensions(List.of("xlf", "xliff"))
 			.build();
 
-		List<TransUnitInterface> transUnits = new XliffCatalog(ressourceLoader.getTranslationFiles(),
-			false).getTransUnits();
+		List<TransUnitInterface> transUnits = new XliffCatalog(ressourceLoader.getTranslationFiles(), false)
+			.getTransUnits();
 
 		assertThat(TestHelper.findInTransUnits(transUnits, "en", "novalid")).isEqualTo("Target");
 	}
@@ -129,30 +121,19 @@ class XliffCatalogTest {
 	@ParameterizedTest
 	@MethodSource("provider_standard_compliant_fixtures")
 	void test_fixtures_are_schema_valid(String resourcePath) {
-		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(
-			List.of(resourcePath),
-			Locale.forLanguageTag("en")
-		);
+		XliffCatalog xliffCatalog = TestHelper.getXliffCatalog(List.of(resourcePath), Locale.forLanguageTag("en"));
 
 		assertThatCode(xliffCatalog::getTransUnits).doesNotThrowAnyException();
 	}
 
 	static Stream<Arguments> provider_standard_compliant_fixtures() {
-		return Stream.of(
-			Arguments.of("fixtures/xliff12.xliff"),
-			Arguments.of("fixtures/xliff20.xliff"),
-			Arguments.of("fixtures/xliff21.xliff"),
-			Arguments.of("translations/messages.xliff"),
-			Arguments.of("translations/messages_de.xliff"),
-			Arguments.of("translations/messages_en_US.xliff"),
-			Arguments.of("translations/payment.en.xlf"),
-			Arguments.of("translations/payment.de.xlf"),
-			Arguments.of("translations_en/messages.xliff"),
-			Arguments.of("translations_en/payment.xlf"),
-			Arguments.of("translations_de/messages_de.xliff"),
-			Arguments.of("translations_de/payment_de.xlf"),
-			Arguments.of("translations_en_US/messages_en_US.xliff")
-		);
+		return Stream.of(Arguments.of("fixtures/xliff12.xliff"), Arguments.of("fixtures/xliff20.xliff"),
+				Arguments.of("fixtures/xliff21.xliff"), Arguments.of("translations/messages.xliff"),
+				Arguments.of("translations/messages_de.xliff"), Arguments.of("translations/messages_en_US.xliff"),
+				Arguments.of("translations/payment.en.xlf"), Arguments.of("translations/payment.de.xlf"),
+				Arguments.of("translations_en/messages.xliff"), Arguments.of("translations_en/payment.xlf"),
+				Arguments.of("translations_de/messages_de.xliff"), Arguments.of("translations_de/payment_de.xlf"),
+				Arguments.of("translations_en_US/messages_en_US.xliff"));
 	}
 
 }

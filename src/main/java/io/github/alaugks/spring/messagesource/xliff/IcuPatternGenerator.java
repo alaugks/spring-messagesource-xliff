@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -12,20 +25,21 @@ import java.util.regex.Pattern;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-
 /**
- * Generates an ICU MessageFormat pattern from an XLIFF 2.2 unit annotated with
- * the Plural, Gender, and Select (PGS) Module.
+ * Generates an ICU MessageFormat pattern from an XLIFF 2.2 unit annotated with the
+ * Plural, Gender, and Select (PGS) Module.
  *
- * <p>The unit's single {@code pgs:switch} ({@code plural}, {@code gender} or
- * {@code select}) becomes an ICU argument; the unit's {@code <segment>}s are the
- * cases, matched via {@code pgs:case}. Within a case, literal text is
- * ICU-escaped and each {@code <ph disp="..."/>} placeholder becomes an ICU
- * argument {@code {disp}}.
+ * <p>
+ * The unit's single {@code pgs:switch} ({@code plural}, {@code gender} or {@code select})
+ * becomes an ICU argument; the unit's {@code <segment>}s are the cases, matched via
+ * {@code pgs:case}. Within a case, literal text is ICU-escaped and each
+ * {@code <ph disp="..."/>} placeholder becomes an ICU argument {@code {disp}}.
  *
- * <p>Example: a {@code plural:count} switch with cases {@code 0}, {@code 1}
- * and {@code other} yields
- * {@code {count, plural, =0 {…} =1 {…} other {…}}}.
+ * <p>
+ * Example: a {@code plural:count} switch with cases {@code 0}, {@code 1} and
+ * {@code other} yields {@code {count, plural, =0 {…} =1 {…} other {…}}}.
+ *
+ * @author André Laugks
  */
 class IcuPatternGenerator {
 
@@ -37,22 +51,21 @@ class IcuPatternGenerator {
 
 	private static final List<String> ICU_TYPES = List.of("plural", "select");
 
-	/** Argument names and select keys: letters, digits and underscore only, so they cannot alter the ICU structure. */
+	// Argument names and select keys: letters, digits and underscore only, so they cannot
+	// alter the ICU structure.
 	private static final Pattern ICU_IDENTIFIER = Pattern.compile("[\\p{L}\\p{N}_]+");
 
 	private static final Pattern EXACT_NUMBER = Pattern.compile("\\d+");
 
 	/**
 	 * Generates the ICU pattern for a PGS-annotated unit.
-	 *
-	 * @param unit      the {@code <unit>} element.
+	 * @param unit the {@code <unit>} element.
 	 * @param pgsSwitch the unit's {@code pgs:switch} value.
 	 * @return the ICU pattern, or {@code ""} when the unit has no segment.
-	 * @throws XliffMessageSourceRuntimeException when the switch is malformed,
-	 *         its type, a variable name, a case or a placeholder cannot be
-	 *         expressed as valid ICU syntax, a segment has no or a duplicate
-	 *         {@code pgs:case}, or the mandatory {@code other} case is
-	 *         missing.
+	 * @throws XliffMessageSourceRuntimeException when the switch is malformed, its type,
+	 * a variable name, a case or a placeholder cannot be expressed as valid ICU syntax, a
+	 * segment has no or a duplicate {@code pgs:case}, or the mandatory {@code other} case
+	 * is missing.
 	 */
 	String generate(Element unit, String pgsSwitch) {
 		List<Element> segments = this.segments(unit);
@@ -64,19 +77,22 @@ class IcuPatternGenerator {
 		return this.build(unit, this.parseSwitch(unitName(unit), pgsSwitch), segments);
 	}
 
-	/** Parses a single pgs:switch value (a type:variable token), mapping the PGS type to its ICU counterpart; fails when malformed. */
+	// Parses a single pgs:switch value (a type:variable token), mapping the PGS type to
+	// its ICU counterpart; fails when malformed.
 	private PgsSwitch parseSwitch(String unitName, String pgsSwitch) {
 		String pgsSwitchValue = pgsSwitch.trim();
 		int colon = pgsSwitchValue.indexOf(':');
 
 		if (colon > 0 && colon < pgsSwitchValue.length() - 1) {
-			return new PgsSwitch(icuType(unitName, pgsSwitchValue.substring(0, colon)), pgsSwitchValue.substring(colon + 1));
+			return new PgsSwitch(icuType(unitName, pgsSwitchValue.substring(0, colon)),
+					pgsSwitchValue.substring(colon + 1));
 		}
 
 		throw invalid(unitName, "malformed pgs:switch '" + pgsSwitch + "', expected type:variable");
 	}
 
-	/** Maps a PGS switch type to its ICU type (gender becomes select); rejects unsupported types. */
+	// Maps a PGS switch type to its ICU type (gender becomes select); rejects unsupported
+	// types.
 	private static String icuType(String unitName, String pgsType) {
 		String icuType = "gender".equals(pgsType) ? "select" : pgsType;
 
@@ -87,7 +103,7 @@ class IcuPatternGenerator {
 		return icuType;
 	}
 
-	/** Collects the unit's <segment> child elements in document order. */
+	// Collects the unit's <segment> child elements in document order.
 	private List<Element> segments(Element unit) {
 		List<Element> segments = new ArrayList<>();
 		Node child = unit.getFirstChild();
@@ -102,7 +118,7 @@ class IcuPatternGenerator {
 		return segments;
 	}
 
-	/** Builds the ICU pattern for the switch, emitting one case branch per segment. */
+	// Builds the ICU pattern for the switch, emitting one case branch per segment.
 	private String build(Element unit, PgsSwitch pgs, List<Element> segments) {
 		String unitName = unitName(unit);
 		requireIdentifier(unitName, "pgs:switch variable", pgs.variable());
@@ -112,7 +128,11 @@ class IcuPatternGenerator {
 
 		for (Map.Entry<String, Element> branch : cases.entrySet()) {
 			String body = this.caseText(unitName, branch.getValue());
-			icu.append(' ').append(formatCase(unitName, pgs.icuType(), branch.getKey())).append(" {").append(body).append('}');
+			icu.append(' ')
+				.append(formatCase(unitName, pgs.icuType(), branch.getKey()))
+				.append(" {")
+				.append(body)
+				.append('}');
 		}
 
 		if (!cases.containsKey(OTHER)) {
@@ -122,7 +142,8 @@ class IcuPatternGenerator {
 		return icu.append('}').toString();
 	}
 
-	/** Maps each pgs:case value to its segment, preserving document order; a duplicate case is rejected. */
+	// Maps each pgs:case value to its segment, preserving document order; a duplicate
+	// case is rejected.
 	private Map<String, Element> segmentsByCase(String unitName, List<Element> segments) {
 		Map<String, Element> byCase = new LinkedHashMap<>();
 
@@ -136,7 +157,7 @@ class IcuPatternGenerator {
 		return byCase;
 	}
 
-	/** Returns the segment's pgs:case value; a missing value is rejected. */
+	// Returns the segment's pgs:case value; a missing value is rejected.
 	private String caseValue(String unitName, Element segment) {
 		String raw = segment.getAttributeNS(PGS_NS, "case").trim();
 
@@ -147,7 +168,8 @@ class IcuPatternGenerator {
 		return raw;
 	}
 
-	/** Formats a case key for ICU: numeric plural cases become exact matches (=0); CLDR plural keywords and all select cases are emitted as-is. */
+	// Formats a case key for ICU: numeric plural cases become exact matches (=0); CLDR
+	// plural keywords and all select cases are emitted as-is.
 	private static String formatCase(String unitName, String icuType, String caseValue) {
 		if ("plural".equals(icuType)) {
 			if (PLURAL_KEYWORDS.contains(caseValue)) {
@@ -164,7 +186,8 @@ class IcuPatternGenerator {
 		return caseValue;
 	}
 
-	/** Builds the ICU sub-message for a segment from its <target> (falling back to <source>). */
+	// Builds the ICU sub-message for a segment from its <target> (falling back to
+	// <source>).
 	private String caseText(String unitName, Element segment) {
 		Element content = XliffDocument.firstChildElement(segment, XliffDocument.TARGET);
 
@@ -182,7 +205,8 @@ class IcuPatternGenerator {
 		return text.toString().trim();
 	}
 
-	/** Walks a node's children, ICU-escaping text and converting <ph disp> to ICU arguments. */
+	// Walks a node's children, ICU-escaping text and converting <ph disp> to ICU
+	// arguments.
 	private void appendText(String unitName, Node node, StringBuilder out) {
 		Node child = node.getFirstChild();
 
@@ -198,7 +222,8 @@ class IcuPatternGenerator {
 		}
 	}
 
-	/** Converts a <ph disp> placeholder to an ICU argument; recurses into any other element. */
+	// Converts a <ph disp> placeholder to an ICU argument; recurses into any other
+	// element.
 	private void appendElement(String unitName, Element element, StringBuilder out) {
 		if ("ph".equals(XliffDocument.elementName(element))) {
 			String disp = element.getAttribute("disp");
@@ -206,12 +231,14 @@ class IcuPatternGenerator {
 				requireIdentifier(unitName, "<ph disp>", disp);
 				out.append('{').append(disp).append('}');
 			}
-		} else {
+		}
+		else {
 			this.appendText(unitName, element, out);
 		}
 	}
 
-	/** Escapes ICU MessageFormat metacharacters in literal text: apostrophes are doubled and runs containing { } # are wrapped in apostrophes. */
+	// Escapes ICU MessageFormat metacharacters in literal text: apostrophes are doubled
+	// and runs containing { } # are wrapped in apostrophes.
 	private static String escape(String text) {
 		StringBuilder out = new StringBuilder(text.length());
 		boolean quoted = false;
@@ -221,10 +248,12 @@ class IcuPatternGenerator {
 			if (c == '\'') {
 				quoted = closeQuote(out, quoted);
 				out.append("''");
-			} else if (c == '{' || c == '}' || c == '#') {
+			}
+			else if (c == '{' || c == '}' || c == '#') {
 				quoted = openQuote(out, quoted);
 				out.append(c);
-			} else {
+			}
+			else {
 				quoted = closeQuote(out, quoted);
 				out.append(c);
 			}
@@ -234,7 +263,7 @@ class IcuPatternGenerator {
 		return out.toString();
 	}
 
-	/** Opens an ICU quote run if not already open; returns the new quoted state. */
+	// Opens an ICU quote run if not already open; returns the new quoted state.
 	private static boolean openQuote(StringBuilder out, boolean quoted) {
 		if (!quoted) {
 			out.append('\'');
@@ -243,7 +272,7 @@ class IcuPatternGenerator {
 		return true;
 	}
 
-	/** Closes an ICU quote run if open; returns the new quoted state. */
+	// Closes an ICU quote run if open; returns the new quoted state.
 	private static boolean closeQuote(StringBuilder out, boolean quoted) {
 		if (quoted) {
 			out.append('\'');
@@ -252,29 +281,31 @@ class IcuPatternGenerator {
 		return false;
 	}
 
-	/** Rejects values that are not a plain ICU identifier. */
+	// Rejects values that are not a plain ICU identifier.
 	private static void requireIdentifier(String unitName, String what, String value) {
 		if (!ICU_IDENTIFIER.matcher(value).matches()) {
 			throw invalid(unitName, "invalid " + what + " '" + value + "'");
 		}
 	}
 
-	/** Retrieves the name of a unit element. If the "name" attribute is empty. Fallback to the value of the "id" attribute.*/
+	// Retrieves the name of a unit element. If the "name" attribute is empty. Fallback to
+	// the value of the "id" attribute.
 	private static String unitName(Element unit) {
 		String name = unit.getAttribute("name");
 		return name.isEmpty() ? unit.getAttribute("id") : name;
 	}
 
-	/**
-	 * Creates and returns a new {@link XliffMessageSourceRuntimeException} with a detailed error message.
-	 * The error message specifies the unit name and the reason for the failure.
-	 */
+	// Creates and returns a new XliffMessageSourceRuntimeException with a
+	// detailed error message. The error message specifies the unit name and the reason
+	// for the failure.
 	private static XliffMessageSourceRuntimeException invalid(String unitName, String reason) {
-		return new XliffMessageSourceRuntimeException("Cannot generate ICU pattern for unit '" + unitName + "': " + reason);
+		return new XliffMessageSourceRuntimeException(
+				"Cannot generate ICU pattern for unit '" + unitName + "': " + reason);
 	}
 
-	/** A PGS switch resolved to its ICU type and the ICU argument variable name. */
+	// A PGS switch resolved to its ICU type and the ICU argument variable name.
 	private record PgsSwitch(String icuType, String variable) {
 
 	}
+
 }

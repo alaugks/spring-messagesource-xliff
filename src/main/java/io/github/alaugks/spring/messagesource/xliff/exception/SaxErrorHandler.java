@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff.exception;
 
@@ -10,9 +23,11 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
 /**
- * SAX {@link ErrorHandler} that turns every warning, error, and fatal error
- * into a corresponding runtime exception instead of allowing the parser to
- * swallow or merely log it.
+ * SAX {@link ErrorHandler} that turns every warning, error, and fatal error into a
+ * corresponding runtime exception instead of allowing the parser to swallow or merely log
+ * it.
+ *
+ * @author André Laugks
  */
 public final class SaxErrorHandler implements ErrorHandler {
 
@@ -23,10 +38,8 @@ public final class SaxErrorHandler implements ErrorHandler {
 	}
 
 	/**
-	 * Handles a SAX parser warning by wrapping it in a
-	 * {@link Warning} and throwing it, so that warnings surface as
-	 * runtime exceptions instead of being silently ignored.
-	 *
+	 * Handles a SAX parser warning by wrapping it in a {@link Warning} and throwing it,
+	 * so that warnings surface as runtime exceptions instead of being silently ignored.
 	 * @param exception the SAX warning reported by the parser.
 	 * @throws Warning always, wrapping the supplied exception.
 	 */
@@ -36,9 +49,8 @@ public final class SaxErrorHandler implements ErrorHandler {
 	}
 
 	/**
-	 * Handles a recoverable SAX parser error by wrapping it in an
-	 * {@link Error} and throwing it.
-	 *
+	 * Handles a recoverable SAX parser error by wrapping it in an {@link Error} and
+	 * throwing it.
 	 * @param exception the SAX error reported by the parser.
 	 * @throws Error always, wrapping the supplied exception.
 	 */
@@ -48,9 +60,8 @@ public final class SaxErrorHandler implements ErrorHandler {
 	}
 
 	/**
-	 * Handles a non-recoverable SAX parser error by wrapping it in a
-	 * {@link FatalError} and throwing it.
-	 *
+	 * Handles a non-recoverable SAX parser error by wrapping it in a {@link FatalError}
+	 * and throwing it.
 	 * @param exception the fatal SAX error reported by the parser.
 	 * @throws FatalError always, wrapping the supplied exception.
 	 */
@@ -58,4 +69,5 @@ public final class SaxErrorHandler implements ErrorHandler {
 	public void fatalError(SAXParseException exception) {
 		throw new FatalError(exception);
 	}
+
 }

@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -13,10 +26,13 @@ import org.w3c.dom.Node;
 /**
  * Abstract base for reading translation units from a parsed XLIFF document.
  *
- * <p>Subclasses implement version-specific extraction; this class provides the
- * shared utilities (key derivation helpers, text extraction, node traversal)
- * and the {@link #readVersion(Element)} factory helper used before the correct
- * subclass can be chosen.
+ * <p>
+ * Subclasses implement version-specific extraction; this class provides the shared
+ * utilities (key derivation helpers, text extraction, node traversal) and the
+ * {@link #readVersion(Element)} factory helper used before the correct subclass can be
+ * chosen.
+ *
+ * @author André Laugks
  */
 abstract class XliffDocument {
 
@@ -30,9 +46,7 @@ abstract class XliffDocument {
 	 */
 	protected static final String TARGET = "target";
 
-	/**
-	 * Inline renderer for extracting text from inline elements.
-	 */
+	// Inline renderer for extracting text from inline elements.
 	private static final InlineElementRenderer INLINE_RENDERER = new InlineElementRenderer();
 
 	/**
@@ -42,7 +56,6 @@ abstract class XliffDocument {
 
 	/**
 	 * Creates a document reader for the given root element.
-	 *
 	 * @param root the root element of the parsed XLIFF document.
 	 */
 	protected XliffDocument(Element root) {
@@ -51,7 +64,6 @@ abstract class XliffDocument {
 
 	/**
 	 * Creates a document reader for the given parsed document.
-	 *
 	 * @param document the parsed XLIFF document.
 	 */
 	protected XliffDocument(Document document) {
@@ -59,16 +71,15 @@ abstract class XliffDocument {
 	}
 
 	/**
-	 * Reads the XLIFF version from the root element without requiring a
-	 * concrete subclass instance. Returns {@code null} when the element is not
-	 * an XLIFF document or declares no {@code version} attribute.
-	 *
+	 * Reads the XLIFF version from the root element without requiring a concrete subclass
+	 * instance. Returns {@code null} when the element is not an XLIFF document or
+	 * declares no {@code version} attribute.
 	 * @param root the root element of a parsed XML document.
 	 * @return the declared XLIFF version string, or {@code null}.
 	 */
-	public static @Nullable String readVersion(Element root) {
+	static @Nullable String readVersion(Element root) {
 		String localName = root.getLocalName();
-		String name = localName != null ? localName : root.getNodeName();
+		String name = (localName != null) ? localName : root.getNodeName();
 		if (!"xliff".equals(name)) {
 			return null;
 		}
@@ -77,18 +88,16 @@ abstract class XliffDocument {
 	}
 
 	/**
-	 * Returns the XLIFF version declared on the root element, or {@code null}
-	 * when absent or when this is not an XLIFF document.
-	 *
+	 * Returns the XLIFF version declared on the root element, or {@code null} when absent
+	 * or when this is not an XLIFF document.
 	 * @return the declared XLIFF version string, or {@code null}.
 	 */
-	public @Nullable String getXliffVersion() {
+	@Nullable String getXliffVersion() {
 		return readVersion(this.root);
 	}
 
 	/**
 	 * Returns whether the root element is an {@code <xliff>} element.
-	 *
 	 * @return {@code true} if the root is an XLIFF document element.
 	 */
 	protected boolean isXliffDocument() {
@@ -97,7 +106,6 @@ abstract class XliffDocument {
 
 	/**
 	 * Returns the first non-null, non-empty value.
-	 *
 	 * @param values the candidate values, in priority order.
 	 * @return the first non-empty value, or {@code ""} if none qualifies.
 	 */
@@ -114,9 +122,8 @@ abstract class XliffDocument {
 	 * Parses an attribute value as a BCP 47 language tag, as declared by
 	 * {@code source-language}/{@code target-language} (XLIFF 1.2) and
 	 * {@code srcLang}/{@code trgLang} (XLIFF 2.x).
-	 *
 	 * @param value the attribute value, as returned by
-	 *              {@link Element#getAttribute(String)}.
+	 * {@link Element#getAttribute(String)}.
 	 * @return the parsed locale, or {@code null} when the value is empty.
 	 */
 	protected static @Nullable Locale toLocale(String value) {
@@ -125,8 +132,7 @@ abstract class XliffDocument {
 
 	/**
 	 * Returns the first direct child element with the given local name.
-	 *
-	 * @param parent    the element whose children are searched.
+	 * @param parent the element whose children are searched.
 	 * @param localName the local name to match.
 	 * @return the first matching child element, or {@code null} if none.
 	 */
@@ -137,7 +143,6 @@ abstract class XliffDocument {
 	/**
 	 * Returns the node's local name, falling back to its node name when no
 	 * namespace-aware local name is available.
-	 *
 	 * @param node the node to name.
 	 * @return the local name, or the node name as fallback.
 	 */
@@ -146,24 +151,21 @@ abstract class XliffDocument {
 	}
 
 	/**
-	 * Returns the element's text content as the displayable value: trimmed
-	 * unless the element's effective {@code xml:space} is {@code "preserve"}.
-	 *
+	 * Returns the element's text content as the displayable value: trimmed unless the
+	 * element's effective {@code xml:space} is {@code "preserve"}.
 	 * @param element the source/target element; may be {@code null}.
-	 * @return the (conditionally trimmed) text content; {@code ""} when
-	 *         {@code element} is {@code null}.
+	 * @return the (conditionally trimmed) text content; {@code ""} when {@code element}
+	 * is {@code null}.
 	 */
 	protected String value(@Nullable Element element) {
 		String raw = this.rawValue(element);
-		return element != null && this.isPreserveSpace(element) ? raw : raw.trim();
+		return (element != null && this.isPreserveSpace(element)) ? raw : raw.trim();
 	}
 
 	/**
 	 * Returns the element's raw text content without trimming.
-	 *
 	 * @param element the element to read; may be {@code null}.
-	 * @return the text content, or {@code ""} when {@code element} is
-	 *         {@code null}.
+	 * @return the text content, or {@code ""} when {@code element} is {@code null}.
 	 */
 	protected String rawValue(@Nullable Element element) {
 		if (element == null) {
@@ -173,15 +175,13 @@ abstract class XliffDocument {
 	}
 
 	/**
-	 * Returns whether whitespace in the element's content is significant, i.e.
-	 * the nearest {@code xml:space} declaration on the element or one of its
-	 * ancestors is {@code "preserve"}. When no ancestor declares
-	 * {@code xml:space}, whitespace is not preserved (the XML default).
-	 *
-	 * @param element the element whose effective {@code xml:space} is resolved;
-	 *                may be {@code null}.
-	 * @return {@code true} if the effective {@code xml:space} is
-	 *         {@code "preserve"}.
+	 * Returns whether whitespace in the element's content is significant, i.e. the
+	 * nearest {@code xml:space} declaration on the element or one of its ancestors is
+	 * {@code "preserve"}. When no ancestor declares {@code xml:space}, whitespace is not
+	 * preserved (the XML default).
+	 * @param element the element whose effective {@code xml:space} is resolved; may be
+	 * {@code null}.
+	 * @return {@code true} if the effective {@code xml:space} is {@code "preserve"}.
 	 */
 	protected boolean isPreserveSpace(@Nullable Element element) {
 		Node node = element;
@@ -195,12 +195,11 @@ abstract class XliffDocument {
 		return false;
 	}
 
-	/**
-	 * Reads the element's xml:space attribute (XML-namespaced, with
-	 * prefixed-name fallback).
-	 */
+	// Reads the element's xml:space attribute (XML-namespaced, with prefixed-name
+	// fallback).
 	private String xmlSpace(Element element) {
 		String space = element.getAttributeNS(XMLConstants.XML_NS_URI, "space");
 		return space.isEmpty() ? element.getAttribute("xml:space") : space;
 	}
+
 }

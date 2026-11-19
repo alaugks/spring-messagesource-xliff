@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -21,11 +34,12 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * The {@code XliffCatalog} class provides support for managing and parsing
- * a collection of XLIFF translation files. It extracts translation units
- * while optionally validating files against their associated XLIFF schemas.
- * The process is optimized for lazy evaluation, parsing the documents
- * and extracting their units only when requested.
+ * The {@code XliffCatalog} class provides support for managing and parsing a collection
+ * of XLIFF translation files. It extracts translation units while optionally validating
+ * files against their associated XLIFF schemas. The process is optimized for lazy
+ * evaluation, parsing the documents and extracting their units only when requested.
+ *
+ * @author André Laugks
  */
 class XliffCatalog {
 
@@ -38,27 +52,23 @@ class XliffCatalog {
 	private final XliffSchemaValidator schemaValidator = new XliffSchemaValidator();
 
 	/**
-	 * Creates a new catalog that lazily parses the given XLIFF translation
-	 * files.
-	 *
+	 * Creates a new catalog that lazily parses the given XLIFF translation files.
 	 * @param translationFiles XLIFF files to parse on first access.
-	 * @param validateSchema   whether each document is validated against its
-	 *                         OASIS XSD schema before its units are extracted.
+	 * @param validateSchema whether each document is validated against its OASIS XSD
+	 * schema before its units are extracted.
 	 */
-	public XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema) {
+	XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema) {
 		this(translationFiles, validateSchema, Set.of());
 	}
 
 	/**
-	 * Creates a new catalog that lazily parses the given XLIFF translation
-	 * files.
-	 *
+	 * Creates a new catalog that lazily parses the given XLIFF translation files.
 	 * @param translationFiles XLIFF files to parse on first access.
-	 * @param validateSchema   whether each document is validated against its
-	 *                         OASIS XSD schema before its units are extracted.
-	 * @param strictMode      checks that reject invalid values in readable documents.
+	 * @param validateSchema whether each document is validated against its OASIS XSD
+	 * schema before its units are extracted.
+	 * @param strictMode checks that reject invalid values in readable documents.
 	 */
-	public XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema, Set<StrictMode> strictMode) {
+	XliffCatalog(List<TransFileInterface> translationFiles, boolean validateSchema, Set<StrictMode> strictMode) {
 		this.translationFiles = translationFiles;
 		this.validateSchema = validateSchema;
 		this.strictMode = Set.copyOf(strictMode);
@@ -66,35 +76,29 @@ class XliffCatalog {
 
 	/**
 	 * Returns the translation units parsed from all configured XLIFF files.
-	 * <p>The result is parsed on the first invocation and cached for subsequent
-	 * calls.
-	 *
+	 * <p>
+	 * The result is parsed on the first invocation and cached for subsequent calls.
 	 * @return list of all translation units across the configured files; never
-	 *         {@code null}.
-	 * @throws FatalError                                if the XML parser cannot
-	 *                                                   be configured or a file
-	 *                                                   cannot be read.
-	 * @throws XliffMessageSourceRuntimeException        if SAX-level parsing
-	 *                                                   fails for one of the
-	 *                                                   files.
-	 * @throws XliffMessageSourceVersionSupportException if a file declares an
-	 *                                                   unsupported XLIFF
-	 *                                                   version.
+	 * {@code null}.
+	 * @throws FatalError if the XML parser cannot be configured or a file cannot be read.
+	 * @throws XliffMessageSourceRuntimeException if SAX-level parsing fails for one of
+	 * the files.
+	 * @throws XliffMessageSourceVersionSupportException if a file declares an unsupported
+	 * XLIFF version.
 	 */
-	public List<TransUnitInterface> getTransUnits() {
+	List<TransUnitInterface> getTransUnits() {
 		try {
 			return this.parseXliffDocuments(this.translationFiles);
-		} catch (ParserConfigurationException | IOException e) {
-			throw new FatalError(e);
+		}
+		catch (ParserConfigurationException | IOException ex) {
+			throw new FatalError(ex);
 		}
 	}
 
-	/**
-	 * Parses the XLIFF files into a flat list of translation units, using a
-	 * namespace-aware, XXE-hardened parser.
-	 */
+	// Parses the XLIFF files into a flat list of translation units, using a
+	// namespace-aware, XXE-hardened parser.
 	private List<TransUnitInterface> parseXliffDocuments(List<TransFileInterface> xliffFiles)
-		throws ParserConfigurationException, IOException {
+			throws ParserConfigurationException, IOException {
 
 		List<TransUnitInterface> transUnits = new ArrayList<>();
 
@@ -104,8 +108,9 @@ class XliffCatalog {
 			Element root;
 			try {
 				root = XliffDocumentParser.parseRootElement(factory, Objects.requireNonNull(xliffFile.content()));
-			} catch (SAXException e) {
-				throw new XliffMessageSourceRuntimeException(e);
+			}
+			catch (SAXException ex) {
+				throw new XliffMessageSourceRuntimeException(ex);
 			}
 
 			String version = XliffDocument.readVersion(root);
@@ -120,23 +125,14 @@ class XliffCatalog {
 			Map<String, String> units = switch (version) {
 				case "1.2" -> new Xliff12Document(root).getUnits();
 				case "2.0", "2.1", "2.2" -> new Xliff2xDocument(root, this.strictMode).getUnits();
-				default -> throw new XliffMessageSourceVersionSupportException(
-					String.format(
-						"XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2",
-						version
-					)
-				);
+				default -> throw new XliffMessageSourceVersionSupportException(String
+					.format("XLIFF version \"%s\" not supported. Supported versions: 1.2, 2.0, 2.1 and 2.2", version));
 			};
 
-			units.forEach((code, value) -> transUnits.add(
-				new TransUnit(
-					xliffFile.locale(),
-					code,
-					value
-				)
-			));
+			units.forEach((code, value) -> transUnits.add(new TransUnit(xliffFile.locale(), code, value)));
 		}
 
 		return transUnits;
 	}
+
 }

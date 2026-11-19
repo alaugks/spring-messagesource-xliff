@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -19,21 +32,25 @@ import org.w3c.dom.NodeList;
 /**
  * Reads translation units from a parsed XLIFF 2.0/2.1 document.
  *
- * <p>For each {@code <unit>}: the key is the first non-empty value of
- * {@code name}, then {@code id}; the value reconstructs the unit's translated
- * text by concatenating, in document order, the {@code <target>} text (falling
- * back to {@code <source>}) of each {@code <segment>} and {@code <ignorable>}
- * — as XLIFF prescribes for segmented content (Segmentation, Section 4.8).
- * Units that have neither a {@code name} nor an {@code id} are skipped.
+ * <p>
+ * For each {@code <unit>}: the key is the first non-empty value of {@code name}, then
+ * {@code id}; the value reconstructs the unit's translated text by concatenating, in
+ * document order, the {@code <target>} text (falling back to {@code <source>}) of each
+ * {@code <segment>} and {@code <ignorable>} — as XLIFF prescribes for segmented content
+ * (Segmentation, Section 4.8). Units that have neither a {@code name} nor an {@code id}
+ * are skipped.
  *
- * <p>Each element's text content is taken verbatim (embedded markup, e.g. HTML
- * in a CDATA section, is preserved; XLIFF inline elements are not interpreted).
- * The concatenated value is trimmed unless the unit, or one of its elements,
- * declares an effective {@code xml:space} of {@code "preserve"}.
+ * <p>
+ * Each element's text content is taken verbatim (embedded markup, e.g. HTML in a CDATA
+ * section, is preserved; XLIFF inline elements are not interpreted). The concatenated
+ * value is trimmed unless the unit, or one of its elements, declares an effective
+ * {@code xml:space} of {@code "preserve"}.
+ *
+ * @author André Laugks
  */
 class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
-	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
+	// Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module.
 	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
 
 	private final IcuPatternGenerator icuPatternGenerator = new IcuPatternGenerator();
@@ -42,50 +59,45 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	/**
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
-	 *
 	 * @param root the root element of the parsed XLIFF document.
 	 */
-	public Xliff2xDocument(Element root) {
+	Xliff2xDocument(Element root) {
 		this(root, Set.of());
 	}
 
 	/**
 	 * Creates a reader for the given XLIFF 2.0/2.1 root element.
-	 *
-	 * @param root         the root element of the parsed XLIFF document.
+	 * @param root the root element of the parsed XLIFF document.
 	 * @param strictMode checks that reject invalid values.
 	 */
-	public Xliff2xDocument(Element root, Set<StrictMode> strictMode) {
+	Xliff2xDocument(Element root, Set<StrictMode> strictMode) {
 		super(root);
 		this.strictMode = Set.copyOf(strictMode);
 	}
 
 	/**
 	 * Creates a reader for the given parsed XLIFF 2.0/2.1 document.
-	 *
 	 * @param document the parsed XLIFF document.
 	 */
-	public Xliff2xDocument(Document document) {
+	Xliff2xDocument(Document document) {
 		super(document);
 		this.strictMode = Set.of();
 	}
 
 	/**
 	 * Creates a reader for the given parsed XLIFF 2.0/2.1 document.
-	 *
-	 * @param document     the parsed XLIFF document.
+	 * @param document the parsed XLIFF document.
 	 * @param strictMode checks that reject invalid values.
 	 */
-	public Xliff2xDocument(Document document, Set<StrictMode> strictMode) {
+	Xliff2xDocument(Document document, Set<StrictMode> strictMode) {
 		super(document);
 		this.strictMode = Set.copyOf(strictMode);
 	}
 
 	/**
 	 * Extracts the translation units from the XLIFF 2.0/2.1 document.
-	 *
-	 * @return ordered map of key to translated text; empty if the document is
-	 *         not an XLIFF document.
+	 * @return ordered map of key to translated text; empty if the document is not an
+	 * XLIFF document.
 	 */
 	@Override
 	public Map<String, String> getUnits() {
@@ -101,34 +113,27 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 
 	/**
 	 * Extracts the declared source and target language from the document's
-	 * {@code srcLang}/{@code trgLang} attributes, read from the root
-	 * {@code <xliff>} element.
-	 *
-	 * @return the declared languages; both {@code null} when absent or when
-	 *         the document is not an XLIFF document.
+	 * {@code srcLang}/{@code trgLang} attributes, read from the root {@code <xliff>}
+	 * element.
+	 * @return the declared languages; both {@code null} when absent or when the document
+	 * is not an XLIFF document.
 	 */
 	@Override
 	public XliffLanguageAttr getLanguages() {
 		if (!this.isXliffDocument()) {
 			return new XliffLanguageAttr(null, null);
 		}
-		return new XliffLanguageAttr(
-			toLocale(this.root.getAttribute("srcLang")),
-			toLocale(this.root.getAttribute("trgLang"))
-		);
+		return new XliffLanguageAttr(toLocale(this.root.getAttribute("srcLang")),
+				toLocale(this.root.getAttribute("trgLang")));
 	}
 
-	/**
-	 * The unit's key: its name, falling back to its id.
-	 */
+	// The unit's key: its name, falling back to its id.
 	private String unitKey(Element unit) {
 		return this.firstNonEmpty(unit.getAttribute("name"), unit.getAttribute("id"));
 	}
 
-	/**
-	 * Adds the unit's key and value to the map, skipping it when it has no key
-	 * or no segments.
-	 */
+	// Adds the unit's key and value to the map, skipping it when it has no key or no
+	// segments.
 	private void addUnit(Element unit, Map<String, String> transUnits) {
 		String key = this.unitKey(unit);
 		if (key.isEmpty()) {
@@ -153,25 +158,18 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 		transUnits.put(key, this.isPreservesWhitespace(elements) ? assembled : assembled.trim());
 	}
 
-	/**
-	 * Returns whether any element's source or target declares
-	 * xml:space="preserve".
-	 */
+	// Returns whether any element's source or target declares xml:space="preserve".
 	private boolean isPreservesWhitespace(List<Element> elements) {
 		for (Element element : elements) {
 			if (this.isPreserveSpace(firstChildElement(element, TARGET))
-				|| this.isPreserveSpace(firstChildElement(element, SOURCE))
-			) {
+					|| this.isPreserveSpace(firstChildElement(element, SOURCE))) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	/**
-	 * Collects the unit's <segment> and <ignorable> child elements in document
-	 * order.
-	 */
+	// Collects the unit's <segment> and <ignorable> child elements in document order.
 	private List<Element> getSegmentNodes(Element unit) {
 		List<Element> segments = new ArrayList<>();
 		NodeList nodes = unit.getChildNodes();
@@ -186,10 +184,8 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 		return segments;
 	}
 
-	/**
-	 * Concatenates each segment's target text (falling back to source) and each
-	 * ignorable's source text in document order.
-	 */
+	// Concatenates each segment's target text (falling back to source) and each
+	// ignorable's source text in document order.
 	private String concatSegments(List<Element> elements) {
 		Iterator<Element> segments = this.orderedSegments(elements).iterator();
 		StringBuilder value = new StringBuilder();
@@ -197,23 +193,20 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			if (this.isSegment(element)) {
 				Element segment = segments.next();
 				Element target = firstChildElement(segment, TARGET);
-				value.append(this.rawValue(target != null ? target : firstChildElement(segment, SOURCE)));
-			} else {
+				value.append(this.rawValue((target != null) ? target : firstChildElement(segment, SOURCE)));
+			}
+			else {
 				value.append(this.rawValue(firstChildElement(element, SOURCE)));
 			}
 		}
 		return value.toString();
 	}
 
-	/**
-	 * Returns the unit's segments in display order: as written when no target
-	 * declares an order attribute, otherwise sorted by that attribute
-	 * (XLIFF 2.x reordering, Section 4.8).
-	 */
+	// Returns the unit's segments in display order: as written when no target declares an
+	// order attribute, otherwise sorted by that attribute (XLIFF 2.x reordering, Section
+	// 4.8).
 	private List<Element> orderedSegments(List<Element> elements) {
-		List<Element> segments = elements.stream()
-			.filter(this::isSegment)
-			.toList();
+		List<Element> segments = elements.stream().filter(this::isSegment).toList();
 
 		if (!this.hasTargetOrder(segments)) {
 			return segments;
@@ -223,15 +216,11 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			this.assertContinuousOrder(segments);
 		}
 
-		return segments.stream()
-			.sorted(Comparator.comparingInt(this::targetOrder))
-			.toList();
+		return segments.stream().sorted(Comparator.comparingInt(this::targetOrder)).toList();
 	}
 
-	/**
-	 * Strict mode: every segment needs a target order, and together the orders
-	 * must be exactly 1, 2, ..., n without gaps or duplicates.
-	 */
+	// Strict mode: every segment needs a target order, and together the orders must be
+	// exactly 1, 2, ..., n without gaps or duplicates.
 	private void assertContinuousOrder(List<Element> segments) {
 		String unitKey = this.unitKey((Element) segments.get(0).getParentNode());
 		List<Integer> orders = new ArrayList<>();
@@ -239,33 +228,21 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			int order = this.targetOrder(segment);
 			if (order == Integer.MAX_VALUE) {
 				throw new XliffMessageSourceRuntimeException(
-					String.format(
-						"unit '%s': segment with missing or non-numeric target order",
-						unitKey
-					)
-				);
+						String.format("unit '%s': segment with missing or non-numeric target order", unitKey));
 			}
 			orders.add(order);
 		}
 		orders.sort(Comparator.naturalOrder());
 		for (int i = 0; i < orders.size(); i++) {
 			if (orders.get(i) != i + 1) {
-				throw new XliffMessageSourceRuntimeException(
-					String.format(
-						"unit '%s': target order must be continuous 1..%d, got %s",
-						unitKey,
-						orders.size(),
-						orders
-					)
-				);
+				throw new XliffMessageSourceRuntimeException(String.format(
+						"unit '%s': target order must be continuous 1..%d, got %s", unitKey, orders.size(), orders));
 			}
 		}
 	}
 
-	/**
-	 * Returns whether any segment's target carries a non-blank order
-	 * attribute, signalling that the segments should be reordered.
-	 */
+	// Returns whether any segment's target carries a non-blank order attribute,
+	// signalling that the segments should be reordered.
 	private boolean hasTargetOrder(List<Element> segments) {
 		for (Element segment : segments) {
 			Element target = firstChildElement(segment, TARGET);
@@ -276,13 +253,11 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 		return false;
 	}
 
-	/**
-	 * Returns the sort key for a segment: its target's order attribute parsed as
-	 * an integer. Segments whose order is absent or empty sort after all
-	 * explicitly ordered ones, keeping their document order among each other
-	 * (the sort is stable). This includes a non-numeric order; strict mode
-	 * rejects it beforehand in {@link #assertContinuousOrder}.
-	 */
+	// Returns the sort key for a segment: its target's order attribute parsed as an
+	// integer. Segments whose order is absent or empty sort after all explicitly ordered
+	// ones, keeping their document order among each other (the sort is stable). This
+	// includes a non-numeric order; strict mode rejects it beforehand in
+	// #assertContinuousOrder.
 	private int targetOrder(Element segment) {
 		Element target = firstChildElement(segment, TARGET);
 		if (target != null) {
@@ -290,7 +265,8 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 			if (!order.isEmpty()) {
 				try {
 					return Integer.parseInt(order);
-				} catch (NumberFormatException e) {
+				}
+				catch (NumberFormatException ex) {
 					// Not a number; sort after the explicitly ordered segments.
 				}
 			}
@@ -298,18 +274,14 @@ class Xliff2xDocument extends XliffDocument implements XliffDocumentInterface {
 		return Integer.MAX_VALUE;
 	}
 
-	/**
-	 * Returns whether the node is a <segment> element.
-	 */
+	// Returns whether the node is a <segment> element.
 	private boolean isSegment(Node node) {
 		return "segment".equals(elementName(node));
 	}
 
-	/**
-	 * Returns whether the node is a <segment> or <ignorable> element.
-	 */
+	// Returns whether the node is a <segment> or <ignorable> element.
 	private boolean isSegmentOrIgnorable(Node node) {
 		return this.isSegment(node) || "ignorable".equals(elementName(node));
 	}
-}
 
+}

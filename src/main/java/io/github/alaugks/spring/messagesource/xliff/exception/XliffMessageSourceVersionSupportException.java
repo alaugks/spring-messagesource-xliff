@@ -1,21 +1,35 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff.exception;
 
 /**
- * Thrown when an XLIFF document declares a version not supported by this
- * library.
+ * Thrown when an XLIFF document declares a version not supported by this library.
+ *
+ * @author André Laugks
  */
 public final class XliffMessageSourceVersionSupportException extends RuntimeException {
 
 	/**
-	 * Creates a new exception indicating that the encountered XLIFF version is
-	 * not supported by this library.
-	 *
+	 * Creates a new exception indicating that the encountered XLIFF version is not
+	 * supported by this library.
 	 * @param message human-readable detail message describing the cause.
 	 */
 	public XliffMessageSourceVersionSupportException(String message) {
 		super(message);
 	}
+
 }

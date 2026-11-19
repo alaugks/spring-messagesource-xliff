@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -16,12 +29,12 @@ import org.springframework.util.Assert;
 
 /**
  * Entry point for assembling an XLIFF-backed Spring {@code MessageSource}.
+ *
+ * @author André Laugks
  */
 public final class XliffResourceMessageSource {
 
-	/**
-	 * Utility class — not intended to be instantiated.
-	 */
+	// Utility class — not intended to be instantiated.
 	private XliffResourceMessageSource() {
 		throw new UnsupportedOperationException("XliffResourceMessageSource not supported.");
 	}
@@ -39,11 +52,10 @@ public final class XliffResourceMessageSource {
 	 *		.build();
 	 * }
 	 * </pre>
-	 *
-	 * @param defaultLocale   the locale to fall back to when a translation is
-	 *                        not available in the requested locale.
-	 * @param locationPattern Spring resource pattern(s) describing where the
-	 *                        XLIFF files are located.
+	 * @param defaultLocale the locale to fall back to when a translation is not available
+	 * in the requested locale.
+	 * @param locationPattern spring resource pattern(s) describing where the XLIFF files
+	 * are located.
 	 * @return a new builder pre-configured with the given defaults.
 	 */
 	public static Builder builder(Locale defaultLocale, String locationPattern) {
@@ -63,11 +75,10 @@ public final class XliffResourceMessageSource {
 	 *		.build();
 	 * }
 	 * </pre>
-	 *
-	 * @param defaultLocale   the locale to fall back to when a translation is
-	 *                        not available in the requested locale.
-	 * @param locationPattern Spring resource pattern(s) describing where the
-	 *                        XLIFF files are located.
+	 * @param defaultLocale the locale to fall back to when a translation is not available
+	 * in the requested locale.
+	 * @param locationPattern spring resource pattern(s) describing where the XLIFF files
+	 * are located.
 	 * @return a new builder pre-configured with the given defaults.
 	 */
 	public static Builder builder(Locale defaultLocale, List<String> locationPattern) {
@@ -87,17 +98,15 @@ public final class XliffResourceMessageSource {
 
 		private Set<StrictMode> strictMode = Set.of();
 
-		@Nullable
-		private TargetLocaleResolverInterface targetLocaleResolver;
+		private @Nullable TargetLocaleResolverInterface targetLocaleResolver;
 
 		/**
-		 * Creates a new builder with the given default locale and XLIFF file
-		 * location pattern.
-		 *
-		 * @param defaultLocale   the locale to fall back to when a translation
-		 *                        is not available in the requested locale.
-		 * @param locationPattern Spring resource pattern(s) describing where
-		 *                        the XLIFF files are located.
+		 * Creates a new builder with the given default locale and XLIFF file location
+		 * pattern.
+		 * @param defaultLocale the locale to fall back to when a translation is not
+		 * available in the requested locale.
+		 * @param locationPattern spring resource pattern(s) describing where the XLIFF
+		 * files are located.
 		 */
 		public Builder(Locale defaultLocale, List<String> locationPattern) {
 			super(defaultLocale);
@@ -105,12 +114,11 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Overrides the list of file extensions that are recognised as XLIFF
-		 * files.
-		 * <p>The defaults are {@code xlf} and {@code xliff}.
-		 *
-		 * @param fileExtensions the file extensions to consider (without the
-		 *                       leading dot).
+		 * Overrides the list of file extensions that are recognised as XLIFF files.
+		 * <p>
+		 * The defaults are {@code xlf} and {@code xliff}.
+		 * @param fileExtensions the file extensions to consider (without the leading
+		 * dot).
 		 * @return this builder for chaining.
 		 */
 		public Builder fileExtensions(List<String> fileExtensions) {
@@ -119,12 +127,13 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Controls whether each XLIFF document is validated against its OASIS XSD schema before its units are
-		 * extracted.
-		 * <p>Validation is disabled by default. Enable it to reject documents
-		 * that do not conform to the schema; note that strict schemas reject files that are otherwise readable (for
-		 * example XLIFF 1.2 files whose {@code <trans-unit>} elements omit the schema-required {@code id} attribute).
-		 *
+		 * Controls whether each XLIFF document is validated against its OASIS XSD schema
+		 * before its units are extracted.
+		 * <p>
+		 * Validation is disabled by default. Enable it to reject documents that do not
+		 * conform to the schema; note that strict schemas reject files that are otherwise
+		 * readable (for example XLIFF 1.2 files whose {@code <trans-unit>} elements omit
+		 * the schema-required {@code id} attribute).
 		 * @return this builder for chaining.
 		 */
 		public Builder enableSchemaValidation() {
@@ -134,10 +143,11 @@ public final class XliffResourceMessageSource {
 
 		/**
 		 * Enables checks that reject invalid values in otherwise readable XLIFF documents
-		 * with an {@link io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException}.
-		 * <p>Without an enabled check (default), invalid values are read on a best-effort basis.
-		 * See {@link StrictMode} for the available checks.
-		 *
+		 * with an
+		 * {@link io.github.alaugks.spring.messagesource.xliff.exception.XliffMessageSourceRuntimeException}.
+		 * <p>
+		 * Without an enabled check (default), invalid values are read on a best-effort
+		 * basis. See {@link StrictMode} for the available checks.
 		 * @param strictMode the checks to enable; must not be null.
 		 * @return this builder for chaining.
 		 */
@@ -151,9 +161,8 @@ public final class XliffResourceMessageSource {
 		/**
 		 * Sets whether each XLIFF document is validated against its OASIS XSD schema
 		 * before its units are extracted.
-		 *
 		 * @param validateSchema {@code true} to enable schema validation, {@code false}
-		 *                       to disable it.
+		 * to disable it.
 		 * @return this builder for chaining.
 		 * @deprecated since 4.1.0, use {@link #enableSchemaValidation()} instead.
 		 */
@@ -164,14 +173,13 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Configures the builder to use the XLIFF language attribute for determining
-		 * the target locale of XLIFF files.
+		 * Configures the builder to use the XLIFF language attribute for determining the
+		 * target locale of XLIFF files.
 		 *
-		 * <p>This method sets the {@code fileNameParser} field to an instance of
-		 * {@link XliffLanguageAttrParser}, enabling the extraction of the target
-		 * locale directly from the language-related attributes defined in the XLIFF
-		 * document.
-		 *
+		 * <p>
+		 * This method sets the {@code fileNameParser} field to an instance of
+		 * {@link XliffLanguageAttrParser}, enabling the extraction of the target locale
+		 * directly from the language-related attributes defined in the XLIFF document.
 		 * @return this builder instance for method chaining.
 		 */
 		public Builder useXliffLanguageAttribute() {
@@ -180,12 +188,11 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Assigns a custom implementation of {@link TargetLocaleResolverInterface} to resolve the
-		 * target locale of XLIFF files.
-		 *
-		 * @param targetLocaleResolver an implementation of {@link TargetLocaleResolverInterface}
-		 *                               used to resolve the target locale of XLIFF files; must
-		 *                               not be null.
+		 * Assigns a custom implementation of {@link TargetLocaleResolverInterface} to
+		 * resolve the target locale of XLIFF files.
+		 * @param targetLocaleResolver an implementation of
+		 * {@link TargetLocaleResolverInterface} used to resolve the target locale of
+		 * XLIFF files; must not be null.
 		 * @return this builder instance for method chaining.
 		 */
 		public Builder targetLocaleResolver(TargetLocaleResolverInterface targetLocaleResolver) {
@@ -196,10 +203,8 @@ public final class XliffResourceMessageSource {
 		}
 
 		/**
-		 * Assembles the configured {@link BaseMessageSourceBuilder} backed
-		 * by an {@link XliffCatalog} loaded from the configured location
-		 * pattern.
-		 *
+		 * Assembles the configured {@link BaseMessageSourceBuilder} backed by an
+		 * {@link XliffCatalog} loaded from the configured location pattern.
 		 * @return the configured message source builder.
 		 */
 		public BaseMessageSourceBuilder build() {
@@ -209,17 +214,15 @@ public final class XliffResourceMessageSource {
 				.targetLocaleResolver(this.targetLocaleResolver)
 				.build();
 
-			XliffCatalog xliffCatalog = new XliffCatalog(
-				resourcesLoader.getTranslationFiles(),
-				this.validateSchema,
-				this.strictMode
-			);
+			XliffCatalog xliffCatalog = new XliffCatalog(resourcesLoader.getTranslationFiles(), this.validateSchema,
+					this.strictMode);
 
-			return BaseMessageSourceBuilder
-				.builder(this.getDefaultLocale(), xliffCatalog.getTransUnits())
+			return BaseMessageSourceBuilder.builder(this.getDefaultLocale(), xliffCatalog.getTransUnits())
 				.parentMessageSource(this.getParentMessageSource())
 				.useICU4j(this.isICU4jEnabled())
 				.build();
 		}
+
 	}
+
 }

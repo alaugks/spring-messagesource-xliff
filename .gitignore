@@ -13,3 +13,4 @@ mvnw.cmd
 *.iml
 *.ipr
 
+!/.idea/checkstyle-idea.xml

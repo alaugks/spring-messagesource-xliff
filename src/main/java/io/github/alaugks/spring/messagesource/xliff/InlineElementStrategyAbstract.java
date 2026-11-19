@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -10,25 +23,24 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Base for the per-element rendering strategies used by
- * {@link InlineElementRenderer}.
+ * Base for the per-element rendering strategies used by {@link InlineElementRenderer}.
  *
- * <p>Provides the behavior shared by every strategy: the dispatch loop that
- * renders an element's children ({@link #appendChildren}), and resolving
- * original data referenced by a {@code dataRef}/{@code dataRefStart}/
- * {@code dataRefEnd} attribute via the enclosing {@code <unit>}'s
- * {@code <originalData>} ({@link #originalData}).
+ * <p>
+ * Provides the behavior shared by every strategy: the dispatch loop that renders an
+ * element's children ({@link #appendChildren}), and resolving original data referenced by
+ * a {@code dataRef}/{@code dataRefStart}/ {@code dataRefEnd} attribute via the enclosing
+ * {@code <unit>}'s {@code <originalData>} ({@link #originalData}).
+ *
+ * @author André Laugks
  */
 abstract class InlineElementStrategyAbstract implements InlineElementStrategyInterface {
 
 	private static final int MAX_DEPTH = 8;
 
 	/**
-	 * Appends the rendered children of the parent, dispatching each element
-	 * child to its {@link InlineElementStrategyAbstract} via
-	 * {@link InlineElementStrategyFactory}. Called by subclasses to
-	 * recurse into an element's own children.
-	 *
+	 * Appends the rendered children of the parent, dispatching each element child to its
+	 * {@link InlineElementStrategyAbstract} via {@link InlineElementStrategyFactory}.
+	 * Called by subclasses to recurse into an element's own children.
 	 * @param parent the element whose children to render.
 	 * @param out the buffer to append to.
 	 * @param depth the current recursion depth.
@@ -52,34 +64,31 @@ abstract class InlineElementStrategyAbstract implements InlineElementStrategyInt
 	}
 
 	/**
-	 * Resolves the original data referenced by {@code attribute} (one of
-	 * {@code dataRef}, {@code dataRefStart}, {@code dataRefEnd}) via the
-	 * element's enclosing {@code <unit>}'s {@code <originalData>}.
-	 *
+	 * Resolves the original data referenced by {@code attribute} (one of {@code dataRef},
+	 * {@code dataRefStart}, {@code dataRefEnd}) via the element's enclosing
+	 * {@code <unit>}'s {@code <originalData>}.
 	 * @param element the element carrying the reference attribute.
 	 * @param attribute the attribute holding the {@code <data>} id.
-	 * @return the referenced data's rendered content, or {@code ""} if the
-	 *         element carries no such attribute.
-	 * @throws NullPointerException if the attribute references a {@code <data>}
-	 *         that does not exist (invalid document).
+	 * @return the referenced data's rendered content, or {@code ""} if the element
+	 * carries no such attribute.
+	 * @throws NullPointerException if the attribute references a {@code <data>} that does
+	 * not exist (invalid document).
 	 */
 	protected final String originalData(Element element, String attribute) {
 		String ref = element.getAttribute(attribute);
 		if (ref.isEmpty()) {
 			return "";
 		}
-		Element originalData = Objects.requireNonNull(
-			XliffElementSupport.firstChildElement(this.enclosingUnit(element), "originalData")
-		);
+		Element originalData = Objects
+			.requireNonNull(XliffElementSupport.firstChildElement(this.enclosingUnit(element), "originalData"));
 		StringBuilder out = new StringBuilder();
 		Element data = Objects.requireNonNull(this.dataById(originalData, ref));
 		this.appendChildren(data, out, MAX_DEPTH - 1);
 		return out.toString();
 	}
 
-	/**
-	 * Finds the <data> child of <originalData> with the given id, or null if there is none.
-	 */
+	// Finds the <data> child of <originalData> with the given id, or null if there is
+	// none.
 	private @Nullable Element dataById(Element originalData, String id) {
 		NodeList dataElements = originalData.getElementsByTagNameNS("*", "data");
 		for (int i = 0; i < dataElements.getLength(); i++) {
@@ -91,9 +100,7 @@ abstract class InlineElementStrategyAbstract implements InlineElementStrategyInt
 		return null;
 	}
 
-	/**
-	 * Finds the closest ancestor <unit> element. A dataRef is only valid inside a <unit>.
-	 */
+	// Finds the closest ancestor <unit> element. A dataRef is only valid inside a <unit>.
 	private Element enclosingUnit(Element element) {
 		Element current = (Element) element.getParentNode();
 		while (!"unit".equals(XliffElementSupport.elementName(current))) {
@@ -101,4 +108,5 @@ abstract class InlineElementStrategyAbstract implements InlineElementStrategyInt
 		}
 		return current;
 	}
+
 }

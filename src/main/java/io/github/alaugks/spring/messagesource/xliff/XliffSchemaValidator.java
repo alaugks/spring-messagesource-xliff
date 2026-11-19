@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -31,56 +44,53 @@ import org.xml.sax.SAXParseException;
 /**
  * Validates XLIFF documents against the bundled OASIS XSD schemas.
  *
- * <p>XLIFF 1.2 is validated against {@code xliff-core-1.2-transitional.xsd},
- * XLIFF 2.0/2.1 against {@code xliff-core-2.0.xsd} (2.1 documents reuse the
- * 2.0 core namespace and schema), and XLIFF 2.2 against
- * {@code xliff_core_2.2.xsd} together with the {@code metadata.xsd} module it
- * imports. All schemas, including the {@code xml.xsd} imported by the core
- * schemas, are read only from the package; external access is disabled so
- * nothing is ever fetched from outside the classpath.
+ * <p>
+ * XLIFF 1.2 is validated against {@code xliff-core-1.2-transitional.xsd}, XLIFF 2.0/2.1
+ * against {@code xliff-core-2.0.xsd} (2.1 documents reuse the 2.0 core namespace and
+ * schema), and XLIFF 2.2 against {@code xliff_core_2.2.xsd} together with the
+ * {@code metadata.xsd} module it imports. All schemas, including the {@code xml.xsd}
+ * imported by the core schemas, are read only from the package; external access is
+ * disabled so nothing is ever fetched from outside the classpath.
  *
- * <p>The Plural, Gender, and Select (PGS) module attributes are an extension of
- * this library, not part of the OASIS core schema, which declares no wildcard
- * for module attributes on every element. They are therefore stripped from a
- * copy of the document before XSD validation so the core schema stays the
- * unmodified OASIS schema; the original document keeps its PGS attributes for
- * the reader.
+ * <p>
+ * The Plural, Gender, and Select (PGS) module attributes are an extension of this
+ * library, not part of the OASIS core schema, which declares no wildcard for module
+ * attributes on every element. They are therefore stripped from a copy of the document
+ * before XSD validation so the core schema stays the unmodified OASIS schema; the
+ * original document keeps its PGS attributes for the reader.
+ *
+ * @author André Laugks
  */
 class XliffSchemaValidator {
 
 	private static final String SCHEMA_PATH = "schema/";
 
-	/** Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module. */
+	// Namespace of the XLIFF 2.2 Plural, Gender, and Select (PGS) Module.
 	private static final String PGS_NS = "urn:oasis:names:tc:xliff:pgs:1.0";
+
 	private static final String PGS_ATTRIBUTES_XPATH = "//@*[namespace-uri()='" + PGS_NS + "']";
 
-	private static final Map<String, List<String>> SCHEMA_BY_VERSION = Map.of(
-		"1.2", List.of("xliff-core-1.2-transitional.xsd"),
-		"2.0", List.of("xliff-core-2.0.xsd"),
-		"2.1", List.of("xliff-core-2.0.xsd"),
-		"2.2", List.of("metadata.xsd", "xliff_core_2.2.xsd")
-	);
+	private static final Map<String, List<String>> SCHEMA_BY_VERSION = Map.of("1.2",
+			List.of("xliff-core-1.2-transitional.xsd"), "2.0", List.of("xliff-core-2.0.xsd"), "2.1",
+			List.of("xliff-core-2.0.xsd"), "2.2", List.of("metadata.xsd", "xliff_core_2.2.xsd"));
 
 	private final Map<String, Schema> schemaCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Validates the given XLIFF document against the schema for its version.
-	 *
 	 * @param document the parsed XLIFF document.
-	 * @param version  the resolved XLIFF version (e.g. {@code "1.2"}).
-	 * @throws XliffMessageSourceValidationException if no schema is bundled for
-	 *                                               the version, or if the
-	 *                                               document violates the schema.
+	 * @param version the resolved XLIFF version (e.g. {@code "1.2"}).
+	 * @throws XliffMessageSourceValidationException if no schema is bundled for the
+	 * version, or if the document violates the schema.
 	 */
 	void validate(Document document, String version) {
 		List<String> schemaResources = SCHEMA_BY_VERSION.get(version);
 		if (schemaResources == null) {
 			throw new XliffMessageSourceValidationException(
-				String.format("No schema available for version \"%s\"", version)
-			);
+					String.format("No schema available for version \"%s\"", version));
 		}
 
-		Schema schema = this.schemaCache.computeIfAbsent(version, key -> this.loadSchema(schemaResources));
+		Schema schema = this.schemaCache.computeIfAbsent(version, (key) -> this.loadSchema(schemaResources));
 
 		CollectingErrorHandler errorHandler = new CollectingErrorHandler();
 		Validator validator = schema.newValidator();
@@ -89,22 +99,20 @@ class XliffSchemaValidator {
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			validator.validate(new DOMSource(withoutPgsAttributes(document)));
-		} catch (SAXException | IOException e) {
-			throw new XliffMessageSourceValidationException(e.getMessage());
+		}
+		catch (SAXException | IOException ex) {
+			throw new XliffMessageSourceValidationException(ex.getMessage());
 		}
 
 		if (!errorHandler.errors.isEmpty()) {
-			throw new XliffMessageSourceValidationException(
-				String.join("", errorHandler.errors)
-			);
+			throw new XliffMessageSourceValidationException(String.join("", errorHandler.errors));
 		}
 	}
 
-	/**
-	 * Returns a deep copy of the document with every PGS module attribute removed, so the document
-	 * validates against the unmodified OASIS core schema. The original document is left untouched and
-	 * keeps its PGS attributes for the reader. Documents without PGS attributes are returned as is.
-	 */
+	// Returns a deep copy of the document with every PGS module attribute removed, so the
+	// document validates against the unmodified OASIS core schema. The original document
+	// is left untouched and keeps its PGS attributes for the reader. Documents without
+	// PGS attributes are returned as is.
 	private static Document withoutPgsAttributes(Document document) {
 		Document copy = (Document) document.cloneNode(true);
 		try {
@@ -115,13 +123,15 @@ class XliffSchemaValidator {
 				Attr attribute = (Attr) pgsAttributes.item(i);
 				attribute.getOwnerElement().removeAttributeNode(attribute);
 			}
-		} catch (XPathExpressionException e) {
-			throw new XliffMessageSourceValidationException(e.getMessage());
+		}
+		catch (XPathExpressionException ex) {
+			throw new XliffMessageSourceValidationException(ex.getMessage());
 		}
 		return copy;
 	}
 
-	/** Loads and compiles all bundled schemas for the version (xml.xsd plus the core and any module it imports), with external access disabled. */
+	// Loads and compiles all bundled schemas for the version (xml.xsd plus the core and
+	// any module it imports), with external access disabled.
 	private Schema loadSchema(List<String> schemaResources) {
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		try {
@@ -137,48 +147,43 @@ class XliffSchemaValidator {
 				sources.add(readSchema(schemaResource));
 			}
 			return factory.newSchema(sources.toArray(new Source[0]));
-		} catch (SAXException e) {
+		}
+		catch (SAXException ex) {
 			throw new XliffMessageSourceValidationException(
-				String.format("Unable to load XLIFF schema %s: %s", schemaResources, e.getMessage())
-			);
+					String.format("Unable to load XLIFF schema %s: %s", schemaResources, ex.getMessage()));
 		}
 	}
 
-	/** Reads a bundled schema fully into memory so that no open stream outlives this method. */
+	// Reads a bundled schema fully into memory so that no open stream outlives this
+	// method.
 	private static Source readSchema(String name) {
 		try (InputStream in = openSchema(name)) {
 			return new StreamSource(new ByteArrayInputStream(in.readAllBytes()));
-		} catch (IOException e) {
+		}
+		catch (IOException ex) {
 			throw new XliffMessageSourceValidationException(
-				String.format("Unable to read bundled schema \"%s\": %s", name, e.getMessage())
-			);
+					String.format("Unable to read bundled schema \"%s\": %s", name, ex.getMessage()));
 		}
 	}
 
-	/**
-	 * Opens a bundled schema resource from the package (classpath) by file name.
-	 */
+	// Opens a bundled schema resource from the package (classpath) by file name.
 	private static InputStream openSchema(String name) {
 		InputStream in = XliffSchemaValidator.class.getResourceAsStream(SCHEMA_PATH + name);
 		if (in == null) {
 			throw new XliffMessageSourceValidationException(
-				String.format("Bundled schema resource \"%s%s\" not found.", SCHEMA_PATH, name)
-			);
+					String.format("Bundled schema resource \"%s%s\" not found.", SCHEMA_PATH, name));
 		}
 		return in;
 	}
 
-	/**
-	 * Collects schema violations into human-readable strings instead of
-	 * throwing on the first one.
-	 */
+	// Collects schema violations into human-readable strings instead of throwing on the
+	// first one.
 	private static final class CollectingErrorHandler implements ErrorHandler {
 
 		private final List<String> errors = new ArrayList<>();
 
 		/**
 		 * Records a schema warning.
-		 *
 		 * @param exception the violation reported by the parser.
 		 */
 		@Override
@@ -188,7 +193,6 @@ class XliffSchemaValidator {
 
 		/**
 		 * Records a schema error.
-		 *
 		 * @param exception the violation reported by the parser.
 		 */
 		@Override
@@ -198,7 +202,6 @@ class XliffSchemaValidator {
 
 		/**
 		 * Records a fatal schema error.
-		 *
 		 * @param exception the violation reported by the parser.
 		 */
 		@Override
@@ -206,18 +209,12 @@ class XliffSchemaValidator {
 			this.errors.add(format("ERROR", exception));
 		}
 
-		/**
-		 * Formats a single schema violation as
-		 * [LEVEL] message (line L, column C).
-		 */
+		// Formats a single schema violation as [LEVEL] message (line L, column C).
 		private static String format(String level, SAXParseException exception) {
-			return String.format(
-				"[%s] %s (line %d, column %d)%n",
-				level,
-				exception.getMessage(),
-				exception.getLineNumber(),
-				exception.getColumnNumber()
-			);
+			return String.format("[%s] %s (line %d, column %d)%n", level, exception.getMessage(),
+					exception.getLineNumber(), exception.getColumnNumber());
 		}
+
 	}
+
 }

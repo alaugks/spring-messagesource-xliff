@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -18,13 +31,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Verifies the examples documented in docs/README-Parent-MessageSource.md. Each test mirrors a
- * README section and its parent-chain configuration against the translations_readme_parent/*
- * (XLIFF) and messages_readme_parent/messages (ResourceBundle) resources.
+ * Verifies the examples documented in docs/README-Parent-MessageSource.md. Each test
+ * mirrors a README section and its parent-chain configuration against the
+ * translations_readme_parent/* (XLIFF) and messages_readme_parent/messages
+ * (ResourceBundle) resources.
  */
-class ReadmeParentMessageSourceExamplesTest {
+class ReadmeParentMessageSourceExamplesTests {
 
 	private static final Locale DE = Locale.forLanguageTag("de");
+
 	private static final Locale EN = Locale.forLanguageTag("en");
 
 	private static MessageSource xliff_first_config() {
@@ -34,16 +49,13 @@ class ReadmeParentMessageSourceExamplesTest {
 		parent.setDefaultLocale(Locale.forLanguageTag("en"));
 		parent.setFallbackToSystemLocale(false);
 
-		return XliffResourceMessageSource
-			.builder(EN, "translations_readme_parent/*")
+		return XliffResourceMessageSource.builder(EN, "translations_readme_parent/*")
 			.parentMessageSource(parent)
 			.build();
 	}
 
 	private static MessageSource bundle_first_config() {
-		MessageSource parent = XliffResourceMessageSource
-			.builder(EN, "translations_readme_parent/*")
-			.build();
+		MessageSource parent = XliffResourceMessageSource.builder(EN, "translations_readme_parent/*").build();
 
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		messageSource.setBasename("messages_readme_parent/messages");
@@ -82,24 +94,19 @@ class ReadmeParentMessageSourceExamplesTest {
 	}
 
 	static Stream<Arguments> provider_xliff_first() {
-		return Stream.of(
-			Arguments.of("only_xliff", DE, "Nur in XLIFF"),
-			Arguments.of("only_xliff", EN, "Only in XLIFF"),
-			Arguments.of("only_bundle", DE, "Nur im ResourceBundle"),
-			Arguments.of("only_bundle", EN, "Only in ResourceBundle"),
-			Arguments.of("shared", DE, "Geteilt aus XLIFF"),
-			Arguments.of("shared", EN, "Shared from XLIFF")
-		);
+		return Stream.of(Arguments.of("only_xliff", DE, "Nur in XLIFF"),
+				Arguments.of("only_xliff", EN, "Only in XLIFF"),
+				Arguments.of("only_bundle", DE, "Nur im ResourceBundle"),
+				Arguments.of("only_bundle", EN, "Only in ResourceBundle"),
+				Arguments.of("shared", DE, "Geteilt aus XLIFF"), Arguments.of("shared", EN, "Shared from XLIFF"));
 	}
 
 	static Stream<Arguments> provider_bundle_first() {
-		return Stream.of(
-			Arguments.of("only_bundle", DE, "Nur im ResourceBundle"),
-			Arguments.of("only_bundle", EN, "Only in ResourceBundle"),
-			Arguments.of("only_xliff", DE, "Nur in XLIFF"),
-			Arguments.of("only_xliff", EN, "Only in XLIFF"),
-			Arguments.of("shared", DE, "Geteilt aus ResourceBundle"),
-			Arguments.of("shared", EN, "Shared from ResourceBundle")
-		);
+		return Stream.of(Arguments.of("only_bundle", DE, "Nur im ResourceBundle"),
+				Arguments.of("only_bundle", EN, "Only in ResourceBundle"),
+				Arguments.of("only_xliff", DE, "Nur in XLIFF"), Arguments.of("only_xliff", EN, "Only in XLIFF"),
+				Arguments.of("shared", DE, "Geteilt aus ResourceBundle"),
+				Arguments.of("shared", EN, "Shared from ResourceBundle"));
 	}
+
 }

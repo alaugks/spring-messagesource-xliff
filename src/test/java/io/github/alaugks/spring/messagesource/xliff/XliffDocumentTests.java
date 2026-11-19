@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: Apache-2.0
-// Copyright 2023 André Laugks <alaugks@gmail.com>
+/*
+ * Copyright André Laugks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package io.github.alaugks.spring.messagesource.xliff;
 
@@ -12,26 +25,26 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class XliffDocumentTest {
+class XliffDocumentTests {
 
 	@Test
 	void test_get_xliff_version_from_version_attribute() {
 		Xliff2xDocument xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
-			<?xml version="1.0" encoding="utf-8"?>
-			<xliff version="2.1" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-			    <file id="f1">
-			        <unit id="unit-id">
-			            <segment>
-			                <source>source</source>
-			                <target>target</target>
-			            </segment>
-			        </unit>
-			    </file>
-			</xliff>
-			"""));
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff version="2.1" srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1">
+				        <unit id="unit-id">
+				            <segment>
+				                <source>source</source>
+				                <target>target</target>
+				            </segment>
+				        </unit>
+				    </file>
+				</xliff>
+				"""));
 
 		assertThat(xliffDocument.getXliffVersion()).isEqualTo("2.1");
 	}
@@ -39,18 +52,18 @@ class XliffDocumentTest {
 	@Test
 	void test_get_xliff_version_null_when_no_version_attribute() {
 		Xliff2xDocument xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
-			<?xml version="1.0" encoding="utf-8"?>
-			<xliff srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
-			    <file id="f1">
-			        <unit id="unit-id">
-			            <segment>
-			                <source>source</source>
-			                <target>target</target>
-			            </segment>
-			        </unit>
-			    </file>
-			</xliff>
-			"""));
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff srcLang="en" trgLang="de" xmlns="urn:oasis:names:tc:xliff:document:2.0">
+				    <file id="f1">
+				        <unit id="unit-id">
+				            <segment>
+				                <source>source</source>
+				                <target>target</target>
+				            </segment>
+				        </unit>
+				    </file>
+				</xliff>
+				"""));
 
 		assertThat(xliffDocument.getXliffVersion()).isNull();
 	}
@@ -58,9 +71,9 @@ class XliffDocumentTest {
 	@Test
 	void test_no_xliff_file() {
 		Document document = TestHelper.parseDocument("""
-			<?xml version="1.0" encoding="utf-8"?>
-			<translations></translations>
-			""");
+				<?xml version="1.0" encoding="utf-8"?>
+				<translations></translations>
+				""");
 
 		assertThat(new Xliff12Document(document).getUnits()).isEqualTo(Map.of());
 		assertThat(new Xliff2xDocument(document).getUnits()).isEqualTo(Map.of());
@@ -71,9 +84,7 @@ class XliffDocumentTest {
 	void test_read_version_uses_node_name_when_local_name_is_absent() throws Exception {
 		Document document = DocumentBuilderFactory.newInstance()
 			.newDocumentBuilder()
-			.parse(new ByteArrayInputStream(
-				"<xliff version=\"1.2\"></xliff>".getBytes(StandardCharsets.UTF_8)
-			));
+			.parse(new ByteArrayInputStream("<xliff version=\"1.2\"></xliff>".getBytes(StandardCharsets.UTF_8)));
 
 		assertThat(XliffDocument.readVersion(document.getDocumentElement())).isEqualTo("1.2");
 	}
@@ -89,9 +100,9 @@ class XliffDocumentTest {
 	@Test
 	void test_first_non_empty_skips_null_and_empty_values() {
 		Xliff2xDocument xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
-			<?xml version="1.0" encoding="utf-8"?>
-			<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"></xliff>
-			"""));
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"></xliff>
+				"""));
 
 		assertThat(xliffDocument.firstNonEmpty(null, "", "value")).isEqualTo("value");
 	}
@@ -99,9 +110,9 @@ class XliffDocumentTest {
 	@Test
 	void test_value_is_empty_when_element_is_null() {
 		Xliff2xDocument xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
-			<?xml version="1.0" encoding="utf-8"?>
-			<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"></xliff>
-			"""));
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"></xliff>
+				"""));
 
 		assertThat(xliffDocument.value(null)).isEmpty();
 	}
@@ -109,12 +120,13 @@ class XliffDocumentTest {
 	@Test
 	void test_raw_value_is_empty_when_text_content_is_null() {
 		Xliff2xDocument xliffDocument = new Xliff2xDocument(TestHelper.parseDocument("""
-			<?xml version="1.0" encoding="utf-8"?>
-			<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"></xliff>
-			"""));
+				<?xml version="1.0" encoding="utf-8"?>
+				<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0"></xliff>
+				"""));
 		Element element = mock(Element.class);
-		when(element.getTextContent()).thenReturn(null);
+		given(element.getTextContent()).willReturn(null);
 
 		assertThat(xliffDocument.rawValue(element)).isEmpty();
 	}
+
 }
